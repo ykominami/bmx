@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title></title>
+<script src="js/jquery-3.1.0.min.js"></script>
+<link rel="stylesheet" href="js/jquery-ui.min.css">
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/popup.js"></script>
+
+  <style>
+body {
+  margin: 1px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 130px 130px 130px 130px 130px;
+  grid-gap: 0px;
+  font-size: 100%;
+  background-color: #fff;
+}
+.wrapper2 {
+  display: grid;
+  grid-template-columns: 325px 325px;
+  grid-gap: 0px;
+  font-size: 100%;
+background-color: #ffffff;
+}
+.wrapper3 {
+  display: grid;
+  grid-template-columns: 160px 160px;
+  grid-gap: 0px;
+  font-size: 100%;
+}
+.spacing {
+  height: 1000px;
+  background-color: #ffffff;
+}
+.box {
+  background-color: #fff;
+  color: #444;
+  border-radius: 5px;
+  padding: 2px;
+  font-size: 100%;
+}
+.button {
+  height: 16;
+}
+.input {
+  width: 95%;
+}
+.input0 {
+  width: 149px;
+}
+.label {
+ padding: 1px;
+}
+.label0 {
+  width: 30px;
+  height: 11px;
+}
+.select {
+  width: 160px;
+}
+.select1 {
+  width: 50%;
+}
+.select2 {
+  width: 300px;
+}
+.wrapper-select {
+  font-size: 100%;
+  padding: 11px;
+  background-color: #f0000;
+  foreground-color: #000f0;
+}
+.wrapper-select0 {
+width: 150px;
+height: 20px;
+}
+.selected {
+  background-color: #dfdfdf;
+}
+.not-selected {
+  background-color: #00000;
+}
+  </style>
+</head>
+<body>
+  <div id="bookmarks">BK<input type="text" id="bk"></div>
+  <div id="editdialog"></div>
+  <div id="deletedialog"></div>
+  <div id="adddialog"></div>
+
+  <div class="wrapper2">
+    <div id="add-mode" class="not-selected">
+      <button type="button" name="dummy"  class="button" id="dummybtn">dummy</button>
+      <button type="button" name="remove" class="button" id="removebtn">remove</button>
+      <button type="button" name="test1"  class="button" id="test1btn">test1</button>
+      <button type="button" name="test2"  class="button" id="test2btn">test2</button>
+      <button type="button" name="test3"  class="button" id="test3btn">test3</button>
+      <div class="wrapper-select">
+      </div>
+      <div class="label">名前：<input type="text" id="name" class="input"></div>
+      <div class="label">url：<input type="text" id="url" class="input"></div>
+    </div>
+    <div id="move-mode" class="not-selected">
+      <button type="button" name="gotourl"  class="button" id="gotobtn">goto</button>
+      <div class="wrapper3">
+	<select type="text"   id="zinp" class="select"></select>
+	<select type="text"   id="yinp" class="select"></select>
+      </div>
+      <div class="label">名前：<input type="text" id="oname" class="input"></div>
+      <div class="label">url：<input type="text" id="ourl" class="input"></div>
+      <input type="hidden" id="oid">
+    </div>
+  </div>
+  <div id="menu" class="wrapper"></div>
+  <div class="wrapper">
+    <button type="button" name="recently"  class="button a" id="rbtn">recently</button>
+    <button type="button" name="category0" class="button c0" id="c0btn">doc</button>
+    <button type="button" name="category1" class="button c1" id="c1btn">book</button>
+    <button type="button" name="category2" class="button c2" id="c2btn">1-DEV</button>
+    <button type="button" name="category3" class="button c3" id="c3btn">1-DEV-ENV</button>
+    <select type="text"   class="box d" id="rinp"></select>
+    <select type="text"   class="box a" id="c0inp"></select>
+    <select type="text"   class="box a" id="c1inp"></select>
+    <select type="text"   class="box b" id="c2inp"></select>
+    <select type="text"   class="box c" id="c3inp"></select>
+    <button type="button" name="category4" class="button c4" id="c4btn">1-DEV-LANG</button>
+    <button type="button" name="category5" class="button c5" id="c5btn">1-DEV-P</button>
+    <button type="button" name="category6" class="button c6" id="c6btn">1-DEV-TECH</button>
+    <button type="button" name="category7" class="button c7" id="c7btn">1-DEV-WEB</button>
+    <button type="button" name="category8" class="button c8" id="c8btn">1-DEV-WEB-DESIGN</button>
+    <select type="text"   class="box c" id="c4inp"></select>
+    <select type="text"   class="box c" id="c5inp"></select>
+    <select type="text"   class="box c" id="c6inp"></select>
+    <select type="text"   class="box c" id="c7inp"></select>
+    <select type="text"   class="box c" id="c8inp"></select>
+    <button type="button" name="category9"  class="button c9"  id="c9btn">1-SECURITY</button>
+    <button type="button" name="category10" class="button d10" id="c10btn">8-SCI</button>
+    <button type="button" name="category11" class="button d11" id="c11btn">0-WORK</button>
+    <button type="button" name="category12" class="button d12" id="c12btn">動画</button>
+    <button type="button" name="category13" class="button d13" id="c13btn"></button>
+    <select type="text"   class="box c" id="c9inp"></select>
+    <select type="text"   class="box c" id="c10inp"></select>
+    <select type="text"   class="box c" id="c11inp"></select>
+    <select type="text"   class="box c" id="c12inp"></select>
+    <select type="text"   class="box c" id="c13inp"></select>
+  </div>
+  <div class="spacing"></div>
+</body>
+</html>
