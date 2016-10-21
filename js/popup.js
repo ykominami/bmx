@@ -7,9 +7,10 @@ $(document).ready( function(){
     var WantItemArray = []
     const ANOTHER_FOLER = -1
     var debugOption = { count_at: 10 , count_init: 0 , count: 0 , count_min: 10 , count_max: 20 }
+    const StorageKey = 'Options'
     var Settings = {}
     var Settings0 = {}
-    Settings.options = []
+    Settings[StorageKey] = []
     Settings0.options = []
 
     function getWantItemArray( )
@@ -47,15 +48,15 @@ $(document).ready( function(){
 	}
     }
     
-    function createOrMoveBKItemX(select_name){
-	debugPrint2("select_name=")
+    function createOrMoveBKItem(select_name){
+	debugPrint2("createOrMoveBKItem select_name=")
 	debugPrint2(select_name)
 	var parent_id = $(select_name).val()
 	var selected_name = select_name + ' option:selected'
-	debugPrint2("selected_name=")
+	debugPrint2("createOrMoveBKItem selected_name=")
 	debugPrint2(selected_name)
 	var selected = $(selected_name)
-	debugPrint2("selected=")
+	debugPrint2("createOrMoveBKItem selected=")
 	debugPrint2(selected)
 	var parent_text = selected.text()
 	var id , text
@@ -86,51 +87,58 @@ $(document).ready( function(){
 
     function addRecentlyItem( select , value , text )
     {
-	var ind = Settings.options.findIndex(function(element,index,array){
+	debugPrint2("addRecentlyItem Settings=")
+	debugPrint2(Settings)
+	var ind = Settings[StorageKey].findIndex(function(element,index,array){
 	    return element.id == value
 	})
 	if( ind != undefined && ind > 0 ){
-	    Settings.options.splice(ind)
+	    Settings[StorageKey].splice(ind)
 	}
-	if( Settings.options.length > 0 ){
-	    if( Settings.options[0].value != value ){
-		Settings.options.unshift( { value: value , text: text } )
+	if( Settings[StorageKey].length > 0 ){
+	    if( Settings[StorageKey][0].value == value ){
+		return
 	    }
 	}
-	else{
-	    Settings.options.unshift( { value: value , text: text } )
-	}
+
+	Settings[StorageKey].unshift( { value: value , text: text } )
+
 	var opts1 = []
-	Settings.options.forEach( function(element, index, array) {
+	Settings[StorageKey].forEach( function(element, index, array) {
 	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 	})
 	debugPrint2("addRecentlyItem opts1=")
 	debugPrint2(opts1)
 	debugPrint2("addRecentlyItem opions=")
-	debugPrint2(Settings.options)
+	debugPrint2(Settings[StorageKey])
 	
 	select.empty()
 	select.append(opts1)
 	debugPrint2("addRecentlyItem select=")
 	debugPrint2(select)
-	var entity = {}
-	entity.settings = Settings
-	debugPrint2("addRecentlyItem entity=")
-	debugPrint2(entity)
-	chrome.storage.local.set(entity, function() {
+	debugPrint2("addRecentlyItem Settings=")
+	debugPrint2(Settings)
+	var val = {}
+	val[StorageKey] = Settings[StorageKey]
+	chrome.storage.local.set( val, function() {
 	    debugPrint2("stored 2 addRecentlyItem")
 	})
     }
     function setSettings(val)
     {
+	debugPrint2("setSettings 0 Settings=")
+	debugPrint2(Settings)
+	debugPrint2("setSettings 0 val=")
+	debugPrint2(val)
 	Settings = val
+	debugPrint2("setSettings 1 Settings=")
+	debugPrint2(Settings)
     }
-    function updateSelectRecently(ary2,settings,select)
+    function updateSelectRecently(ary2,select)
     {
 	debugPrint2("ary2=")
 	debugPrint2(ary2)
 	var opts1 = []
-	Settings = settings
 	ary2.forEach(function(element, index, array) {
 	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 	})
@@ -145,54 +153,35 @@ $(document).ready( function(){
     {
 	debugPrint2("loadAndAddSelectRecently")
 	debugPrint2(select)
-	var ary = []
-	var defaults = {}
-	defaults.settings = {
-	    options: ary
-	}
 
-	chrome.storage.local.get(defaults, function(result) {
-	    if(!defaults.settings.options){
+	chrome.storage.local.get(StorageKey, function(result) {
+	    if(!result[StorageKey]){
 		debugPrint2("local.get 1")
-		ary2 = []
+		result[StorageKey] = []
 	    }
 	    else{
 		debugPrint2("local.get 2 0")
-		debugPrint2(result.settings.options)
-		ary2 = result.settings.options
+		debugPrint2(result[StorageKey])
 	    }
-	    updateSelectRecently(ary , result.settings , select)
+	    setSettings(result)
+	    updateSelectRecently(result[StorageKey] , select)
 	})
     }
     function loadAndAddSelectRecentlyX(select)
     {
-	var ary = []
-	var defaults = {}
-	defaults.settings = {
-	    options: ary
-	}
-
-	chrome.storage.local.get(defaults, function(result) {
-	    var ary2
-	    if(!defaults.settings.options){
-		debugPrint2("local.get 1")
-		ary2 = []
+	chrome.storage.local.get(StorageKey, function(result) {
+	    if(result[StorageKey] != undefined){
+		debugPrint2("local.get 2 0")
+		debugPrint2(result[StorageKey])
 	    }
 	    else{
-		if(defaults.settings.options != undefined){
-		    debugPrint2("local.get 2 0")
-		    debugPrint2(result.settings.options)
-		    ary2 = result.settings.options
-		}
-		else{
-		    debugPrint2("local.get 2 1")
-		    debugPrint2(result.settings.options)
-		    ary2 = []
-		}
+		debugPrint2("local.get 2 1")
+		debugPrint2(result[StorageKey])
+		result[StorageKey] = []
 	    }
 	    var opts1 = []
-	    setSettings(result.settings)
-	    ary2.forEach(function(element, index, array) {
+	    setSettings(result)
+	    result[StorageKey].forEach(function(element, index, array) {
 		opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 	    })
 	    select.empty()
@@ -216,7 +205,6 @@ $(document).ready( function(){
 	opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
 	select.append(opts1);
 	addSelectWaitingItemsX($('#yinp') , $('#zinp').val())
-//	$('#zinp').click()
     }
     
     function addSelectWaitingItemsX(select , folder_id)
@@ -335,7 +323,7 @@ $(document).ready( function(){
     function makeBtnHdrAndSelect(btn_name , select_name , keytop)
     {
 	$(btn_name).click(function(){
-	    createOrMoveBKItemX( select_name )
+	    createOrMoveBKItem( select_name )
 	})
 	addSelect($(select_name) , keytop)
     }
@@ -349,14 +337,6 @@ $(document).ready( function(){
     // Event called on a profile startup.
     chrome.runtime.onStartup.addListener(function () {
 	alert("onStartup")
-	/*
-	chrome.storage.local.get(['state'], function(result) {
-	    if (!result.state)
-		return;
-
-	    chrome.storage.local.set({state: result.state});
-	});
-*/
     });
     chrome.runtime.onInstalled.addListener(function () {
 	alert("onInstalled")
@@ -409,17 +389,16 @@ $(document).ready( function(){
 	}
 	alert("out:" + text)
     })
-    function dummyFunc(ary,entity)
+    function dummyFunc(ary)
     {
 	debugPrint2("dummyFunc 0")
 	debugPrint2(ary)
 	var val = Date.now()
-	var text = val % 10
+	var text = val % 100
 	ary.push( { value: val , text: text } )
-	entity.settings = {
-	    options: ary
-	}
-	chrome.storage.local.set(entity, function() {
+	var val = {}
+	val[StorageKey] = ary
+	chrome.storage.local.set(val, function() {
 	    debugPrint2("stored")
 	})
     }
@@ -438,46 +417,42 @@ $(document).ready( function(){
     }
     $('#test3btn').click(function(){
 //	makeSelect('#c13inp')
-//	makeSelect('#rinp')
+	makeSelect('#rinp')
     })
+    function localget()
+    {
+	debugPrint2("localget get called")
+	chrome.storage.local.get( null , function(result) {
+	    debugPrint2("localget get result=")
+	    debugPrint2(result)	    
+	})
+    }
     $('#dummybtn').click(function(){
-	var ary = []
-	var entity = {}
-	var defaults = {}
-
-	defaults.settings = {
-	    options: ary
-	}
-	chrome.storage.local.get(defaults, function(result) {
+	localget()
+	chrome.storage.local.get(StorageKey , function(result) {
 	    var ary2
-	    if(!defaults.settings.options){
-		debugPrint2("local.get 1")
-		ary2 = []
+	    if(result[StorageKey] != undefined){
+		debugPrint2("local.get 2 0")
+//		debugPrint2(result[StorageKey])
+		debugPrint2(result)
+		ary2 = result[StorageKey]
 	    }
 	    else{
-		if(defaults.settings.options != undefined){
-		    debugPrint2("local.get 2 0")
-		    debugPrint2(result.settings.options)
-		    ary2 = result.settings.options
-		}
-		else{
-		    debugPrint2("local.get 2 1")
-		    debugPrint2(result.settings.options)
-		    ary2 = []
-		}
+		debugPrint2("local.get 2 1")
+//		debugPrint2(result[StorageKey])
+		debugPrint2(result)
+		ary2 = []
 	    }
-	    dummyFunc(ary2 , entity)
+	    dummyFunc(ary2)
 	});
 
     })
     
     $('#removebtn').click(function(){
-	var ary = []
-	var defaults = {}
-	defaults.settings = {
-	    options: ary
-	}
-	chrome.storage.local.remove(defaults, function(result) {
+
+	chrome.storage.local.remove(StorageKey, function(result) {
+	})
+	chrome.storage.local.remove('StorageKey', function(result) {
 	})
     })
     //
@@ -512,7 +487,7 @@ $(document).ready( function(){
 	setTargetArea( "#add-mode" )
     
 	$('#rbtn').click(function(){
-	    createOrMoveBKItemX( '#rinp' )
+	    createOrMoveBKItem( '#rinp' )
 	})
 	loadAndAddSelectRecently($('#rinp'))
 	addSelectWaitingFolders( $('#zinp') )
