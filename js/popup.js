@@ -9,9 +9,7 @@ $(document).ready( function(){
     var debugOption = { count_at: 10 , count_init: 0 , count: 0 , count_min: 10 , count_max: 20 }
     const StorageKey = 'Options'
     var Settings = {}
-    var Settings0 = {}
     Settings[StorageKey] = []
-    Settings0.options = []
 
     function getWantItemArray( )
     {
@@ -36,33 +34,27 @@ $(document).ready( function(){
 	if( Target != val ){
 	    Target = val
 	    if( Target == "#add-mode" ){
-		debugPrint2("#add-mode")
+		// debugPrint2("#add-mode")
 		$('#move-mode').attr({class:"not-selected"})
 		$('#add-mode').attr({class:"selected"})
 	    }
 	    else {
-		debugPrint2("#move-mode")
+		// debugPrint2("#move-mode")
 		$('#add-mode').attr({class:"not-selected"})
 		$('#move-mode').attr({class:"selected"})
 	    }
 	}
     }
-    
-    function createOrMoveBKItem(select_name){
-	debugPrint2("createOrMoveBKItem select_name=")
-	debugPrint2(select_name)
+    function createOrMoveBKItemRecently(select_name){
 	var parent_id = $(select_name).val()
 	var selected_name = select_name + ' option:selected'
-	debugPrint2("createOrMoveBKItem selected_name=")
-	debugPrint2(selected_name)
 	var selected = $(selected_name)
-	debugPrint2("createOrMoveBKItem selected=")
-	debugPrint2(selected)
 	var parent_text = selected.text()
 	var id , text
 	if( Target == "#add-mode" ){
 	    text = $('#name').val()
 	    url = $('#url').val()
+	    alert( "1|parent_id=" + parent_id + "|text=" + text + "|url=" + url  )
 	    if( text != "" && url != "" ){
 		chrome.bookmarks.create( { parentId: parent_id, title: text , url: url } )
 	    }
@@ -74,8 +66,64 @@ $(document).ready( function(){
 	    text = $('#oname').val()
 	    url = $('#ourl').val()
 	    id = $('#oid').val()
+	    debugPrint2("=ItemHash["+ id + "]")
+	    debugPrint2(ItemHash[id])
+	    ItemHash[id].parentId
+
+	    alert( "2|parent_id=" + parent_id + "|text=" + text + "|url=" + url + "|id=" + id )
 	    if( text != "" && url != "" && id != "" ){
 		chrome.bookmarks.move( id , { parentId: parent_id} )
+		$(select_name).empty()
+		dumpBookmarksFromSubTree(parentId , query)
+		addSelect($(select_name) , keytop)
+	    }
+	    else{
+		alert("Can't move bookmark")
+	    }
+	}
+
+	addRecentlyItem( $('#rinp') , parent_id , parent_text )
+    }
+    function moveBKItem(id , src_parent_id , dest_parent_id)
+    {
+	if( id != "" ){
+	    chrome.bookmarks.move( id , { parentId: dest_parent_id} )
+	    dumpBookmarksFromSubTree(src_parent_id , "")
+	    addSelectWaitingItemsX($('#yinp') , src_parent_id)
+	    $('#oname').val("")
+	    $('#ourl').val("")
+	    $('#oid').val("")
+	}
+	else{
+	    alert("Can't move bookmark")
+	}
+    }
+    function createOrMoveBKItem(select_name , keytop){
+	var parent_id = $(select_name).val()
+	var selected_name = select_name + ' option:selected'
+	var selected = $(selected_name)
+	var parent_text = selected.text()
+	var id , text
+	if( Target == "#add-mode" ){
+	    text = $('#name').val()
+	    url = $('#url').val()
+//	    alert( "1|parent_id=" + parent_id + "|text=" + text + "|url=" + url  )
+	    if( text != "" && url != "" ){
+		chrome.bookmarks.create( { parentId: parent_id, title: text , url: url } )
+	    }
+	    else{
+		alert("Can't add bookmark")
+	    }
+	}
+	else {
+	    text = $('#oname').val()
+	    url = $('#ourl').val()
+	    id = $('#oid').val()
+//	    alert( "2|parent_id=" + parent_id + "|text=" + text + "|url=" + url + "|id=" + id )
+	    if( text != "" && url != "" && id != "" ){
+		chrome.bookmarks.get( id , function(result){
+		    moveBKItem( id , result[0].parentId , parent_id)
+		} )
 	    }
 	    else{
 		alert("Can't move bookmark")
@@ -87,8 +135,6 @@ $(document).ready( function(){
 
     function addRecentlyItem( select , value , text )
     {
-	debugPrint2("addRecentlyItem Settings=")
-	debugPrint2(Settings)
 	var ind = Settings[StorageKey].findIndex(function(element,index,array){
 	    return element.id == value
 	})
@@ -107,37 +153,20 @@ $(document).ready( function(){
 	Settings[StorageKey].forEach( function(element, index, array) {
 	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 	})
-	debugPrint2("addRecentlyItem opts1=")
-	debugPrint2(opts1)
-	debugPrint2("addRecentlyItem opions=")
-	debugPrint2(Settings[StorageKey])
 	
 	select.empty()
 	select.append(opts1)
-	debugPrint2("addRecentlyItem select=")
-	debugPrint2(select)
-	debugPrint2("addRecentlyItem Settings=")
-	debugPrint2(Settings)
 	var val = {}
 	val[StorageKey] = Settings[StorageKey]
 	chrome.storage.local.set( val, function() {
-	    debugPrint2("stored 2 addRecentlyItem")
 	})
     }
     function setSettings(val)
     {
-	debugPrint2("setSettings 0 Settings=")
-	debugPrint2(Settings)
-	debugPrint2("setSettings 0 val=")
-	debugPrint2(val)
 	Settings = val
-	debugPrint2("setSettings 1 Settings=")
-	debugPrint2(Settings)
     }
     function updateSelectRecently(ary2,select)
     {
-	debugPrint2("ary2=")
-	debugPrint2(ary2)
 	var opts1 = []
 	ary2.forEach(function(element, index, array) {
 	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
@@ -146,22 +175,12 @@ $(document).ready( function(){
 	if( opts1.length > 0 ){
 	    select.append(opts1)
 	}
-	debugPrint2("=updateSelectRecently select")
-	debugPrint2(select)
     }
     function loadAndAddSelectRecently(select)
     {
-	debugPrint2("loadAndAddSelectRecently")
-	debugPrint2(select)
-
 	chrome.storage.local.get(StorageKey, function(result) {
 	    if(!result[StorageKey]){
-		debugPrint2("local.get 1")
 		result[StorageKey] = []
-	    }
-	    else{
-		debugPrint2("local.get 2 0")
-		debugPrint2(result[StorageKey])
 	    }
 	    setSettings(result)
 	    updateSelectRecently(result[StorageKey] , select)
@@ -171,12 +190,12 @@ $(document).ready( function(){
     {
 	chrome.storage.local.get(StorageKey, function(result) {
 	    if(result[StorageKey] != undefined){
-		debugPrint2("local.get 2 0")
-		debugPrint2(result[StorageKey])
+//		debugPrint2("local.get 2 0")
+//		debugPrint2(result[StorageKey])
 	    }
 	    else{
-		debugPrint2("local.get 2 1")
-		debugPrint2(result[StorageKey])
+//		debugPrint2("local.get 2 1")
+//		debugPrint2(result[StorageKey])
 		result[StorageKey] = []
 	    }
 	    var opts1 = []
@@ -221,7 +240,6 @@ $(document).ready( function(){
     function dumpTreeItems(bookmarkTreeNodes , ignore_head) {
 	ignore_head = ignore_head === undefined ? false : ignore_head
 
-	debugPrint2("C")
 	var ary = []
 	var i
 	for(i=0; i<bookmarkTreeNodes.length; i++){
@@ -241,12 +259,24 @@ $(document).ready( function(){
     function addSelect(select,keytop)
     {
 	var opts1 = []
-	var xary = getSelectItem(ItemHashByHier[keytop] , true)
-	xary.forEach( function(element, index, array) {
-	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
-	})
-	opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
-	select.append(opts1);
+	if( keytop != null ){
+	    var item = ItemHashByHier[keytop]
+	    if( item != undefined ){
+		var xary = getSelectItem(item , true)
+		xary.forEach( function(element, index, array) {
+		    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
+		})
+		if( opts1.length == 0 ){
+		    opts1.push( $('<option>' , { value: ItemHashByHier[keytop].id , text: ItemHashByHier[keytop].title } ) )
+		    
+		}
+		opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
+		select.append(opts1);
+	    }
+	    else{
+		debugPrint2("key=" + keytop )
+	    }
+	}
     }
     
     function getSelectItem(item , ignore_head){
@@ -263,7 +293,15 @@ $(document).ready( function(){
 	}
 	return ary
     }
-    
+    function dumpBookmarksFromSubTree(parentId , query)
+    {
+	var bookmarkTreeNodes = chrome.bookmarks.getSubTree(
+	    parentId,
+	    function(bookmarkTreeNodes) {
+		ItemHash[parentId].children = dumpTreeNodes(bookmarkTreeNodes, query , { })
+//		ItemHashByHier[item.hier] = item
+	    } )
+    }
     function dumpBookmarks(query) {
 	var bookmarkTreeNodes = chrome.bookmarks.getTree(
 	    function(bookmarkTreeNodes) {
@@ -303,7 +341,6 @@ $(document).ready( function(){
 			item.top_hier = item.title
 			item.hier = ""
 			TopItems.push(item.id)
-//			debugPrint2( TopItems.length )
 		    }
 		    else {
 			item.hier = parent_item.hier + '/' +  item.title
@@ -323,7 +360,7 @@ $(document).ready( function(){
     function makeBtnHdrAndSelect(btn_name , select_name , keytop)
     {
 	$(btn_name).click(function(){
-	    createOrMoveBKItem( select_name )
+	    createOrMoveBKItem( select_name , keytop)
 	})
 	addSelect($(select_name) , keytop)
     }
@@ -331,7 +368,7 @@ $(document).ready( function(){
     {
 	var i
 	for(i=0; i<items.length ; i++){
-	    makeBtnHdrAndSelect('#c'+i+'btn' , '#c'+i+'inp' , items[i])
+	    makeBtnHdrAndSelect('#c'+i+'btn' , '#c'+i+'inp' , items[i][1])
 	}
     }
     // Event called on a profile startup.
@@ -369,93 +406,155 @@ $(document).ready( function(){
     $('#gotobtn').click(function(){
 	chrome.tabs.create({url: $('#ourl').val()})
     })
-    $('#test1btn').click(function(){
-	var e = {
-	    abc: undefined
-	}
+    $('#removeitembtn').click(function(){
+	chrome.bookmarks.remove($('#oid').val(), function(result) {
+	    var parent_id = $('#zinp').val()
+	    $('#yinp').empty()
+	    dumpBookmarksFromSubTree( parent_id , "")
+	    addSelectWaitingItemsX($('#yinp') , parent_id )
+	    $('#oname').val("")
+	    $('#ourl').val("")
+	    $('#oid').val("")
+	})
+    })
+    $('#bk').change(function(){
+	debugPrint2( $('#bk').val() )
+    })
+    function makeBtnA( name , class_name , id )
+    {
+	return $('<button>' , {
+	    type: "button",
+	    name: name, 
+	    class: class_name,
+	    id: id,
+	    text: name
+	})
+    }
+    function makeSelectA( class_name , id )
+    {
+	return $('<select>' , {
+	    class: class_name, 
+	    id: id
+	})
+    }
+    function makeMenuXrecently()
+    {
+	return { first: makeBtnA( "recently" , "button a" , "rbtn" ) ,
+		 second: makeSelectA( "box d" , "rinp0" ) 
+	       }
+    }
+    function makeMenuXcategory(max,items)
+    {
+	var ary = []
+	var i
+	var name
 	var text
-	if( e.abc === undefined ){
-	    text = "undef"
+	var lormax = items.length
+	if( max < lormax ){
+	    lormax = max
 	}
-	else{
-	    text = "defined"
+	for(i=0; i<lormax; i++){
+	    text = items[i][0]
+
+	    name = "c" + i
+	    ary.push(
+		{ first: makeBtnA( text , "button " + name , name + "btn" ),
+		  second: makeSelectA( "box " + i , name + "inp" ) 
+		} )
 	}
-	alert("abc:" + text)
-	if( e.out === undefined ){
-	    text = "undef"
-	}
-	else{
-	    text = "defined"
-	}
-	alert("out:" + text)
-    })
-    function dummyFunc(ary)
-    {
-	debugPrint2("dummyFunc 0")
-	debugPrint2(ary)
-	var val = Date.now()
-	var text = val % 100
-	ary.push( { value: val , text: text } )
-	var val = {}
-	val[StorageKey] = ary
-	chrome.storage.local.set(val, function() {
-	    debugPrint2("stored")
-	})
+	return ary
     }
-    function makeSelect(select_name)
+    function makeMenuX(category_max , items)
     {
-	var value = Date.now()
-	var text = value % 10
-	var v = { value: value , text: text }
-	Settings0.options.unshift(v)
-	var opts1 = []
-	Settings0.options.forEach(function(element, index, array){
-	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
-	})
-	$(select_name).empty()
-	$(select_name).append(opts1)
+	var ary = []
+	var ary2 = []
+	
+	ary.push( makeMenuXrecently() )
+	ary2 = ary.concat( makeMenuXcategory(category_max , items) )
+
+	return ary2
     }
-    $('#test3btn').click(function(){
-//	makeSelect('#c13inp')
-	makeSelect('#rinp')
-    })
-    function localget()
+ 
+    var w = 5
+    var ind
+    var next_start
+    var b_c,b_r,s_c,s_r
+    var items = [
+	['doc', '/0/doc'],
+	['book', '/0/book'],
+	['Op', '/Op'],
+	['Op2', '/Op2'],
+	['Op3', '/Op3'],
+	['Op4', '/Op4'],
+	['Op5', '/Op5'],
+	['1-DEV', '/XD/1-DEV'],
+	['1-DEV-DOCUMENTATION', '/XD/1-DEV-DOCUMENTATION'],
+	['1-DEV-EMBEDED', '/XD/1-DEV-EMBEDED'],
+	['1-DEV-ENV', '/XD/1-DEV-ENV'],
+	['1-DEV-ENV-2', '/XD/1-DEV-ENV-2'],
+	['1-DEV-LANG', '/XD/1-DEV-LANG'],
+	['1-DEV-LANG-2', '/XD/1-DEV-LANG-2'],
+	['1-DEV-LANG-3', '/XD/1-DEV-LANG-3'],
+	['1-DEV-LANG-4', '/XD/1-DEV-LANG-4'],
+	['1-DEV-P', '/XD/1-DEV-P'],
+	['1-DEV-TECH', '/XD/1-DEV-TECH'],
+	['1-DEV-WEB-API', '/XD/1-DEV-WEB-API'],
+	['1-DEV-WEB', '/XD/1-DEV-WEB'],
+	['1-DEV-WEB-DESIGN', '/XD/1-DEV-WEB-DESIGN'],
+	['1-SECURITY', '/XD/1-SECURITY'],
+	['8-SCI', '/XD/8-SCI'],
+	['0-WORK','/XD/0-WORK'],
+	['動画','/0/動画'],
+	['kurayama','/S/kurayama'],
+	['9-SOC','/S/9-SOC'],
+	['10-SOC','/S/10-SOC'],
+	['9-ECONOMY','/S/9-ECONOMY'],
+	['book','/L/book'],
+	['L2','/L2'],
+	['L','/L'],
+	['HUMAN','/0/0-HUMAN']
+	
+    ]
+
+    function getItems()
     {
-	debugPrint2("localget get called")
-	chrome.storage.local.get( null , function(result) {
-	    debugPrint2("localget get result=")
-	    debugPrint2(result)	    
-	})
+	return items
     }
-    $('#dummybtn').click(function(){
-	localget()
-	chrome.storage.local.get(StorageKey , function(result) {
-	    var ary2
-	    if(result[StorageKey] != undefined){
-		debugPrint2("local.get 2 0")
-//		debugPrint2(result[StorageKey])
-		debugPrint2(result)
-		ary2 = result[StorageKey]
+
+    function makeMenuY()
+    {
+	var els = makeMenuX(80 , items)
+	var aryx = new Array(els.length * 2)
+
+	els.forEach(function(element, index, array){
+	    ind = index % w
+	    if( ind == 0 ){
+		if( index == 0){
+		    b_r = 1
+		    next_start = 2
+		}
+		else{
+		    b_r = next_start * 2
+		    next_start = next_start + 1
+		}
+		s_r = b_r + 1
+
+		b_c = 1
+		s_c = 1
 	    }
 	    else{
-		debugPrint2("local.get 2 1")
-//		debugPrint2(result[StorageKey])
-		debugPrint2(result)
-		ary2 = []
+		b_c = b_c + 1
+		s_c = s_c + 1
 	    }
-	    dummyFunc(ary2)
-	});
-
-    })
-    
-    $('#removebtn').click(function(){
-
-	chrome.storage.local.remove(StorageKey, function(result) {
+	    element.first.addClass( 'g-' + b_r + '-' + b_c)
+	    element.second.addClass('g-' + s_r + '-' + s_c)
+	    aryx.push(element.first)
+	    aryx.push(element.second)
 	})
-	chrome.storage.local.remove('StorageKey', function(result) {
-	})
-    })
-    //
+	$('#menu').addClass("wrapper")
+	$('#menu').append( aryx )
+    }
+    makeMenuY()
     
     var query = ""
     dumpBookmarks(query)
@@ -468,8 +567,6 @@ $(document).ready( function(){
 	$('#name').val(title)
 	var url = current.url
 	$('#url').val(url)
-	$('#bk').val("bkx")
-
 	$('#zinp').click(function(){
 	    debugPrint2("setTargetArea 3")
 	    setTargetArea( '#move-mode' )
@@ -483,30 +580,14 @@ $(document).ready( function(){
 		debugPrint2( BookmarkTreeNodes[0].id )
 	    } )
 	})
-	debugPrint2("setTargetArea 0")
 	setTargetArea( "#add-mode" )
-    
+	
 	$('#rbtn').click(function(){
-	    createOrMoveBKItem( '#rinp' )
+	    createOrMoveBKItemRecently( '#rinp' )
 	})
 	loadAndAddSelectRecently($('#rinp'))
 	addSelectWaitingFolders( $('#zinp') )
-	var items = [
-	    '/0/doc',
-	    '/0/book',
-	    '/XD/1-DEV',
-	    '/XD/1-DEV-ENV',
-	    '/XD/1-DEV-LANG',
-	    '/XD/1-DEV-P',
-	    '/XD/1-DEV-TECH',
-	    '/XD/1-DEV-WEB',
-	    '/XD/1-DEV-WEB-DESIGN',
-	    '/XD/1-SECURITY',
-	    '/XD/8-SCI',
-	    '/XD/0-WORK',
-	    '/0/動画'
-	]
-	makeDistinationMenu(items)
+	makeDistinationMenu( getItems() )
     })
     
 })
