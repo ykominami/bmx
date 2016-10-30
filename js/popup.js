@@ -94,7 +94,7 @@ $(document).ready( function(){
     function makeBtnHdrAndSelect(btn_jquery_id , select_jquery_id , keytop)
     {
 	addSelect($(select_jquery_id) , keytop)
-	$(btn_jquery_id).click(function(){
+	$(btn_jquery_id).click(() => {
 	    createOrMoveBKItem( select_jquery_id , keytop)
 	})
     }
@@ -149,7 +149,7 @@ $(document).ready( function(){
 	    var item = ItemHashByHier[keytop]
 	    if( item != undefined ){
 		var xary = getSelectOption(item , true)
-		xary.forEach( function(element, index, array) {
+		xary.forEach( (element, index, array) => {
 		    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 		})
 		if( opts1.length == 0 ){
@@ -186,7 +186,7 @@ $(document).ready( function(){
 	    ary.push( { value: item.id , text: item.title } )
 	}
 	if (item.children) {
-	    item.children.forEach( function(element, index, array) {
+	    item.children.forEach( (element, index, array) => {
 		Array.prototype.push.apply( this , getSelectOption(element) )
 	    } , ary )
 	}
@@ -215,7 +215,7 @@ $(document).ready( function(){
     {
 	var item = ItemHash[folder_id]
 	chrome.bookmarks.getSubTree( item.id ,
-				     function(bookmarkTreeNodes) {
+				     (bookmarkTreeNodes) => {
 					 select.empty()
 					 var zary = dumpTreeItems(bookmarkTreeNodes , true)
 					 select.append( zary )
@@ -247,7 +247,7 @@ $(document).ready( function(){
 	    url = $('#ourl').val()
 	    id = $('#oid').val()
 	    if( text != "" && url != "" && id != "" ){
-		chrome.bookmarks.get( id , function(result){
+		chrome.bookmarks.get( id , (result) => {
 		    moveBKItem( id , result[0].parentId , parent_id)
 		} )
 	    }
@@ -265,7 +265,7 @@ $(document).ready( function(){
 	var values = []
 	var item
 	var key_array = ['/0/new-action','/0/action','/0/1','/0/AdventCalendar', '/0/0-etc', '/0/a-ref']
-	key_array.forEach( function(element, index, array) {
+	key_array.forEach( (element, index, array) => {
 	    item = ItemHashByHier[element]
 	    values.push(item.id)
 	    opts1.push( $('<option>' , { value: item.id , text: element }) )
@@ -303,7 +303,7 @@ $(document).ready( function(){
     /* ===== ----- ==== */
     function addRecentlyItem( select , value , text )
     {
-	var ind = Settings[StorageOptions].findIndex(function(element,index,array){
+	var ind = Settings[StorageOptions].findIndex((element,index,array) => {
 	    return element.value == value
 	})
 	if( ind >= 0 ){
@@ -312,7 +312,7 @@ $(document).ready( function(){
 	Settings[StorageOptions].unshift( { value: value , text: text } )
 
 	var opts1 = []
-	Settings[StorageOptions].forEach( function(element, index, array) {
+	Settings[StorageOptions].forEach( (element, index, array) => {
 	    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
 	})
 	select.empty()
@@ -324,7 +324,7 @@ $(document).ready( function(){
 	val[StorageSelected] = Settings[StorageSelected]
 	debugPrint2("addRecentlyItem=StorageSelected")
 	debugPrint2(Settings[StorageSelected])
-	chrome.storage.local.set( val, function() {
+	chrome.storage.local.set( val, () => {
 	})
     }
     /*********************/
@@ -392,7 +392,7 @@ $(document).ready( function(){
 
 	makeDistinationMenu( getItems1() )
 
-	$('#rbtn').click(function(){
+	$('#rbtn').click(() => {
 	    createOrMoveBKItem( '#rinp' , 'recently' )
 	})
 	updateSelectRecently(Settings[StorageOptions] , $('#rinp'))
@@ -403,12 +403,12 @@ $(document).ready( function(){
     {
 	$('#name').val(title)
 	$('#url').val(url)
-	$('#zinp').click(function(){
+	$('#zinp').click(() => {
 	    setTargetArea( '#move-mode' )
 	    addSelectWaitingItemsX($('#yinp') , $('#zinp').val())
 	})
-	$('#yinp').click(function(){
-	    chrome.bookmarks.get( $('#yinp').val() , function(BookmarkTreeNodes){
+	$('#yinp').click(() => {
+	    chrome.bookmarks.get( $('#yinp').val() , (BookmarkTreeNodes) => {
 		$('#oname').val( BookmarkTreeNodes[0].title )
 		$('#ourl').val( BookmarkTreeNodes[0].url )
 		$('#oid').val( BookmarkTreeNodes[0].id )
@@ -418,18 +418,18 @@ $(document).ready( function(){
 
 	addSelectWaitingFolders( $('#zinp') )
 
-	$('#add-mode').click(function(){
+	$('#add-mode').click(() => {
 	    setTargetArea( '#add-mode' )
 	})
-	$('#move-mode').click(function(){
+	$('#move-mode').click(() => {
 	    setTargetArea( '#move-mode' )
 	})
 
-	$('#gotobtn').click(function(){
+	$('#gotobtn').click(() => {
 	    chrome.tabs.create({url: $('#ourl').val()})
 	})
-	$('#removeitembtn').click(function(){
-	    chrome.bookmarks.remove($('#oid').val(), function(result) {
+	$('#removeitembtn').click(() => {
+	    chrome.bookmarks.remove($('#oid').val(), (result) => {
 		var parent_id = $('#zinp').val()
 		$('#yinp').empty()
 		dumpBookmarksFromSubTree( parent_id , "")
@@ -438,18 +438,18 @@ $(document).ready( function(){
 		$('#oid').val("")
 	    })
 	})
-	$('#bk').change(function(){
+	$('#bk').change(() => {
 	    debugPrint2( $('#bk').val() )
 	})
-	$('#removebtn').click(function(){
+	$('#removebtn').click(() => {
 
-	    chrome.storage.local.remove([StorageOptions, StorageSelected], function(result) {
+	    chrome.storage.local.remove([StorageOptions, StorageSelected], (result) => {
 	    })
 	})
-	$('#test1btn').click(function(){
+	$('#test1btn').click(() => {
 	    var ary = []
 	    var xitems = {}
-	    Settings.Options.forEach(function(element,index,array){
+	    Settings.Options.forEach((element,index,array) => {
 		if( !xitems[element.value] ){
 		    xitems[element.value] = element
 		    ary.push(element)
@@ -462,7 +462,7 @@ $(document).ready( function(){
 	    var val = {}
 	    val[StorageOptions] = Settings[StorageOptions]
 	    val[StorageSelected] = Settings[StorageSelected]
-	    chrome.storage.local.set( val, function() {
+	    chrome.storage.local.set( val, () => {
 	    })
 	})
 
@@ -471,7 +471,7 @@ $(document).ready( function(){
     /* ===== bookmarkの情報を取得 ===== */
     function dumpTreeNodes(bookmarkTreeNodes, query , parent_item) {
 	var ary = []
-	bookmarkTreeNodes.forEach( function(element, index, array) {
+	bookmarkTreeNodes.forEach( (element, index, array) => {
 	    var hier = ""
 	    if ( ItemHash[element.parentId] ){
 		hier = ItemHash[element.parentId].hier + '/' + element.title
@@ -521,7 +521,7 @@ $(document).ready( function(){
 
     /* ===== popup windowsの作成 ===== */
     function setupyPopupWindow(){
-	chrome.tabs.query( {active: true, currentWindow: true} , function(tabs) {
+	chrome.tabs.query( {active: true, currentWindow: true} , (tabs) => {
 	    var current = tabs[0]
 	    var title = current.title
 	    var url = current.url
@@ -533,7 +533,7 @@ $(document).ready( function(){
 
     function dumpBookmarks(query) {
 	var bookmarkTreeNodes = chrome.bookmarks.getTree(
-	    function(bookmarkTreeNodes) {
+	    (bookmarkTreeNodes) => {
 		dumpTreeNodes(bookmarkTreeNodes, query , { root: true })
 
 		setupyPopupWindow()
@@ -542,7 +542,7 @@ $(document).ready( function(){
 
     function load()
     {
-	chrome.storage.local.get([StorageOptions, StorageSelected] , function(result) {
+	chrome.storage.local.get([StorageOptions, StorageSelected] , (result)  => {
 	    if(!result[StorageOptions]){
 		result[StorageOptions] = []
 	    }
