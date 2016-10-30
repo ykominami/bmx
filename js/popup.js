@@ -32,7 +32,7 @@ $(document).ready( function(){
 	Settings = val
     }
     /* ===== popup window 下部 下位関数 ==== */
-    function makeMenuCategorySelectBtn(category_max , items)
+    function makeMenuRecentlyAndCategorySelectBtn(category_max , items)
     {
 	var ary = []
 	var ary2 = []
@@ -61,7 +61,8 @@ $(document).ready( function(){
 	select.empty()
 	if( opts1.length > 0 ){
 	    select.append(opts1)
-	    select.val( ary2[(ary2.length - 1)].value )
+//	    select.val( ary2[(ary2.length - 1)].value )
+	    select.val( ary2[0].value )
 	}
     }
 
@@ -228,7 +229,9 @@ $(document).ready( function(){
 	var parent_text = selected.text()
 	var id , text
 
-	Settings[StorageSelected][keytop] = selected.val()
+	if( Settings[StorageSelected][keytop] != undefined ){
+	    Settings[StorageSelected][keytop] = selected.val()
+	}
 	if( Target == "#add-mode" ){
 	    text = $('#name').val()
 	    url = $('#url').val()
@@ -303,7 +306,7 @@ $(document).ready( function(){
 	var ind = Settings[StorageOptions].findIndex(function(element,index,array){
 	    return element.value == value
 	})
-	if( ind > 0 ){
+	if( ind >= 0 ){
 	    Settings[StorageOptions].splice(ind)
 	}
 	Settings[StorageOptions].unshift( { value: value , text: text } )
@@ -356,7 +359,7 @@ $(document).ready( function(){
 	var ind
 	var next_start
 	var b_c,b_r,s_c,s_r
-	var els = makeMenuCategorySelectBtn(count , getItems1())
+	var els = makeMenuRecentlyAndCategorySelectBtn(count , getItems1())
 	var aryx = new Array(els.length * 2)
 
 	els.forEach(function(element, index, array){
@@ -389,6 +392,9 @@ $(document).ready( function(){
 
 	makeDistinationMenu( getItems1() )
 
+	$('#rbtn').click(function(){
+	    createOrMoveBKItem( '#rinp' , 'recently' )
+	})
 	updateSelectRecently(Settings[StorageOptions] , $('#rinp'))
     }
 
@@ -410,9 +416,6 @@ $(document).ready( function(){
 	})
 	setTargetArea( "#add-mode" )
 
-	$('#rbtn').click(function(){
-	    createOrMoveBKItem( '#rinp' )
-	})
 	addSelectWaitingFolders( $('#zinp') )
 
 	$('#add-mode').click(function(){
