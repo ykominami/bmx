@@ -1,28 +1,29 @@
 $(document).ready( function(){
     var Target
     var ItemHash = []
-    var ItemHashByHier = new Object()
+//    var ItemHashByHier = new Object()
+    var ItemHashByHier = {}
     var RootItems = []
     var TopItems = []
     const ANOTHER_FOLER = -1
     const StorageOptions = 'Options'
     const StorageSelected = 'Selected'
-    var Settings = {
-	StorageOptions: [],
-	StorageSelected: {}
-    }
+
+    var Settings = {}
+    Settings[StorageOptions] = []
+    Settings[StorageSelected] = {}
 
     /* デバッグ用関数 */
     function debugPrint2( obj )
     {
-	console.log( obj )
+//	console.log( obj )
     }
     
     function debugPrint( obj )
     {
 	if( debugOption.count_min <= debugOption.count && debugOption.count_max >= debugOption.count){
 	    console.log( obj )
-	}
+}
 	debugOption.count++
     }
 
@@ -141,13 +142,26 @@ $(document).ready( function(){
 	return "#" + id
     }
 
+    function getItemByHier(key)
+    {
+	return ItemHashByHier[key]
+    }
+
     function addSelect(select,keytop)
     {
 	var opts1 = []
-	var value
+	var item,value
 	if( keytop != null ){
-	    var item = ItemHashByHier[keytop]
+	    debugPrint2("addSelect keytop=")
+	    debugPrint2(keytop)
+	    debugPrint2(ItemHashByHier)
+	    item = getItemByHier(keytop)
+	    debugPrint2("addSelect itemm=")
+	    debugPrint2(item)
+	    debugPrint2("addSelect length=")
+	    debugPrint2(ItemHashByHier.length)
 	    if( item != undefined ){
+		debugPrint2("addSelect 1")
 		var xary = getSelectOption(item , true)
 		xary.forEach( (element, index, array) => {
 		    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
@@ -159,7 +173,13 @@ $(document).ready( function(){
 		opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
 		select.append(opts1);
 
-		value = Settings[StorageSelected][keytop]
+		if( Settings[StorageSelected] != undefined ){
+		    value = Settings[StorageSelected][keytop]
+		}
+		else{
+		    Settings[StorageSelected] = {}
+		    value = undefined
+		}
 		if(value != undefined){
 		    select.val(value)
 		}
@@ -175,6 +195,9 @@ $(document).ready( function(){
 		debugPrint2("addSelect item =")
 		debugPrint2(item)
 	    }
+	    else{
+		debugPrint2("addSelect 2")
+	    }
 	}
     }
 
@@ -187,9 +210,13 @@ $(document).ready( function(){
 	}
 	if (item.children) {
 	    item.children.forEach( (element, index, array) => {
-		Array.prototype.push.apply( this , getSelectOption(element) )
-	    } , ary )
+		Array.prototype.push.apply( ary , getSelectOption(element) )
+	    } )
 	}
+	debugPrint2("getSelectOption item=")
+	debugPrint2(item)
+	debugPrint2("getSelectOption ary=")
+	debugPrint2(ary)
 	return ary
     }
 
@@ -280,7 +307,7 @@ $(document).ready( function(){
 	var bookmarkTreeNodes = chrome.bookmarks.getSubTree(
 	    parentId,
 	    function(bookmarkTreeNodes) {
-		ItemHash[parentId].children = dumpTreeNodes(bookmarkTreeNodes, query , { })
+		ItemHash[parentId].children = dumpTreeNodes(bookmarkTreeNodes, { })
 		addSelectWaitingItemsX($('#yinp') , parentId )
 	    } )
     }
@@ -354,14 +381,20 @@ $(document).ready( function(){
     /* ====== popup window 下部 ===== */
     function makeMenuOnBottomArea()
     {
+	debugPrint2("makeMenuOnBottomArea")
 	var w = 5
 	var count = 80
 	var ind
 	var next_start
 	var b_c,b_r,s_c,s_r
-	var els = makeMenuRecentlyAndCategorySelectBtn(count , getItems1())
+	var items = getItems1()
+	var els = makeMenuRecentlyAndCategorySelectBtn(count , items)
 	var aryx = new Array(els.length * 2)
 
+	debugPrint2("items=")
+	debugPrint2(items)
+	debugPrint2("els=")
+	debugPrint2(els)
 	els.forEach(function(element, index, array){
 	    ind = index % w
 	    if( ind == 0 ){
@@ -469,7 +502,7 @@ $(document).ready( function(){
     }
 
     /* ===== bookmarkの情報を取得 ===== */
-    function dumpTreeNodes(bookmarkTreeNodes, query , parent_item) {
+    function dumpTreeNodes(bookmarkTreeNodes , parent_item) {
 	var ary = []
 	bookmarkTreeNodes.forEach( (element, index, array) => {
 	    var hier = ""
@@ -511,7 +544,7 @@ $(document).ready( function(){
 		ItemHash[item.id] = item
 		ItemHashByHier[item.hier] = item
 		if ( element.children ) {
-		    item.children = dumpTreeNodes(element.children, query, item) 
+		    item.children = dumpTreeNodes(element.children , item) 
 		}
 		ary.push( item )
 	    }
@@ -520,23 +553,24 @@ $(document).ready( function(){
     }
 
     /* ===== popup windowsの作成 ===== */
-    function setupyPopupWindow(){
+    function setupPopupWindow(){
 	chrome.tabs.query( {active: true, currentWindow: true} , (tabs) => {
 	    var current = tabs[0]
 	    var title = current.title
 	    var url = current.url
 
 	    makeMenuOnUpperArea(title,url)
-	    makeMenuOnBottomArea()
 	})
     }
 
-    function dumpBookmarks(query) {
+    function dumpBookmarks() {
 	var bookmarkTreeNodes = chrome.bookmarks.getTree(
 	    (bookmarkTreeNodes) => {
-		dumpTreeNodes(bookmarkTreeNodes, query , { root: true })
-
-		setupyPopupWindow()
+		var ary = dumpTreeNodes(bookmarkTreeNodes, { root: true })
+		debugPrint2("dumpBookmarks ItemHashByHier=")
+		debugPrint2(ItemHashByHier)
+		debugPrint2("dumpBookmarks ItemHashByHier[/0]=")
+		debugPrint2(ItemHashByHier["/0"])
 	    } )
     }
 
@@ -550,17 +584,51 @@ $(document).ready( function(){
 		result[StorageSelected] = {}
 	    }
 	    setSettings(result)
-
-	    var query = ""
-	    dumpBookmarks(query)
 	})
     }
-
+    function dumpBookmarksAsync(){
+	return new Promise( (resolve, reject ) => {
+	    var bookmarkTreeNodes = chrome.bookmarks.getTree(
+		(bookmarkTreeNodes) => {
+		    var ary = dumpTreeNodes(bookmarkTreeNodes, { root: true })
+		    debugPrint2("dumpBookmarksAsync ItemHashByHier=")
+		    debugPrint2(ItemHashByHier)
+		    debugPrint2("dumpBookmarksAsync ItemHashByHier[/0]=")
+		    debugPrint2(ItemHashByHier["/0"])
+		    resolve({})
+		} )
+	} )
+    }
+    function loadAsync(){
+	return new Promise( (resolve, reject) => {
+	    chrome.storage.local.get([StorageOptions, StorageSelected] , (result)  => {
+		debugPrint2(result)
+		debugPrint2("loadAsync 1")
+		if(!result[StorageOptions]){
+		    debugPrint2("loadAsync 1 A")
+		    result[StorageOptions] = []
+		}
+		debugPrint2("loadAsync 1 B")
+		if(!result[StorageSelected]){
+		    debugPrint2("loadAsync C")
+		    result[StorageSelected] = {}
+		}
+		setSettings(result)
+		debugPrint2("loadAsync 2")
+		debugPrint2("result=")
+		debugPrint2(result)
+		debugPrint2("Settings=")
+		debugPrint2(Settings)
+		resolve({})
+	    })
+	} )
+    }
     function start()
     {
-	load()
+	dumpBookmarksAsync().then( ()=>{ loadAsync() } )
+	    .then( ()=>{setupPopupWindow()} )
+	    .then( ()=>{makeMenuOnBottomArea()} )
     }
-
     start()
 })
 
