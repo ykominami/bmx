@@ -1,8 +1,12 @@
+/** 
+ * @fileoverview ファイルの説明、使い方や依存関係に 
+ * ついての情報。 
+ */
 $(document).ready( function(){
     var Target
     var ItemHash = []
-//    var ItemHashByHier = new Object()
-    var ItemHashByHier = {}
+    var ItemHashByHier = new Object()
+//    var ItemHashByHier = {}
     var RootItems = []
     var TopItems = []
     const ANOTHER_FOLER = -1
@@ -16,7 +20,7 @@ $(document).ready( function(){
     /* デバッグ用関数 */
     function debugPrint2( obj )
     {
-//	console.log( obj )
+	console.log( obj )
     }
     
     function debugPrint( obj )
@@ -91,7 +95,12 @@ $(document).ready( function(){
 	}
 	return ary
     }
-
+/**
+ * 指定selectにkeytopで指定されたブックマークのサブツリー以下の項目をoption
+ * @param {number} btn_jquery_id selectに対応するbtnを表すjqueryのid
+ * @param {number} select_jquery_id optionを追加するselectを表すjqueryのid
+ * @param {string} keytop bookmarkのサブツリーを指定する文字列(サブツリーまで
+ */
     function makeBtnHdrAndSelect(btn_jquery_id , select_jquery_id , keytop)
     {
 	addSelect($(select_jquery_id) , keytop)
@@ -151,17 +160,18 @@ $(document).ready( function(){
     {
 	var opts1 = []
 	var item,value
+//	debugPrint2("addSelect")
 	if( keytop != null ){
-	    debugPrint2("addSelect keytop=")
-	    debugPrint2(keytop)
-	    debugPrint2(ItemHashByHier)
+//	    debugPrint2("addSelect keytop=")
+//	    debugPrint2(keytop)
+//	    debugPrint2(ItemHashByHier)
 	    item = getItemByHier(keytop)
-	    debugPrint2("addSelect itemm=")
-	    debugPrint2(item)
-	    debugPrint2("addSelect length=")
-	    debugPrint2(ItemHashByHier.length)
+//	    debugPrint2("addSelect itemm=")
+//	    debugPrint2(item)
+//	    debugPrint2("addSelect length=")
+//	    debugPrint2(ItemHashByHier.length)
 	    if( item != undefined ){
-		debugPrint2("addSelect 1")
+//		debugPrint2("addSelect 1")
 		var xary = getSelectOption(item , true)
 		xary.forEach( (element, index, array) => {
 		    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
@@ -186,17 +196,17 @@ $(document).ready( function(){
 		else{
 		    value = Settings[StorageSelected][keytop] = opts1[0][0].value
 		}
-		debugPrint2("addSelect keytop =")
-		debugPrint2(keytop)
-		debugPrint2("addSelect value =")
-		debugPrint2(value)
-		debugPrint2("addSelect xary =")
-		debugPrint2(xary)
-		debugPrint2("addSelect item =")
-		debugPrint2(item)
+//		debugPrint2("addSelect keytop =")
+//		debugPrint2(keytop)
+//		debugPrint2("addSelect value =")
+//		debugPrint2(value)
+//		debugPrint2("addSelect xary =")
+//		debugPrint2(xary)
+//		debugPrint2("addSelect item =")
+//		debugPrint2(item)
 	    }
 	    else{
-		debugPrint2("addSelect 2")
+//		debugPrint2("addSelect 2")
 	    }
 	}
     }
@@ -213,10 +223,10 @@ $(document).ready( function(){
 		Array.prototype.push.apply( ary , getSelectOption(element) )
 	    } )
 	}
-	debugPrint2("getSelectOption item=")
-	debugPrint2(item)
-	debugPrint2("getSelectOption ary=")
-	debugPrint2(ary)
+//	debugPrint2("getSelectOption item=")
+//	debugPrint2(item)
+//	debugPrint2("getSelectOption ary=")
+//	debugPrint2(ary)
 	return ary
     }
 
@@ -241,6 +251,10 @@ $(document).ready( function(){
     function addSelectWaitingItemsX(select , folder_id)
     {
 	var item = ItemHash[folder_id]
+	debugPrint2("folder_id=")
+	debugPrint2(folder_id)
+
+	
 	chrome.bookmarks.getSubTree( item.id ,
 				     (bookmarkTreeNodes) => {
 					 select.empty()
@@ -291,14 +305,17 @@ $(document).ready( function(){
 	var opts1 = []
 	var values = []
 	var item
-	var key_array = ['/0/new-action','/0/action','/0/1','/0/AdventCalendar', '/0/0-etc', '/0/a-ref']
+	var key_array = ['/0/1','/0/2','/0/new-action','/0/action','/0/AdventCalendar', '/0/0-etc', '/0/a-ref']
 	key_array.forEach( (element, index, array) => {
 	    item = ItemHashByHier[element]
-	    values.push(item.id)
-	    opts1.push( $('<option>' , { value: item.id , text: element }) )
+		if( item !== undefined ){
+	    	values.push(item.id)
+	    	opts1.push( $('<option>' , { value: item.id , text: element }) )
+		}
 	})
 	opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
 	select.append(opts1);
+	debugPrint2("addSelectWaitingFolders");
 	addSelectWaitingItemsX($('#yinp') , $('#zinp').val())
     }
 
@@ -321,6 +338,7 @@ $(document).ready( function(){
 	    $('#oname').val("")
 	    $('#ourl').val("")
 	    $('#oid').val("")
+	    $('#yinp option:first').prop('selected' , true)
 	}
 	else{
 	    alert("Can't move bookmark")
@@ -349,8 +367,8 @@ $(document).ready( function(){
 	var val = {}
 	val[StorageOptions] = Settings[StorageOptions]
 	val[StorageSelected] = Settings[StorageSelected]
-	debugPrint2("addRecentlyItem=StorageSelected")
-	debugPrint2(Settings[StorageSelected])
+//	debugPrint2("addRecentlyItem=StorageSelected")
+//	debugPrint2(Settings[StorageSelected])
 	chrome.storage.local.set( val, () => {
 	})
     }
@@ -381,7 +399,7 @@ $(document).ready( function(){
     /* ====== popup window 下部 ===== */
     function makeMenuOnBottomArea()
     {
-	debugPrint2("makeMenuOnBottomArea")
+	debugPrint2("makeMenuOnBottomArea 1")
 	var w = 5
 	var count = 80
 	var ind
@@ -391,10 +409,10 @@ $(document).ready( function(){
 	var els = makeMenuRecentlyAndCategorySelectBtn(count , items)
 	var aryx = new Array(els.length * 2)
 
-	debugPrint2("items=")
-	debugPrint2(items)
-	debugPrint2("els=")
-	debugPrint2(els)
+//	debugPrint2("items=")
+//	debugPrint2(items)
+//	debugPrint2("els=")
+//	debugPrint2(els)
 	els.forEach(function(element, index, array){
 	    ind = index % w
 	    if( ind == 0 ){
@@ -429,8 +447,17 @@ $(document).ready( function(){
 	    createOrMoveBKItem( '#rinp' , 'recently' )
 	})
 	updateSelectRecently(Settings[StorageOptions] , $('#rinp'))
+	debugPrint2("makeMenuOnBottomArea 2")
     }
 
+    function makeMenuOnBottomAreaAsync() {
+	return new Promise( (resolve, reject) => {
+		debugPrint2("makeMenuOnBottomAreaAsyc 1")
+		makeMenuOnBottomArea() 
+		debugPrint2("makeMenuOnBottomAreaAsyc")
+		resolve()
+		} )
+    }
     /* ===== popup window 上部 ===== */
     function makeMenuOnUpperArea(title,url)
     {
@@ -503,6 +530,7 @@ $(document).ready( function(){
 
     /* ===== bookmarkの情報を取得 ===== */
     function dumpTreeNodes(bookmarkTreeNodes , parent_item) {
+//	debugPrint2("dTN 1")
 	var ary = []
 	bookmarkTreeNodes.forEach( (element, index, array) => {
 	    var hier = ""
@@ -543,92 +571,137 @@ $(document).ready( function(){
 		
 		ItemHash[item.id] = item
 		ItemHashByHier[item.hier] = item
+		debugPrint2( "=---" )
+		debugPrint2( item.hier )
+//		debugPrint2( ItemHashByHier[item.hier] )
 		if ( element.children ) {
 		    item.children = dumpTreeNodes(element.children , item) 
 		}
 		ary.push( item )
 	    }
 	} )
+//	debugPrint2( "dTN 2" )
 	return ary
     }
 
-    /* ===== popup windowsの作成 ===== */
-    function setupPopupWindow(){
-	chrome.tabs.query( {active: true, currentWindow: true} , (tabs) => {
-	    var current = tabs[0]
-	    var title = current.title
-	    var url = current.url
-
-	    makeMenuOnUpperArea(title,url)
-	})
-    }
-
-    function dumpBookmarks() {
-	var bookmarkTreeNodes = chrome.bookmarks.getTree(
-	    (bookmarkTreeNodes) => {
-		var ary = dumpTreeNodes(bookmarkTreeNodes, { root: true })
-		debugPrint2("dumpBookmarks ItemHashByHier=")
-		debugPrint2(ItemHashByHier)
-		debugPrint2("dumpBookmarks ItemHashByHier[/0]=")
-		debugPrint2(ItemHashByHier["/0"])
+    function dumpTreeNodesAsync(bookmarkTreeNodes) {
+	    return new Promise( (resolve, reject) => {
+		debugPrint2("Promise dumpTreeNodes 1")
+		dumpTreeNodes(bookmarkTreeNodes, { root: true }) 
+		debugPrint2("Promise dumpTreeNodes 2")
+		resolve({})
 	    } )
     }
+    /* ===== popup windowsの作成 ===== */
+    function setupPopupWindowAsync(){
+	return new Promise( (resolve, reject) => {
+	    debugPrint2("setupPopupWindowAsync 1")
 
-    function load()
-    {
-	chrome.storage.local.get([StorageOptions, StorageSelected] , (result)  => {
-	    if(!result[StorageOptions]){
-		result[StorageOptions] = []
-	    }
-	    if(!result[StorageSelected]){
-		result[StorageSelected] = {}
-	    }
-	    setSettings(result)
-	})
+	    chrome.tabs.query( {active: true, currentWindow: true} , (tabs) => {
+	    	var current = tabs[0]
+	    	var title = current.title
+	    	var url = current.url
+
+	        makeMenuOnUpperArea(title,url)
+	        debugPrint2("setupPopupWindowAsync 2")
+	        resolve({})
+	    })
+        } )
     }
-    function dumpBookmarksAsync(){
-	return new Promise( (resolve, reject ) => {
-	    var bookmarkTreeNodes = chrome.bookmarks.getTree(
-		(bookmarkTreeNodes) => {
-		    var ary = dumpTreeNodes(bookmarkTreeNodes, { root: true })
-		    debugPrint2("dumpBookmarksAsync ItemHashByHier=")
-		    debugPrint2(ItemHashByHier)
-		    debugPrint2("dumpBookmarksAsync ItemHashByHier[/0]=")
-		    debugPrint2(ItemHashByHier["/0"])
-		    resolve({})
-		} )
-	} )
-    }
+
     function loadAsync(){
 	return new Promise( (resolve, reject) => {
+	    debugPrint2("Promise loadAsync 1")
 	    chrome.storage.local.get([StorageOptions, StorageSelected] , (result)  => {
-		debugPrint2(result)
-		debugPrint2("loadAsync 1")
 		if(!result[StorageOptions]){
 		    debugPrint2("loadAsync 1 A")
 		    result[StorageOptions] = []
 		}
-		debugPrint2("loadAsync 1 B")
 		if(!result[StorageSelected]){
 		    debugPrint2("loadAsync C")
 		    result[StorageSelected] = {}
 		}
 		setSettings(result)
-		debugPrint2("loadAsync 2")
-		debugPrint2("result=")
-		debugPrint2(result)
-		debugPrint2("Settings=")
-		debugPrint2(Settings)
+		debugPrint2("Promise loadAsync 2")
+
 		resolve({})
 	    })
 	} )
     }
-    function start()
-    {
-	dumpBookmarksAsync().then( ()=>{ loadAsync() } )
-	    .then( ()=>{setupPopupWindow()} )
-	    .then( ()=>{makeMenuOnBottomArea()} )
+
+    function dumpBookmarksAsync(){
+	return new Promise( (resolve, reject ) => {
+	    debugPrint2("Promise dumpBookmarksAsync")
+	    chrome.bookmarks.getTree(
+		(bookmarkTreeNodes) => {
+		    resolve(bookmarkTreeNodes)
+		} )
+	} )
     }
-    start()
+
+    function start0()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( () => {
+		loadAsync()
+		setupPopupWindowAsync()
+		makeMenuOnBottomAreaAsync() 
+	    } )
+    }
+
+    function start1()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( () => {
+		loadAsync().then( setupPopupWindowAsync() )
+		.then( makeMenuOnBottomAreaAsync() )
+	    } )
+    }
+
+    function start2()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( () => {
+		loadAsync().then( () => {
+			setupPopupWindowAsync().then( () => {makeMenuOnBottomAreaAsync()} )
+		} )
+	    } )
+    }
+
+    function start3()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( loadAsync() ).then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
+    }
+
+    function start4()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( () => {
+		loadAsync().then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
+	    } )
+    }
+    function start5()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( () => {
+		loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
+	    } )
+    }
+    function start6()
+    {
+	dumpBookmarksAsync()
+	    .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
+	    .then( 
+		loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
+	    )
+    }
+    start6()
 })
 
