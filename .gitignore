@@ -6,3 +6,7 @@ memo.txt
 *~
 .*~
 *.js-0
+*.html
+base/
+jquery-*/
+smoothness/
