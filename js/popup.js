@@ -98,8 +98,8 @@ $(document).ready( function(){
             /* name + "inp"という形の文字列が返る */
             select_id = getSelectId(name)
             ary.push({
-            first: makeBtnA( text , btn_class_name , btn_id ),
-            second: makeSelectA( select_class_name , select_id )
+                first: makeBtnA( text , btn_class_name , btn_id ),
+                second: makeSelectA( select_class_name , select_id )
             })
         }
         /* ハッシュの要素　first:ボタン second:セレクト */
@@ -123,7 +123,8 @@ $(document).ready( function(){
     /* recentlyのメニュー項目のデフォルト値 */
     function makeMenuXrecently()
     {
-        return { first: makeBtnA( "recently" , "button a" , "rbtn" ) ,
+        return {
+            first: makeBtnA( "recently" , "button a" , "rbtn" ) ,
             second: makeSelectA( "box d" , "rinp" )
         }
     }
