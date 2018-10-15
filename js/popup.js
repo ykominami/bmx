@@ -25,10 +25,10 @@ $(document).ready( function(){
     
     function debugPrint( obj )
     {
-    if( debugOption.count_min <= debugOption.count && debugOption.count_max >= debugOption.count){
-        console.log( obj )
-    }
-    debugOption.count++
+        if( debugOption.count_min <= debugOption.count && debugOption.count_max >= debugOption.count){
+            console.log( obj )
+        }
+        debugOption.count++
     }
 
     /* ===== グローバル変数 関連 ===== */
@@ -318,7 +318,6 @@ $(document).ready( function(){
         var opts1 = []
         var values = []
         var item
-    /*	var key_array = ['/0/1','/0/2','/0/new-action','/0/action','/0/AdventCalendar', '/0/0-etc', '/0/a-ref'] */
         var key_array = getKeys()
         key_array.forEach( (element, index, array) => {
             item = ItemHashByHier[element]
@@ -335,12 +334,13 @@ $(document).ready( function(){
 
     function dumpBookmarksFromSubTree(parentId , query)
     {
-    var bookmarkTreeNodes = chrome.bookmarks.getSubTree(
-        parentId,
-        function(bookmarkTreeNodes) {
-            ItemHash[parentId].children = dumpTreeNodes(bookmarkTreeNodes, { })
-            addSelectWaitingItemsX($('#yinp') , parentId )
-        } )
+        var bookmarkTreeNodes = chrome.bookmarks.getSubTree(
+            parentId,
+            (bookmarkTreeNodes) => {
+                ItemHash[parentId].children = dumpTreeNodes(bookmarkTreeNodes, { })
+                addSelectWaitingItemsX($('#yinp') , parentId )
+            }
+        )
     }
 
     function moveBKItem(id , src_parent_id , dest_parent_id)
