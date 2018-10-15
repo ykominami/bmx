@@ -646,18 +646,18 @@ $(document).ready( function(){
         return new Promise( (resolve, reject) => {
             debugPrint2("Promise loadAsync 1")
             chrome.storage.local.get([StorageOptions, StorageSelected] , (result)  => {
-            if(!result[StorageOptions]){
-                debugPrint2("loadAsync 1 A")
-                result[StorageOptions] = []
-            }
-            if(!result[StorageSelected]){
-                debugPrint2("loadAsync C")
-                result[StorageSelected] = {}
-            }
-            setSettings(result)
-            debugPrint2("Promise loadAsync 2")
+                if(!result[StorageOptions]){
+                    debugPrint2("loadAsync 1 A")
+                    result[StorageOptions] = []
+                }
+                if(!result[StorageSelected]){
+                    debugPrint2("loadAsync C")
+                    result[StorageSelected] = {}
+                }
+                setSettings(result)
+                debugPrint2("Promise loadAsync 2")
 
-            resolve({})
+                resolve({})
             })
         } )
     }
