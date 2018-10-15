@@ -716,7 +716,7 @@ $(document).ready( function(){
         dumpBookmarksAsync()
             .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
             .then( () => {
-            loadAsync().then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
+                loadAsync().then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
             } )
     }
     function start5()
@@ -724,7 +724,7 @@ $(document).ready( function(){
         dumpBookmarksAsync()
             .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
             .then( () => {
-            loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
+                loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
             } )
     }
     function start6()
@@ -732,7 +732,7 @@ $(document).ready( function(){
         dumpBookmarksAsync()
             .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
             .then( 
-            loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
+                loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
             )
         }
         start6()
