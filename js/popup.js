@@ -10,8 +10,8 @@ $(document).ready( function(){
     var RootItems = []
     var TopItems = []
     const ANOTHER_FOLER = -1
-    const StorageOptions = 'Options'
-    const StorageSelected = 'Selected'
+    const StorageOptions = 'Options'  /* 選択された対象フォルダの履歴() */
+    const StorageSelected = 'Selected' /* 各keytop毎の選択された対象フォルダ */
 
     var Settings = {}
     Settings[StorageOptions] = []
@@ -105,6 +105,7 @@ $(document).ready( function(){
         /* ハッシュの要素　first:ボタン second:セレクト */
         return ary
     }
+    
     /**
      * 指定selectにkeytopで指定されたブックマークのサブツリー以下の項目をoption
      * @param {number} btn_jquery_id selectに対応するbtnを表すjqueryのid
@@ -120,7 +121,8 @@ $(document).ready( function(){
             createOrMoveBKItem( select_jquery_id , keytop)
         })
     }
-    /* recentlyのメニュー項目のデフォルト値 */
+
+    /* recentlyのメニュー項目のデフォルト値 - buttonとselectのjqueryオブジェクト */
     function makeMenuXrecently()
     {
         return {
@@ -129,6 +131,7 @@ $(document).ready( function(){
         }
     }
 
+    /* buttonのjqueryオブジェクト */
     function makeBtnA( name , class_name , id )
     {
         return $('<button>' , {
@@ -140,6 +143,7 @@ $(document).ready( function(){
         })
     }
 
+    /* selectのjqueryオブジェクト */
     function makeSelectA( class_name , id )
     {
         return $('<select>' , {
@@ -276,6 +280,18 @@ $(document).ready( function(){
                         })
     }
 
+    /* 非同期タブ問い合わせ */
+    function tab_query_async(query) {
+        var promise = new Promise(function (resolve, reject) {
+                chrome.tabs.query(query, (tabs) => {
+                    resolve(tabs)
+                })
+        })
+        return promise
+    }
+
+    /* ボタンクリックハンドラの実体 */
+    /* 対象フォルダにbookmarkアイテムを作成または移動 */
     function createOrMoveBKItem(select_jquery_id , keytop){
         var parent_id = $(select_jquery_id).val()
         var selected_jquery_id = select_jquery_id + ' option:selected'
@@ -287,14 +303,64 @@ $(document).ready( function(){
             Settings[StorageSelected][keytop] = selected.val()
         }
         if( Target == "#add-mode" ){
-            text = $('#name').val()
-            url = $('#url').val()
-            if( text != "" && url != "" ){
-                chrome.bookmarks.create( { parentId: parent_id, title: text , url: url } )
-            }
-            else{
-                alert("Can't add bookmark")
-            }
+            tab_query_async({
+                active: true,
+                currentWindow: true
+            }).then(
+                (cur_tabs) => {
+                    var current_tab = cur_tabs[0]
+                    tab_query_async({
+                        currentWindow: true
+                    }).then(
+                        (tabs) => {
+                            var i
+                            var radioval = $("input[name='add-mode']:checked").val()
+                            switch (radioval) {
+                                case 'single':
+                                    chrome.bookmarks.create({
+                                        parentId: parent_id,
+                                        title: current_tab.title,
+                                        url: current_tab.url
+                                    })
+                                    chrome.tabs.remove(current_tab.id)
+                                    break
+                                case 'multi-r':
+                                    for (i = current_tab.index + 1; i < tabs.length; i++) {
+                                        console.log( [i, tabs[i].text , tabs[i].url ] )
+                                        chrome.bookmarks.create({
+                                            parentId: parent_id,
+                                            title: tabs[i].title,
+                                            url: tabs[i].url
+                                        })
+                                    }
+                                    /* 要検討 tabs.removeの引数をidではなくindexを指定できると勘違いしていたため、逆順に呼び出している */
+                                    /* 引数はidなので、正順に呼び出しても構わないと思われる */
+                                    for (i = tabs.length - 1; i > current_tab.index; i--) {
+                                        chrome.tabs.remove( tabs[i].id )
+                                    }
+                                    break
+                                case 'multi-l':
+                                    for (i = 0; i < current_tab.index; i++) {
+                                        chrome.bookmarks.create({
+                                            parentId: parent_id,
+                                            title: tabs[i].text,
+                                            url: tabs[i].url
+                                        })
+                                    }
+                                    /* 要検討 tabs.removeの引数をidではなくindexを指定できると勘違いしていたため、逆順に呼び出している */
+                                    /* 引数はidなので、正順に呼び出しても構わないと思われる */
+                                    for (i = current_tab.index - 1; i > -1; i--) {
+                                        chrome.bookmarks.remove(tabs[i].id)
+                                    }
+                                    break
+                                default:
+                                    /*  do nothing */
+                            }
+                        }
+                    )
+                },
+                (value) => {}
+            )
         }
         else {
             text = $('#oname').val()
@@ -362,6 +428,8 @@ $(document).ready( function(){
     /* ===== ----- ==== */
     function addRecentlyItem( select , value , text )
     {
+        /* 現在選択された対象フォルダが過去にも選択されていれば、過去の対象フォルダを直近に移動させる（つまりあらかじめ、過去の記録を削除する） */
+        /* 直近で同一対象フォルダが選択されていても、いったん削除する */
         var ind = Settings[StorageOptions].findIndex((element,index,array) => {
             return element.value == value
         })
@@ -370,6 +438,7 @@ $(document).ready( function(){
         }
         Settings[StorageOptions].unshift( { value: value , text: text } )
 
+        /* selectにアイテムを追加する(いったんslectの内容を消去して、追加したデータを改めてselectに設定する) */
         var opts1 = []
         Settings[StorageOptions].forEach( (element, index, array) => {
             opts1.push( $('<option>' , { value: element.value , text: element.text }) )
@@ -378,6 +447,7 @@ $(document).ready( function(){
         select.append(opts1)
         select.val(value)
 
+        /* 変更したSettingの内容をローカルに保存する */
         var val = {}
         val[StorageOptions] = Settings[StorageOptions]
         val[StorageSelected] = Settings[StorageSelected]
@@ -421,8 +491,9 @@ $(document).ready( function(){
         var b_c,b_r,s_c,s_r
         /* getItems1() itemsは次の構造の配列　配列の要素は[メニュー項目名 , フォルダ名の階層構造]　 settings.jsで定義 */
         var items = getItems1()
-        /* recentlyのメニュー項目データの配列作成 */
+        /* recentlyのメニュー項目データの配列と対象フォルダ指定用selectとbuttonの作成 */
         var els = makeMenuRecentlyAndCategorySelectBtn(count , items)
+        /* 一つの対象フォルダの指定は、一組のbuttonとselectで実現するため、配置の指定には要素数を2倍にする */
         var aryx = new Array(els.length * 2)
 
         //	debugPrint2("items=")
@@ -458,12 +529,13 @@ $(document).ready( function(){
         $('#menu').append( aryx )
 
         /* getItems1() itemsは次の構造の配列　[メニュー項目名 , フォルダ名の階層構造]　という settings.jsで定義 */
-        /* 対象フォルダ選択メニュー作成 */
+        /* 全対象フォルダselect作成 */
         makeDistinationMenu( getItems1() )
-
+        /* recently ボタンクリック処理の設定 */
         $('#rbtn').click(() => {
             createOrMoveBKItem( '#rinp' , 'recently' )
         })
+        /* recently selectの選択肢の更新 */
         updateSelectRecently(Settings[StorageOptions] , $('#rinp'))
         debugPrint2("makeMenuOnBottomArea 2")
     }
@@ -734,7 +806,7 @@ $(document).ready( function(){
             .then( 
                 loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
             )
-        }
-        start6()
+    }
+    start6()
 })
 
