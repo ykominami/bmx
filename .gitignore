@@ -10,3 +10,4 @@ memo.txt
 base/
 jquery-*/
 smoothness/
+*.code-workspace
