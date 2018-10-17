@@ -97,12 +97,13 @@ $(document).ready( function(){
             select_class_name = "box " + i
             /* name + "inp"という形の文字列が返る */
             select_id = getSelectId(name)
+            /* (keytop毎に)buttonとselectのjqueryオブジェクトの組を作成 */
             ary.push({
                 first: makeBtnA( text , btn_class_name , btn_id ),
                 second: makeSelectA( select_class_name , select_id )
             })
         }
-        /* ハッシュの要素　first:ボタン second:セレクト */
+        /* 以下のハッシュの配列 - ハッシュの要素　first:ボタン second:セレクト */
         return ary
     }
     
@@ -189,41 +190,41 @@ $(document).ready( function(){
             //	    debugPrint2(ItemHashByHier.length)
             if( item != undefined ){
             //		debugPrint2("addSelect 1")
-            var xary = getSelectOption(item , true)
-            xary.forEach( (element, index, array) => {
-                opts1.push( $('<option>' , { value: element.value , text: element.text }) )
-            })
-            if( opts1.length == 0 ){
-                opts1.push( $('<option>' , { value: ItemHashByHier[keytop].id , text: ItemHashByHier[keytop].title } ) )
+                var xary = getSelectOption(item , true)
+                xary.forEach( (element, index, array) => {
+                    opts1.push( $('<option>' , { value: element.value , text: element.text }) )
+                })
+                if( opts1.length == 0 ){
+                    opts1.push( $('<option>' , { value: ItemHashByHier[keytop].id , text: ItemHashByHier[keytop].title } ) )
 
-            }
-            opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
-            select.append(opts1);
+                }
+                opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
+                select.append(opts1);
 
-            if( Settings[StorageSelected] != undefined ){
-                value = Settings[StorageSelected][keytop]
+                if( Settings[StorageSelected] != undefined ){
+                    value = Settings[StorageSelected][keytop]
+                }
+                else{
+                    Settings[StorageSelected] = {}
+                    value = undefined
+                }
+                if(value != undefined){
+                    select.val(value)
+                }
+                else{
+                    value = Settings[StorageSelected][keytop] = opts1[0][0].value
+                }
+                //		debugPrint2("addSelect keytop =")
+                //		debugPrint2(keytop)
+                //		debugPrint2("addSelect value =")
+                //		debugPrint2(value)
+                //		debugPrint2("addSelect xary =")
+                //		debugPrint2(xary)
+                //		debugPrint2("addSelect item =")
+                //		debugPrint2(item)
             }
             else{
-                Settings[StorageSelected] = {}
-                value = undefined
-            }
-            if(value != undefined){
-                select.val(value)
-            }
-            else{
-                value = Settings[StorageSelected][keytop] = opts1[0][0].value
-            }
-            //		debugPrint2("addSelect keytop =")
-            //		debugPrint2(keytop)
-            //		debugPrint2("addSelect value =")
-            //		debugPrint2(value)
-            //		debugPrint2("addSelect xary =")
-            //		debugPrint2(xary)
-            //		debugPrint2("addSelect item =")
-            //		debugPrint2(item)
-            }
-            else{
-            //		debugPrint2("addSelect 2")
+                //		debugPrint2("addSelect 2")
             }
         }
     }
@@ -235,7 +236,7 @@ $(document).ready( function(){
         if (!ignore_head){
             ary.push( { value: item.id , text: item.title } )
         }
-        if (item.children) {
+        if (item.children.length > 0) {
             item.children.forEach( (element, index, array) => {
                 Array.prototype.push.apply( ary , getSelectOption(element) )
             } )
@@ -265,18 +266,46 @@ $(document).ready( function(){
         }
     }
 
+    function dumpTreeItemsX(bookmarkTreeNodes) {
+        var ary = []
+        var i
+        for (i = 0; i < bookmarkTreeNodes.length; i++) {
+            element = bookmarkTreeNodes[i]
+            if (element.url) {
+                ary.push(element.id)
+            }
+
+            if (element.children) {
+                ary = ary.concat(dumpTreeItemsX(element.children))
+            }
+        }
+        return ary
+    }
+
+    function dumpTreeItemsXTop(folder_id) {
+        var zary = []
+        var item = ItemHash[folder_id]
+
+        chrome.bookmarks.getSubTree(item.id,
+            (bookmarkTreeNodes) => {
+                zary = dumpTreeItemsX(bookmarkTreeNodes)
+            })
+        debugPrint2(["dumpTreeItemsXTop", "folder_id=", folder_id, "item.id=", item.id, "zary.lenght=", zary.length])
+        return zary
+    }
+
     function addSelectWaitingItemsX(select , folder_id)
     {
         var item = ItemHash[folder_id]
-        debugPrint2("folder_id=")
-        debugPrint2(folder_id)
-
+        debugPrint2( ["folder_id=" , folder_id ])
+ 
         
         chrome.bookmarks.getSubTree( item.id ,
                         (bookmarkTreeNodes) => {
                             select.empty()
                             var zary = dumpTreeItems(bookmarkTreeNodes , true)
                             select.append( zary )
+                            selectWaitingItemsBtnHdr(select.val())
                         })
     }
 
@@ -354,7 +383,11 @@ $(document).ready( function(){
                                     }
                                     break
                                 default:
-                                    /*  do nothing */
+                                    chrome.bookmarks.create({
+                                        parentId: parent_id,
+                                        title: current_tab.title,
+                                        url: current_tab.url
+                                    })
                             }
                         }
                     )
@@ -395,7 +428,7 @@ $(document).ready( function(){
         opts1.push( $('<option>' , { value: ANOTHER_FOLER , text: "#別のフォルダ#" }) )
         select.append(opts1);
         debugPrint2("addSelectWaitingFolders");
-        addSelectWaitingItemsX($('#yinp') , $('#zinp').val())
+        addSelectWaitingItemsX( $('#yinp'), values[0] )
     }
 
     function dumpBookmarksFromSubTree(parentId , query)
@@ -414,11 +447,7 @@ $(document).ready( function(){
         if( id != "" ){
             chrome.bookmarks.move( id , { parentId: dest_parent_id} )
             dumpBookmarksFromSubTree(src_parent_id , "")
-            addSelectWaitingItemsX($('#yinp') , src_parent_id)
-            $('#oname').val("")
-            $('#ourl').val("")
-            $('#oid').val("")
-            $('#yinp option:first').prop('selected' , true)
+            /* addSelectWaitingItemsX($('#yinp') , src_parent_id) */
         }
         else{
             alert("Can't move bookmark")
@@ -548,6 +577,7 @@ $(document).ready( function(){
             resolve()
         } )
     }
+
     /* ===== popup window 上部 ===== */
     function makeMenuOnUpperArea(title,url)
     {
@@ -571,11 +601,7 @@ $(document).ready( function(){
         /* move-mode時の移動対象アイテム選択時の動作 */
         /*** ★hrome bookmarks APIにはidが必要。これは隠れフィールドoidに設定しておく***/
         $('#yinp').click(() => {
-            chrome.bookmarks.get( $('#yinp').val() , (BookmarkTreeNodes) => {
-            $('#oname').val( BookmarkTreeNodes[0].title )
-            $('#ourl').val( BookmarkTreeNodes[0].url )
-            $('#oid').val( BookmarkTreeNodes[0].id )
-            } )
+            selectWaitingItemsBtnHdr( $('#yinp').val() )
         })
 
         /* add-mode領域を選択状態にする(デフォルトにする) */
@@ -598,9 +624,9 @@ $(document).ready( function(){
             var parent_id = $('#zinp').val()
             $('#yinp').empty()
             dumpBookmarksFromSubTree( parent_id , "")
-            $('#oname').val("")
+            /*$('#oname').val("")
             $('#ourl').val("")
-            $('#oid').val("")
+            $('#oid').val("")*/
             })
         })
         $('#bk').change(() => {
@@ -630,58 +656,75 @@ $(document).ready( function(){
             chrome.storage.local.set( val, () => {
             } )
         })
+    }
 
+    /* move-mode領域の */
+    function selectWaitingItemsBtnHdr(folder_id) {
+        chrome.bookmarks.get(folder_id, (BookmarkTreeNodes) => {
+            $('#oname').val(BookmarkTreeNodes[0].title)
+            $('#ourl').val(BookmarkTreeNodes[0].url)
+            $('#oid').val(BookmarkTreeNodes[0].id)
+        })
     }
 
     /* ===== bookmarkの情報を取得 ===== */
+    /* 指定フォルダ以下の対象フォルダの一覧取得(配列として) */
+    /* この関数は再帰的に呼び出されるが、内部処理は必ず最初はchromeのbookmarksのトップに対
+    して呼び出されることを想定している */
+    /* 一気に全フォルダの階層構造をつくることが目的である */
     function dumpTreeNodes(bookmarkTreeNodes , parent_item) {
         //	debugPrint2("dTN 1")
         var ary = []
+        /* bookmarkTreeNodes - フォルダと項目が混在している */
         bookmarkTreeNodes.forEach( (element, index, array) => {
-            var hier = ""
+            /* var hier = "" */
+            /* 親フォルダが取得済みであれば、自身の階層名をつくる */
+            /*
             if ( ItemHash[element.parentId] ){
-            hier = ItemHash[element.parentId].hier + '/' + element.title
+                hier = ItemHash[element.parentId].hier + '/' + element.title
             }
+            */
+            /* フォルダのみを処理する（項目は無視する） */
             if ( ! element.url ) {
-            var item = {
-                id: element.id,
-                folder: true,
-                root: false,
-                top: false,
-                parentId: element.parentId,
-                posindex: element.index,
-                url: element.url,
-                title: element.title,
-                hier: hier,
-                children: [],
-                top_hier: ""
-            }
-            
-            if ( !item.parentId ) {
-                item.root = true
-                RootItems.push(item.id)
-                item.hier = item.title
-            }
-            else {
-                if ( parent_item.root ) {
-                    item.top = true
-                    item.top_hier = item.title
-                    item.hier = ""
-                    TopItems.push(item.id)
+                var item = {
+                    id: element.id,
+                    folder: true,
+                    root: false,
+                    top: false,
+                    parentId: element.parentId,
+                    posindex: element.index,
+                    url: element.url,
+                    title: element.title,
+                    hier: ""/* hier */,
+                    children: [],
+                }
+                /* 親フォルダがなければ、ルート階層のフォルダとする */
+                if ( !item.parentId ) {
+                    item.root = true
+                    RootItems.push(item.id)
+                    item.hier = item.title
                 }
                 else {
-                    item.hier = parent_item.hier + '/' +  item.title
+                    /* 親フォルダがルート階層のフォルダであればトップ階層のフォルダにする */
+                    if ( parent_item.root ) {
+                        item.top = true
+                        item.hier = ""
+                        TopItems.push(item.id)
+                    }
+                    /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
+                    else {
+                        item.hier = parent_item.hier + '/' +  item.title
+                    }
                 }
-            }
             
-            ItemHash[item.id] = item
-            ItemHashByHier[item.hier] = item
-            debugPrint2( "=---" )
-            debugPrint2( item.hier )
-            //		debugPrint2( ItemHashByHier[item.hier] )
-            if ( element.children ) {
-                item.children = dumpTreeNodes(element.children , item) 
-            }
+                ItemHash[item.id] = item
+                ItemHashByHier[item.hier] = item
+                debugPrint2( "=---" )
+                debugPrint2( item.hier )
+                //		debugPrint2( ItemHashByHier[item.hier] )
+                if ( element.children.length > 0 ) {
+                    item.children = dumpTreeNodes(element.children , item) 
+                }
                 ary.push( item )
             }
         } )
@@ -744,61 +787,6 @@ $(document).ready( function(){
         } )
     }
 
-    function start0()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( () => {
-            loadAsync()
-            setupPopupWindowAsync()
-            makeMenuOnBottomAreaAsync() 
-            } )
-    }
-
-    function start1()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( () => {
-            loadAsync().then( setupPopupWindowAsync() )
-                .then( makeMenuOnBottomAreaAsync() )
-            } )
-    }
-
-    function start2()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( () => {
-                loadAsync().then( () => {
-                    setupPopupWindowAsync().then( () => {makeMenuOnBottomAreaAsync()} )
-                } )
-            } )
-    }
-
-    function start3()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( loadAsync() ).then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
-    }
-
-    function start4()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( () => {
-                loadAsync().then( setupPopupWindowAsync() ).then( makeMenuOnBottomAreaAsync() )
-            } )
-    }
-    function start5()
-    {
-        dumpBookmarksAsync()
-            .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( () => {
-                loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
-            } )
-    }
     function start6()
     {
         dumpBookmarksAsync()
