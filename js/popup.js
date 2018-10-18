@@ -754,7 +754,7 @@ $(document).ready( function(){
         } )
     }
 
-    function start6()
+    function start()
     {
         dumpBookmarksAsync()
             .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
@@ -762,6 +762,6 @@ $(document).ready( function(){
                 loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
             )
     }
-    start6()
+    start()
 })
 
