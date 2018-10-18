@@ -351,7 +351,7 @@ $(document).ready( function(){
                                         title: current_tab.title,
                                         url: current_tab.url
                                     })
-                                    chrome.tabs.remove(current_tab.id)
+                                    /* chrome.tabs.remove(current_tab.id) */
                                     break
                                 case 'multi-r':
                                     for (i = current_tab.index + 1; i < tabs.length; i++) {
@@ -463,7 +463,7 @@ $(document).ready( function(){
             return element.value == value
         })
         if( ind >= 0 ){
-            Settings[StorageOptions].splice(ind)
+            Settings[StorageOptions].splice(ind, 1)
         }
         Settings[StorageOptions].unshift( { value: value , text: text } )
 
@@ -480,8 +480,6 @@ $(document).ready( function(){
         var val = {}
         val[StorageOptions] = Settings[StorageOptions]
         val[StorageSelected] = Settings[StorageSelected]
-        //	debugPrint2("addRecentlyItem=StorageSelected")
-        //	debugPrint2(Settings[StorageSelected])
         chrome.storage.local.set( val, () => {
         })
     }
@@ -525,10 +523,6 @@ $(document).ready( function(){
         /* 一つの対象フォルダの指定は、一組のbuttonとselectで実現するため、配置の指定には要素数を2倍にする */
         var aryx = new Array(els.length * 2)
 
-        //	debugPrint2("items=")
-        //	debugPrint2(items)
-        //	debugPrint2("els=")
-        //	debugPrint2(els)
         els.forEach(function(element, index, array){
             ind = index % w
             if( ind == 0 ){
@@ -617,16 +611,21 @@ $(document).ready( function(){
         })
 
         $('#gotobtn').click(() => {
-            chrome.tabs.create({url: $('#ourl').val()})
+            /* 隠しフィールドに設定したtab idは、val()で取得しただけでは文字列になるので、整数値にする */
+            var sid = parseInt( $('#sid').val() , 10 )
+            var ourl = $('#ourl').val()
+            chrome.tabs.update(sid, {
+                        url: ourl
+                    }, (tab) => {
+                        console.log(["sid=",sid , "ourl=", ourl ])
+                    }
+            )
         })
         $('#removeitembtn').click(() => {
             chrome.bookmarks.remove($('#oid').val(), (result) => {
             var parent_id = $('#zinp').val()
             $('#yinp').empty()
             dumpBookmarksFromSubTree( parent_id , "")
-            /*$('#oname').val("")
-            $('#ourl').val("")
-            $('#oid').val("")*/
             })
         })
         $('#bk').change(() => {
@@ -677,13 +676,6 @@ $(document).ready( function(){
         var ary = []
         /* bookmarkTreeNodes - フォルダと項目が混在している */
         bookmarkTreeNodes.forEach( (element, index, array) => {
-            /* var hier = "" */
-            /* 親フォルダが取得済みであれば、自身の階層名をつくる */
-            /*
-            if ( ItemHash[element.parentId] ){
-                hier = ItemHash[element.parentId].hier + '/' + element.title
-            }
-            */
             /* フォルダのみを処理する（項目は無視する） */
             if ( ! element.url ) {
                 var item = {
@@ -721,14 +713,12 @@ $(document).ready( function(){
                 ItemHashByHier[item.hier] = item
                 debugPrint2( "=---" )
                 debugPrint2( item.hier )
-                //		debugPrint2( ItemHashByHier[item.hier] )
                 if ( element.children.length > 0 ) {
                     item.children = dumpTreeNodes(element.children , item) 
                 }
                 ary.push( item )
             }
         } )
-        //	debugPrint2( "dTN 2" )
         return ary
     }
 
@@ -749,6 +739,7 @@ $(document).ready( function(){
                 var current = tabs[0]
                 var title = current.title
                 var url = current.url
+                $('#sid').val(current.id)
 
                 makeMenuOnUpperArea(title,url)
                 debugPrint2("setupPopupWindowAsync 2")
