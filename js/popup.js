@@ -72,7 +72,6 @@ $(document).ready( function(){
         select.empty()
         if( opts1.length > 0 ){
             select.append(opts1)
-            //	    select.val( ary2[(ary2.length - 1)].value )
             select.val( ary2[0].value )
         }
     }
@@ -178,18 +177,9 @@ $(document).ready( function(){
     {
         var opts1 = []
         var item,value
-        //	debugPrint2("addSelect")
         if( keytop != null ){
-            //	    debugPrint2("addSelect keytop=")
-            //	    debugPrint2(keytop)
-            //	    debugPrint2(ItemHashByHier)
             item = getItemByHier(keytop)
-            //	    debugPrint2("addSelect itemm=")
-            //	    debugPrint2(item)
-            //	    debugPrint2("addSelect length=")
-            //	    debugPrint2(ItemHashByHier.length)
             if( item != undefined ){
-            //		debugPrint2("addSelect 1")
                 var xary = getSelectOption(item , true)
                 xary.forEach( (element, index, array) => {
                     opts1.push( $('<option>' , { value: element.value , text: element.text }) )
@@ -214,17 +204,9 @@ $(document).ready( function(){
                 else{
                     value = Settings[StorageSelected][keytop] = opts1[0][0].value
                 }
-                //		debugPrint2("addSelect keytop =")
-                //		debugPrint2(keytop)
-                //		debugPrint2("addSelect value =")
-                //		debugPrint2(value)
-                //		debugPrint2("addSelect xary =")
-                //		debugPrint2(xary)
-                //		debugPrint2("addSelect item =")
-                //		debugPrint2(item)
             }
             else{
-                //		debugPrint2("addSelect 2")
+                //		do nothing
             }
         }
     }
@@ -241,10 +223,6 @@ $(document).ready( function(){
                 Array.prototype.push.apply( ary , getSelectOption(element) )
             } )
         }
-        //	debugPrint2("getSelectOption item=")
-        //	debugPrint2(item)
-        //	debugPrint2("getSelectOption ary=")
-        //	debugPrint2(ary)
         return ary
     }
 
@@ -711,8 +689,6 @@ $(document).ready( function(){
             
                 ItemHash[item.id] = item
                 ItemHashByHier[item.hier] = item
-                debugPrint2( "=---" )
-                debugPrint2( item.hier )
                 if ( element.children.length > 0 ) {
                     item.children = dumpTreeNodes(element.children , item) 
                 }
