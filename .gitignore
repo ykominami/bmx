@@ -3,3 +3,11 @@ js/popup2.js
 js/settings.js
 tmp/
 memo.txt
+*~
+.*~
+*.js-0
+*.html
+base/
+jquery-*/
+smoothness/
+*.code-workspace
