@@ -1,6 +1,6 @@
-/** 
- * @fileoverview ファイルの説明、使い方や依存関係に 
- * ついての情報。 
+/**
+ * @fileoverview ファイルの説明、使い方や依存関係に
+ * ついての情報。
  */
 $(document).ready( function(){
     var Target
@@ -22,7 +22,7 @@ $(document).ready( function(){
     {
         console.log( obj )
     }
-    
+
     function debugPrint( obj )
     {
         if( debugOption.count_min <= debugOption.count && debugOption.count_max >= debugOption.count){
@@ -105,7 +105,7 @@ $(document).ready( function(){
         /* 以下のハッシュの配列 - ハッシュの要素　first:ボタン second:セレクト */
         return ary
     }
-    
+
     /**
      * 指定selectにkeytopで指定されたブックマークのサブツリー以下の項目をoption
      * @param {number} btn_jquery_id selectに対応するbtnを表すjqueryのid
@@ -276,14 +276,17 @@ $(document).ready( function(){
     {
         var item = ItemHash[folder_id]
         debugPrint2( ["folder_id=" , folder_id ])
- 
-        
+
+
         chrome.bookmarks.getSubTree( item.id ,
                         (bookmarkTreeNodes) => {
                             select.empty()
                             var zary = dumpTreeItems(bookmarkTreeNodes , true)
                             select.append( zary )
-                            selectWaitingItemsBtnHdr(select.val())
+                            var folder_id = select.val()
+                            if( folder_id ){
+                                selectWaitingItemsBtnHdr(folder_id)
+                            }
                         })
     }
 
@@ -462,7 +465,7 @@ $(document).ready( function(){
         })
     }
     /*********************/
-    
+
     /***** bookmark 関連 下位関数 *****/
     function dumpTreeItems(bookmarkTreeNodes , ignore_head) {
         ignore_head = ignore_head === undefined ? false : ignore_head
@@ -482,7 +485,7 @@ $(document).ready( function(){
         }
         return ary
     }
-    
+
     /*********************/
 
     /* ====== popup window 下部 ===== */
@@ -556,9 +559,9 @@ $(document).ready( function(){
         /* add-mode領域 */
         $('#name').val(title)
         $('#url').val(url)
-        
+
         /* move-mode領域に対する初期設定 */
-        
+
         /* 移動対象フォルダ内のアイテム一覧作成 - 要検討 */
         /* $('#zinp')は何も選択されていないので、ここでの処理は期待したとおりにならない */
         /* 表示されたときに、選択状態にしたいならば、別途初期化を行う関数を定義して、呼び出さなければならない */
@@ -603,6 +606,8 @@ $(document).ready( function(){
             chrome.bookmarks.remove($('#oid').val(), (result) => {
             var parent_id = $('#zinp').val()
             $('#yinp').empty()
+            $('#ourl').val("")
+            $('#oid').val("")
             dumpBookmarksFromSubTree( parent_id , "")
             })
         })
@@ -686,7 +691,7 @@ $(document).ready( function(){
                         item.hier = parent_item.hier + '/' +  item.title
                     }
                 }
-            
+
                 ItemHash[item.id] = item
                 ItemHashByHier[item.hier] = item
                 if ( element.children.length > 0 ) {
@@ -758,7 +763,7 @@ $(document).ready( function(){
     {
         dumpBookmarksAsync()
             .then( (bookmarkTreeNodes) => {dumpTreeNodesAsync(bookmarkTreeNodes)} )
-            .then( 
+            .then(
                 loadAsync().then( setupPopupWindowAsync ).then( makeMenuOnBottomAreaAsync )
             )
     }
