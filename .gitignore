@@ -1,6 +1,6 @@
 js/debug.js
 js/popup2.js
-js/settings.js
+#js/settings.js
 tmp/
 memo.txt
 *~
