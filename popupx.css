@@ -46,6 +46,10 @@ body {
 }
 
 .spacing {
+  height: 1px;
+  background-color: #ffffff;
+}
+.spacing0 {
   height: 1000px;
   background-color: #ffffff;
 }
