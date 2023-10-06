@@ -26,7 +26,7 @@ function makeElement(idx, parentidx, indexx, urlx, titlex) {
   return element;
 }
 function makeItem(element) {
-  var item = {
+  const item = {
     id: element.id,
     folder: true,
     root: false,
@@ -77,3 +77,12 @@ function addFolderx() {
     }
   });
 }
+
+export {
+  getYearAndNextMonthAsString,
+  registerx,
+  makeElement,
+  makeItem,
+  makeAndRegisterBookmarkFolder,
+  addFolderx,
+};
