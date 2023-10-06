@@ -15,6 +15,7 @@
       "default_icon": "images/19x19.png",
       "default_popup": "popup.html"
   },
+  "options_page": "optionsb.html",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }

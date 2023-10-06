@@ -7,11 +7,6 @@
 	<script src="js/jquery-3.1.0.min.js"></script>
 	<link rel="stylesheet" href="js/jquery-ui.min.css">
 	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/settings.js"></script>
-	<script src="js/addfolder.js"></script>
-	<script src="js/util.js"></script>
-	<script src="js/data.js"></script>
-	<script type="module" src="js/popup.js"></script>
 
 	<link rel="stylesheet" href="popup.css">
 	<link rel="stylesheet" href="popupx.css">
@@ -25,10 +20,12 @@
 
 	<div class="wrapper2">
 		<div id="add-mode" class="not-selected">
-			<button type="button" name="remove" id="removebtn">remove</button>
+			<button type="button" name="rm" id="removebtn">remove</button>
 			<!-- <input type="radio" name="add-mode"  id="removebtn"><label>remove</label></input>  -->
-			<button type="button" name="close" id="closebtn">close</button>
-			<button type="button" name="addfolder" id="addfolderbtn">addFolder</button>
+			<button type="button" name="cl" id="closebtn">close</button>
+			<button type="button" name="addf" id="addfolderbtn">addF</button>
+			<button id="go-to-options">Go to options</button>
+			id="addfolderbtn">addFol</button>
 			<input type="radio" name="add-mode" value="single"><label>s</label></input>
 			<input type="radio" name="add-mode" value="multi-r"><label>m-r</label></input>
 			<input type="radio" name="add-mode" value="multi-l"><label>m-l</label></input>
@@ -51,6 +48,8 @@
 	</div>
 	<div id="menu"></div>
 	<div class="spacing"></div>
+	<script type="module" src="./js/popupx.js">
+	</script>
 </body>
 
 

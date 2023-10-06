@@ -1,4 +1,4 @@
-var items1 = [
+export const items1 = [
   /* 1 */
   ["GD-0-inbox", "/0X/GD-0-inbox"],
   ["0X", "/0X"],
@@ -7,6 +7,7 @@ var items1 = [
   ["Y1/HotWire.love", "/Y1/HotWire.love"],
   ["Y1/HotWire-2", "/Y1/HotWire-2"],
   ["Y1/HotWire", "/Y1/HotWire"],
+  ["RoR-INO", "/Y1/RoR-INFO"],
   ["RoR-Tips-1", "/Y1/RoR-Tips-1"],
   ["RoR-Tips-12", "/Y1/RoR-Tips-12"],
   ["RoR-Tips-13", "/Y1/RoR-Tips-13"],
@@ -138,9 +139,7 @@ var items1 = [
   /* 13 */
   ["Py-web", "/XD/Python/py-web"],
   ["Python2", "/XD/Python2"],
-  ["Ruby-a", "/XD/Ruby-a"],
   ["Ruby-b", "/XD/Ruby-b"],
-  ["RoR", "/XD/RoR"],
   /* 14 */
   ["LANG-RZ", "/XD/LANG-RZ"],
   ["P", "/XD/P"],
@@ -178,7 +177,7 @@ var items1 = [
   ["Gs", "/Gs"],
 ];
 
-var keys = [
+export const keys = [
   "/0/0-etc/0-0-0",
   "/0/0-etc/0",
   "/0/0-etc/2-2",
@@ -191,7 +190,7 @@ var keys = [
   "/Y/Day/2022/202210",
 ];
 
-let folderPrefixes = { "/0/KU": "KU", "/0/Kindle": "K", "/0/本": "本" };
+export let folderPrefixes = { "/0/KU": "KU", "/0/Kindle": "K", "/0/本": "本" };
 
 function getItems1() {
   return items1;
@@ -216,3 +215,5 @@ function getPrefix(key) {
 function getFolders() {
   return Object.keys(folderPrefixes);
 }
+
+export { getItems1, getKeys, getNumOfRows, getMax, getPrefix, getFolders };
