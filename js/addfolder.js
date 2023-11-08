@@ -78,6 +78,9 @@ function addFolderx() {
   });
 }
 
+function todayx() {
+// Y0/Day/2023/202310/20231031
+}
 export {
   getYearAndNextMonthAsString,
   registerx,
