@@ -18,5 +18,11 @@
   "options_page": "optionsb.html",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "background": {
+  	  "script": ["background.js"]
+  },
+  "action": {
+  	  "default_popup": "popup.html"
   }
 }
