@@ -3,19 +3,23 @@ export const items1 = [
   ["GD-0-inbox", "/0X/GD-0-inbox"],
   ["0X", "/0X"],
   ["Y2", "/Y2"],
-  ["Y1/HotWire-IDEA", "/Y1/HotWire-IDEA"],
+  ["ChatGPT", "/Y1/ChatGPT"],
+  ["Y1/HotWire-0-IDEA", "/Y1/HotWire-0-IDEA"],
   ["Y1/HotWire.love", "/Y1/HotWire.love"],
   ["Y1/HotWire-2", "/Y1/HotWire-2"],
   ["Y1/HotWire", "/Y1/HotWire"],
   ["RoR-INO", "/Y1/RoR-INFO"],
-  ["RoR-Tips-1", "/Y1/RoR-Tips-1"],
-  ["RoR-Tips-12", "/Y1/RoR-Tips-12"],
-  ["RoR-Tips-13", "/Y1/RoR-Tips-13"],
-  ["RoR-Tips-2", "/Y1/RoR-Tips-2"],
-  ["RoR-Tips-3", "/Y1/RoR-Tips-3"],
-  ["1-DEV-RoR", "/Y1/1-DEV-RoR"],
-  ["1-DEV-RoR-2", "/Y1/1-DEV-RoR-2"],
-  ["1-DEV-RoR-3", "/Y1/1-DEV-RoR-3"],
+  ["RoR-BasicF", "/Y1/RoR-BasicF"],
+  ["RoR-Func", "/Y1/RoR-Func"],
+  ["RoR-Peri", "/Y1/RoR-Peri"],
+  ["RoR-Ind", "/Y1/RoR-Ind"],
+  ["RoR-Cloud", "/Y1/RoR-Cloud"],
+  ["RoR-Security", "/Y1/RoR-Security"],
+  ["RoR-DevP", "/Y1/RoR-DevP"],
+  ["RoR-API", "/Y1/RoR-API"],
+  ["RoR-Rack", "/Y1/RoR-Rack"],
+  ["RoR-OtherSys", "/Y1/RoR-OtherSys"],
+
   ["1-DEV-RB", "/Y1/1-DEV-RB"],
   ["Y", "/Y"],
   ["Y0", "/Y0"],
@@ -191,6 +195,7 @@ export const keys = [
 ];
 
 export let folderPrefixes = { "/0/KU": "KU", "/0/Kindle": "K", "/0/本": "本" };
+export let folderDayPrefixes = { "/Y/Day": "Day" };
 
 function getItems1() {
   return items1;
@@ -212,8 +217,19 @@ function getPrefix(key) {
   return folderPrefixes[key];
 }
 
-function getFolders() {
+function getFoldersFromPrefixes() {
   return Object.keys(folderPrefixes);
 }
 
-export { getItems1, getKeys, getNumOfRows, getMax, getPrefix, getFolders };
+function getFoldersFromDayPrefixes() {
+  return Object.keys(folderDayPrefixes);
+}
+export {
+  getItems1,
+  getKeys,
+  getNumOfRows,
+  getMax,
+  getPrefix,
+  getFoldersFromPrefixes,
+  getFoldersFromDayPrefixes,
+};

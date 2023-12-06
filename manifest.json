@@ -1,28 +1,22 @@
 {
-  "name": "Bmx72MV3",
-  "description": "Powered-Bookmark7MV3",
-  "version": "2.3",
+  "name": "Bmx72MV3C",
+  "description": "Powered-Bookmark7MV3C",
+  "version": "2.3.2",
   "manifest_version": 3,
   "permissions": [
-      "bookmarks",
-      "activeTab",
-      "storage",
-      "tabs"
+    "bookmarks",
+    "activeTab",
+    "storage",
+    "tabs"
   ],
   "host_permissions": [],
   "action": {
-      "default_title": "Bmx7MV3",
-      "default_icon": "images/19x19.png",
-      "default_popup": "popup.html"
+    "default_title": "Bmx7MV30C",
+    "default_icon": "images/19x19.png",
+    "default_popup": "popup.html"
   },
-  "options_page": "optionsb.html",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
-  "background": {
-  	  "script": ["background.js"]
-  },
-  "action": {
-  	  "default_popup": "popup.html"
-  }
+  "options_page": "options.html"
 }

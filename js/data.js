@@ -1,6 +1,33 @@
 let ItemHashByHier;
 let ItemHash;
 
+function dumpTreeItemsX(bookmarkTreeNodes) {
+  let ary = [];
+  let i;
+  for (i = 0; i < bookmarkTreeNodes.length; i++) {
+    const element = bookmarkTreeNodes[i];
+    if (element.url) {
+      ary.push(element.id);
+    }
+
+    if (element.children) {
+      ary = ary.concat(dumpTreeItemsX(element.children));
+    }
+  }
+  return ary;
+}
+
+function dumpTreeItemsXTop(folder_id) {
+  let zary = [];
+  const item = getItem(folder_id);
+
+  chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
+    zary = dumpTreeItemsX(bookmarkTreeNodes);
+  });
+  return zary;
+}
+
+
 function getItemByHier(key) {
   return ItemHashByHier[key];
 }
@@ -40,6 +67,8 @@ function printItemHash() {
   debubPrint2(ItemHas);
 }
 export {
+  dumpTreeItemsX,
+  dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
   getItemHashByHierKeys,
