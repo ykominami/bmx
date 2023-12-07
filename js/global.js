@@ -54,16 +54,14 @@ async function saveSettings_by_api() {
 }
 
 async function loadSettings_by_api(mes = "") {
-  return new Promise((resolve) => {
-    chrome.storage.local.get().then((result) => {
-      let value = result["all"];
-      Settings = value == null || value == undefined ? {} : value;
-      console.log(`loadSettings_by_api Settings=${Settings}`);
+  let result = await chrome.storage.local.get()
+  let value = result["all"];
+  Settings = value == null || value == undefined ? {} : value;
+  console.log(`loadSettings_by_api Settings=${Settings}`);
 
-      resolve(Settings);
-    });
-  });
+  return Settings;
 }
+
 function loadSettings(mes = "") {
   let valStorageOptions = adjustValue(localStorage[StorageOptions]);
   let valStorageSelected = adjustValue(localStorage[StorageSelected]);
@@ -256,10 +254,10 @@ async function saveSettings() {
     `========   saveSettings localStorage[StorageSelected]=${localStorage[StorageSelected]}`
   );
 }
-const loadSettings2 = (key = null) =>
-  new Promise((resolve) => {
-    chrome.storage.local.get(key, resolve);
-  });
+const loadSettings2 = async function (key = null) {
+    const val = await chrome.storage.local.get(key);
+	return val
+}
 
 async function loadSettings2_orig(mes = "") {
   const storagex = (await chrome.storage.local.get()).then((val) => val);

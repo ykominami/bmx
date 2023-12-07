@@ -30,20 +30,4 @@ async function loadAsync() {
   updateSelectRecently(options, $("#rinp"));
 }
 
-async function loadAsync_0() {
-  // loadSettings(mes);
-  await loadSettings_by_api("from loadAsync").then(() => {
-    /* recently selectの選択肢の更新 */
-    let storageOptions = getStorageOptions();
-
-    storageOptions["Options"] = adjustValue(storageOptions["Options"]);
-    console.log(
-      `loadSettings_by_api --- Options ${Object.entries(
-        storageOptions["Options"]
-      )}`
-    );
-    updateSelectRecently(storageOptions["Options"], $("#rinp"));
-  });
-}
-
 export { loadAsync, updateSelectRecently };
