@@ -29,7 +29,11 @@ function dumpTreeItemsXTop(folder_id) {
 
 
 function getItemByHier(key) {
-  return ItemHashByHier[key];
+	let ret = null
+	if (key in ItemHashByHier){
+  		ret = ItemHashByHier[key];
+	}
+    return ret;
 }
 
 function setItemByHier(key, value) {

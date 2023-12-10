@@ -112,6 +112,9 @@ function makeMenuRecentlyAndCategorySelectBtn(category_max, items) {
 function importUrls(urls) {
   const keytop = "/0/0-etc/1";
   const parent_item = getItemByHier(keytop);
+  if (parent_item === null) {
+    return;
+  }
   const parent_id = parent_item.id;
 
   urls.map(function (item) {
@@ -208,13 +211,15 @@ function addSelect(select, keytop) {
         );
       });
       if (opts1.length == 0) {
-        let item2 = getItemByHier(key);
-        opts1.push(
-          $("<option>", {
-            value: item2.id,
-            text: item2.title,
-          })
-        );
+        let item2 = getItemByHier(keytop);
+        if (item2 !== null) {
+          opts1.push(
+            $("<option>", {
+              value: item2.id,
+              text: item2.title,
+            })
+          );
+        }
       }
       opts1.push(
         $("<option>", {
@@ -295,7 +300,7 @@ function addSelectWaitingItemsX(select, folder_id) {
 
 /* 非同期タブ問い合わせ */
 async function tab_query_async(query) {
-  const tabs = await chrome.tabs.query(query)
+  const tabs = await chrome.tabs.query(query);
   return tabs;
 }
 
@@ -370,10 +375,10 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
               // const id = "2261"
               // const id = "262290"
               if (id != "") {
-                console.log(`id=${id}`)
+                console.log(`id=${id}`);
                 // chrome.tabs.create({url: `chrome://bookmarks/?id=${id}`})
               }
-                
+
               break;
             default:
               chrome.bookmarks.create({
@@ -711,7 +716,11 @@ function selectWaitingItemsBtnHdr(folder_id) {
     $("#ourl").val(BookmarkTreeNodes[0].url);
     $("#oid").val(BookmarkTreeNodes[0].id);
 
-    console.log(`############  selectWaitingItemsBtnHdr folder_id=${folder_id} || #oid=${ $("#oid").val() }|| ${BookmarkTreeNodes.length}` )
+    console.log(
+      `############  selectWaitingItemsBtnHdr folder_id=${folder_id} || #oid=${$(
+        "#oid"
+      ).val()}|| ${BookmarkTreeNodes.length}`
+    );
   });
 }
 
@@ -721,7 +730,7 @@ function selectWaitingItemsBtnHdr(folder_id) {
     して呼び出されることを想定している */
 /* 一気に全フォルダの階層構造をつくることが目的である */
 function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
-  console.log(`dumpTreeNodes parent_item=${parent_item.id}`)
+  console.log(`dumpTreeNodes parent_item=${parent_item.id}`);
   //	debugPrint2("dTN 1")
   let ary = [];
 
@@ -770,36 +779,36 @@ function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
   return ary;
 }
 async function dumpTreeNodesAsync(bookmarkTreeNodes) {
-    console.log(`### dumpTreeNodesAsync bookmarkTreeNodes.length= ${ bookmarkTreeNodes.length }`)
-    dumpTreeNodes(bookmarkTreeNodes, {
-      root: true,
-    });
-    const hierKeys = getItemHashByHierKeys();
-    setStorageHiers(hierKeys);
-    return bookmarkTreeNodes;
+  console.log(
+    `### dumpTreeNodesAsync bookmarkTreeNodes.length= ${bookmarkTreeNodes.length}`
+  );
+  dumpTreeNodes(bookmarkTreeNodes, {
+    root: true,
+  });
+  const hierKeys = getItemHashByHierKeys();
+  setStorageHiers(hierKeys);
+  return bookmarkTreeNodes;
 }
 
 /* ===== popup windowsの作成 ===== */
 async function setupPopupWindowAsync() {
-    const tabs = await chrome.tabs.query(
-      {
-        active: true,
-        currentWindow: true,
-      }
-    )
-    const current = tabs[0];
-    const title = current.title;
-    const url = current.url;
-    $("#sid").val(current.id);
+  const tabs = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  const current = tabs[0];
+  const title = current.title;
+  const url = current.url;
+  $("#sid").val(current.id);
 
-    makeMenuOnUpperArea(title, url);
+  makeMenuOnUpperArea(title, url);
 }
 
 async function dumpBookmarksAsync() {
-  console.log("dumpBookmarksAsync 1")
-  const bookmarkTreeNodes = await chrome.bookmarks.getTree()
-  console.log("dumpBookmarksAsync 3")
-  return bookmarkTreeNodes
+  console.log("dumpBookmarksAsync 1");
+  const bookmarkTreeNodes = await chrome.bookmarks.getTree();
+  console.log("dumpBookmarksAsync 3");
+  return bookmarkTreeNodes;
 }
 
 function gotooptions() {
@@ -814,15 +823,15 @@ function gotooptions() {
 
 async function start() {
   // await initSettings_all();
-  console.log("start 1")
+  console.log("start 1");
 
   initItems();
-  console.log("start 2")
+  console.log("start 2");
 
   // gotooptions();
   dumpBookmarksAsync()
     .then((bookmarkTreeNodes) => {
-      console.log("start dumpBookmarksAsync 01")
+      console.log("start dumpBookmarksAsync 01");
       dumpTreeNodesAsync(bookmarkTreeNodes);
     })
     .then(

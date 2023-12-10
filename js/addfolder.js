@@ -16,7 +16,7 @@ import {
   getMax,
   getPrefix,
   getFoldersFromPrefixes,
-  getFoldersFromDayPrefixes
+  getFoldersFromDayPrefixes,
 } from "./settings.js";
 
 import {
@@ -33,7 +33,7 @@ import {
   printItemHash,
 } from "./data.js";
 
-	/* folder追加処理 */
+/* folder追加処理 */
 function getYearAndNextMonthAsString() {
   let current = new Date();
   let month = current.getMonth();
@@ -55,8 +55,8 @@ function getYearAndMonthAndDayAsString() {
 
   console.log(`month=${month}`);
   console.log(`monthx=${monthx}`);
-//  console.log(`next_month=${next_month}`);
-  
+  //  console.log(`next_month=${next_month}`);
+
   let month_str = adjustAsStr(monthx);
   let date = current.getDate();
   let date_str = adjustAsStr(date);
@@ -125,12 +125,12 @@ function addFolderx() {
 
   folders.map((parent) => {
     const parent_item = getItemByHier(parent);
-    if (parent_item !== undefined) {
+    if (parent_item !== null) {
       let prefix = getPrefix(parent);
       let title = `${prefix}-${year_month}`;
       let new_keytop = `${parent}/${title}`;
       let new_item = getItemByHier(new_keytop);
-      if (new_item === undefined) {
+      if (new_item === null) {
         makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
       }
     }
@@ -140,45 +140,45 @@ function addFolderx() {
 function addDayFolderx() {
   let folders = getFoldersFromDayPrefixes();
   let [y_str, ym_str, ymd_str] = getYearAndMonthAndDayAsString();
-  let y_m_str = `${y_str}${ym_str}`
-  let y_m_d_str = `${y_str}${ym_str}${ymd_str}`
-
+  let y_m_str = `${y_str}${ym_str}`;
+  let y_m_d_str = `${y_str}${ym_str}${ymd_str}`;
 
   // "Y/Day"
   folders.map((parent) => {
-    const arrayx = [parent, y_str, ym_str, ymd_str]
-	// let parent_y_str = `${parent}/${y_str}`
-	// let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
-	// let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
-	arrayx.reduce( (accumulator, currentValue, currentIndex, array) => {
-	    const parent_item = getItemByHier(accumulator);
-	    const hier = [accumulator, currentValue].join('/');
-	    let item = getItemByHier(hier);
-	    if (item === undefined) {
-		  makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
-	      item = getItemByHier(hier);
-		}
-		console.log( `parent=${parent} hier=${hier}`);
-		
-		return hier;
-  	} );
-  })
+    const arrayx = [parent, y_str, ym_str, ymd_str];
+    // let parent_y_str = `${parent}/${y_str}`
+    // let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
+    // let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
+    arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
+      const parent_item = getItemByHier(accumulator);
+      const hier = [accumulator, currentValue].join("/");
+      let item = getItemByHier(hier);
+      if (item === null) {
+        makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
+        item = getItemByHier(hier);
+      }
+      console.log(`parent=${parent} hier=${hier} item=${item}`);
+
+      return hier;
+    });
+  });
 }
-function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop){
-	let new_item = getItemByHier(new_keytop);
-	if (new_item === undefined) {
-	  makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
-	  new_item = getItemByHier(new_keytop);
-	}
-	return new_item;
+function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
+  let new_item = getItemByHier(new_keytop);
+  if (new_item === null) {
+    makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
+    new_item = getItemByHier(new_keytop);
+  }
+  return new_item;
 }
-function lstree(){
-	const hier = "/Y/Day/2023/202311";
-	let item = getItemByHier(hier);
-	console.log(item);
-	let ary = dumpTreeItemsXTop(item.id);
-	ary.map( (item_id) => console.log(item_id) );
-	
+function lstree() {
+  const hier = "/Y/Day/2023/202311";
+  let item = getItemByHier(hier);
+  console.log(item);
+  if (item !== null) {
+    let ary = dumpTreeItemsXTop(item.id);
+    ary.map((item_id) => console.log(item_id));
+  }
 }
 export {
   getYearAndNextMonthAsString,
@@ -188,5 +188,5 @@ export {
   makeAndRegisterBookmarkFolder,
   addFolderx,
   addDayFolderx,
-  lstree
+  lstree,
 };
