@@ -86,16 +86,7 @@ let TopItems = [];
 
 // always waits the document to be loaded when shown
 document.addEventListener("DOMContentLoaded", function () {
-  // opens a communication between scripts
-  // let port = chrome.runtime.connect();
-
-  // listens to the click of the button into the popup content
   document.getElementById("popupBtn").addEventListener("click", function () {
-    // sends a message throw the communication port
-    // port.postMessage({
-    //     'from': 'popup',
-    //     'start': 'Y'
-    // V});
   });
 });
 
@@ -281,8 +272,8 @@ function setTargetArea(val) {
 
 function addSelectWaitingItemsX(select, folder_id) {
   const item = getItem(folder_id);
-  console.log(`folder_id=${folder_id}`);
-  console.log(`item.id=${item.id}`);
+  console.log(`addSelectWaitingItemsX folder_id=${folder_id}`);
+  console.log(`addSelectWaitingItemsX item.id=${item.id}`);
   // debugPrint2(["folder_id=", folder_id]);
 
   chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
@@ -407,9 +398,9 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
   addRecentlyItemX($("#rinp"), parent_id, parent_text);
 
   const bucket = await chrome.storage.local.get();
-  console.log("createOrMoveBKItem");
+  console.log("################## after addRecentlyItemX createOrMoveBKItem");
   console.log(Object.entries(bucket));
-  console.log("createOrMoveBKItem END ====");
+  console.log("################# createOrMoveBKItem END ====");
 }
 
 /* ボタンクリックハンドラの実体 */
@@ -583,13 +574,13 @@ function makeMenuOnBottomArea() {
   });
 
   /* recently selectの選択肢の更新 */
-  /*
   let storageOptions = getStorageOptions();
 
-  storageOptions["Options"] = adjustValue(storageOptions["Options"]);
-  console.log(`Options ${Object.entries(storageOptions["Options"])}`);
+  // storageOptions["Options"] = adjustValue(storageOptions["Options"]);
+  storageOptions["Options"] = adjustValue(storageOptions);
+  console.log(`***** ================== makeMenuOnBottomArea Options ${Object.entries(storageOptions["Options"])}`);
   updateSelectRecently(storageOptions["Options"], $("#rinp"));
-*/
+
 }
 
 async function makeMenuOnBottomAreaAsync() {
@@ -730,7 +721,7 @@ function selectWaitingItemsBtnHdr(folder_id) {
     して呼び出されることを想定している */
 /* 一気に全フォルダの階層構造をつくることが目的である */
 function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
-  console.log(`dumpTreeNodes parent_item=${parent_item.id}`);
+//  console.log(`dumpTreeNodes parent_item=${parent_item.id}`);
   //	debugPrint2("dTN 1")
   let ary = [];
 
@@ -811,15 +802,13 @@ async function dumpBookmarksAsync() {
   return bookmarkTreeNodes;
 }
 
-function gotooptions() {
-  $("#go-to-options").click(() => {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      window.open(chrome.runtime.getURL("optionsy.html"));
-    }
-  });
-}
+document.querySelector("#go-to-options").addEventListener("click", () => {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL("options.html"));
+  }
+});
 
 async function start() {
   // await initSettings_all();

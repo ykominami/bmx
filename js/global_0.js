@@ -76,6 +76,41 @@ function loadSettings(mes = "") {
   return Settings;
 }
 
+function initSettings_z() {
+  let c;
+
+  setSettingsByKey(Settings, StorageOptions, []);
+  setSettingsByKey(Settings, StorageSelected, {});
+  setSettingsByKey(Settings, StorageHiers, {});
+  setSettingsByKey(Settings, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad2, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad2, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad2, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad2, StorageMisc, {});
+
+  // let c = loadSettings_by_api("Y1");
+  // let c = loadSettings("Y1");
+  console.log(`StorageOptions ${c[StorageOptions]}`);
+  Object.entries(c).map((key) => {
+    console.log(`key=${key}`);
+  });
+  console.log(`StorageSelected ${c[StorageSelected]}`);
+
+  setSettings(c);
+  setSettingsFromLoad(c);
+  setSettingsFromLoad2(c);
+  copyFromLoad2ToSettingsX();
+
+  console.log("initSettings_z saveSettings");
+  saveSettings();
+}
+
 async function initSettings_all() {
   console.log("initSettings_all 0");
   loadSettings_by_api().then((c) => {
@@ -139,7 +174,6 @@ function getStorageSelected() {
 }
 
 function getStorageOptions() {
-	console.log("***=====================  getStorageOptions")
   let options = getSettingsByKey(Settings, StorageOptions);
   if (typeof options == "undefined") {
     options = [];
@@ -151,7 +185,6 @@ function getStorageOptions() {
     setSettingsByKey(Settings, StorageOptions, options);
     console.log(`############### 4 getStorageOptions not Array`);
   }
- 	console.log(`***=====================  getStorageOptions options=${options}`)
   return options;
 }
 
