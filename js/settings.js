@@ -116,6 +116,7 @@ export const items1 = [
   ["Vue.js", "/XD/WEB-2/Vue.js"],
   ["js-fw", "/XD/WEB-2/js-fw"],
   ["Vue.js", "/XD/WEB-2/Vue.js"],
+  ["JAMStack", "/XD/WEB-2/JAMStack"],
   ["EMB", "/XD/EMB"],
   ["EMB2", "/XD/EMB2"],
 
@@ -203,10 +204,7 @@ export const items1 = [
 ];
 
 export const keys = [
-  "/0/0-etc/0-0-0",
   "/0/0-etc/0",
-  "/0/0-etc/2-2",
-  "/0/0-etc/2-1",
   "/0/action",
   "/0/AdventCalendar",
   "/0/a-ref",

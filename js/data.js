@@ -3,16 +3,18 @@ let ItemHash;
 
 function dumpTreeItemsX(bookmarkTreeNodes) {
   let ary = [];
-  let i;
-  for (i = 0; i < bookmarkTreeNodes.length; i++) {
-    const element = bookmarkTreeNodes[i];
+  let ary_children = [];
+  for (let i = 0; i < bookmarkTreeNodes.length; i++) {
+    let element = bookmarkTreeNodes[i];
     if (element.url) {
-      ary.push(element.id);
+      ary.push(element.url);
     }
 
     if (element.children) {
-      ary = ary.concat(dumpTreeItemsX(element.children));
+      // ary = ary.concat(dumpTreeItemsX(element.children));
+      ary_children = dumpTreeItemsX(element.children);
     }
+    ary = [...ary, ...ary_children];
   }
   return ary;
 }
@@ -27,13 +29,13 @@ function dumpTreeItemsXTop(folder_id) {
   return zary;
 }
 
-
 function getItemByHier(key) {
-	let ret = null
-	if (key in ItemHashByHier){
-  		ret = ItemHashByHier[key];
-	}
-    return ret;
+  let ret = null;
+  //console.log(`itemHash.keys=${ Object.keys(ItemHashByHier) }`)
+  if (key in ItemHashByHier) {
+    ret = ItemHashByHier[key];
+  }
+  return ret;
 }
 
 function setItemByHier(key, value) {
@@ -45,7 +47,12 @@ function getItemHashByHierKeys() {
 }
 
 function getItem(key) {
-  return ItemHash[key];
+  let ret = null;
+  //console.log(`itemHash.keys=${ Object.keys(ItemHash) }`)
+  if (key in ItemHash) {
+    ret = ItemHash[key];
+  }
+  return ret;
 }
 
 function setItem(key, value) {

@@ -12,7 +12,7 @@ let SettingsFromLoad2 = {};
 
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
-  let val2;
+  let val2 = [];
   let val3 = null;
   // if (val == null || val === undefined) {
   if (val != null) {
@@ -45,24 +45,26 @@ async function saveSettings_by_api() {
   val[StorageSelected] = [];
   // val[StorageMisc] = getStorageMisc();
 
-  console.log("==################################ saveSettings_by_api == 1");
-  console.log(Object.entries(val));
+  // console.log("==################################ saveSettings_by_api == 1");
+  // console.log(Object.entries(val));
 
   // await chrome.storage.local.set(val);
   chrome.storage.local.set({ all: val });
-  console.log("==################################ saveSettings_by_api == 2");
+  // console.log("==################################ saveSettings_by_api == 2");
 }
 
 async function loadSettings_by_api(mes = "") {
+	// TODO: remove argument mes
   let result = await chrome.storage.local.get()
   let value = result["all"];
   Settings = value == null || value == undefined ? {} : value;
-  console.log(`loadSettings_by_api Settings=${Settings}`);
+  // console.log(`loadSettings_by_api Settings=${Settings}`);
 
   return Settings;
 }
 
 function loadSettings(mes = "") {
+	// TODO: remove argument mes
   let valStorageOptions = adjustValue(localStorage[StorageOptions]);
   let valStorageSelected = adjustValue(localStorage[StorageSelected]);
   let valStorageHiers = adjustValue(localStorage[StorageHiers]);
@@ -77,15 +79,15 @@ function loadSettings(mes = "") {
 }
 
 async function initSettings_all() {
-  console.log("initSettings_all 0");
+  // console.log("initSettings_all 0");
   loadSettings_by_api().then((c) => {
-    console.log(`initSettings_all 3 c=${c}`);
+    // console.log(`initSettings_all 3 c=${c}`);
   });
 }
 
 /* ===== グローバル変数 関連 ===== */
 function setSettings(val) {
-  console.log(`================= setSettings ${JSON.stringify(val)}`);
+  // console.log(`================= setSettings ${JSON.stringify(val)}`);
   Settings = val;
 }
 
@@ -98,7 +100,11 @@ function setSettingsFromLoad2(val) {
 }
 
 function getSettingsByKey(assoc, key) {
-  return assoc[key];
+	let ret = null
+	if (key in assoc){
+  		ret = assoc[key];
+  	}
+  	return ret
 }
 
 function setSettingsByKey(assoc, key, value) {
@@ -134,68 +140,69 @@ function setStorageSelected(keytop, value) {
 
 function getStorageSelected() {
   let selected = adjustValue(Settings[StorageSelected]);
-  console.log(`getStorageSelected ${selected}`);
+  // console.log(`getStorageSelected ${selected}`);
   return selected;
 }
 
 function getStorageOptions() {
-	console.log("***=====================  getStorageOptions")
+	// console.log("***=====================  getStorageOptions")
   let options = getSettingsByKey(Settings, StorageOptions);
-  if (typeof options == "undefined") {
+  if (options == null) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
-    console.log(`############### 3 getStorageOptions undefined`);
+    // console.log(`############### 3 getStorageOptions undefined`);
   }
   if (Array.isArray(options) == false) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
-    console.log(`############### 4 getStorageOptions not Array`);
+    // console.log(`############### 4 getStorageOptions not Array`);
   }
- 	console.log(`***=====================  getStorageOptions options=${options}`)
+ 	// console.log(`***=====================  getStorageOptions options=${options}`)
   return options;
 }
 
 function setStorageOptions(value) {
-  /* console.log(
-    `================= setStorageOptions value=${JSON.stringify(value)}`
-  );
-  */
   Settings[StorageOptions] = value;
-  localStorage[StorageOptions] = value;
 }
 
 function getStorageHiers() {
-  return Settings[StorageHiers];
+  let ret = null
+  if( StorageHiers in Settings ){
+  	ret = Settings[StorageHiers];
+  }
+  return ret;
 }
 
 function setStorageHiers(value) {
-  /*
-  console.log(
-    `================= setStorageHiers value=${JSON.stringify(value)}`
-  );
-  */
   Settings[StorageHiers] = value;
   localStorage[StorageHiers] = value;
 }
 
 function getStorageMisc() {
-  return Settings[StorageMisc];
+  let ret = null
+  if( StorageMisc in Settings ){
+  	ret = Settings[StorageMisc];
+  }
+  return ret;
 }
 
 function setStorageMisc(value) {
+	/*
   console.log(
     `================= setStorageMisc value=${JSON.stringify(value)}`
   );
+  */
   Settings[StorageMisc] = value;
   localStorage[StorageMisc] = value;
 }
 
 function storageOptionsUnshift(obj) {
-  Settings[StorageOptions].unshift(obj);
+  if (! StorageOptions in Settings ){
+  	Settings[StorageOptions] = []
+  }
+  Settings[StorageOptions] = [obj, ...Settings[StorageOptions]]
   // localStorage[StorageOptions] = Settings[StorageOptions];
-  let objx = localStorage[StorageOptions];
-  console.log(typeof objx);
-  localStorage[StorageOptions] = objx;
+  localStorage[StorageOptions] = [obj, ...localStorage[StorageOptions]]
 }
 
 async function saveSettings() {
@@ -206,8 +213,8 @@ async function saveSettings() {
   val[StorageSelected] = [];
   // val[StorageMisc] = getStorageMisc();
 
-  console.log("==################################ saveSettings == 1");
-  console.log(Object.entries(val));
+  // console.log("==################################ saveSettings == 1");
+  // console.log(Object.entries(val));
 
   await chrome.storage.local.set(val);
   console.log("==################################ saveSettings == 2");
@@ -217,10 +224,12 @@ async function saveSettings() {
   localStorage[StorageHiers] = val[StorageHiers];
   localStorage[StorageMisc] = val[StorageMisc];
 
-  console.log("========   saveSettings");
-  console.log(
+  // console.log("========   saveSettings");
+  /*
+  	  console.log(
     `========   saveSettings localStorage[StorageSelected]=${localStorage[StorageSelected]}`
   );
+  */
 }
 const loadSettings2 = async function (key = null) {
     const val = await chrome.storage.local.get(key);
@@ -256,7 +265,7 @@ function copyFromLoad2ToSettingsX() {
 
 function copyFromLoadToSettings(key) {
   // SettingsFromLoad[key] = Settings[key];
-  console.log(`================= copyFromLoadToSettings key=${key}`);
+  // console.log(`================= copyFromLoadToSettings key=${key}`);
   if (typeof SettingsFromLoad != "undefined") {
     if (typeof SettingsFromLoad[key] != "undefined") {
       Settings[key] = SettingsFromLoad[key];
@@ -312,38 +321,32 @@ function addRecentlyItem(select, value, text) {
   /* console.log("## addRecentlyItem"); */
   /* 現在選択された対象フォルダが過去にも選択されていれば、過去の対象フォルダを直近に移動させる（つまりあらかじめ、過去の記録を削除する） */
   /* 直近で同一対象フォルダが選択されていても、いったん削除する */
-  const storageOptions = getStorageOptions();
-  console.log(`storageOptions=${storageOptions}`);
-  console.log(JSON.stringify(storageOptions));
+  let storageOptions = getStorageOptions();
   const ind = storageOptions.findIndex((element, index, array) => {
     return element.value == value;
   });
+  console.log(`addRecentlyItem ind=${ind}`);
   if (ind >= 0) {
     storageOptions.splice(ind, 1);
   }
-  storageOptionsUnshift({
+  let item = {
     value: value,
     text: text,
-  });
+  }
+  storageOptions = [item, ...storageOptions]
 
   /* selectにアイテムを追加する(いったんslectの内容を消去して、追加したデータを改めてselectに設定する) */
-  const opts1 = [];
-  storageOptions.forEach((element, index, array) => {
-    opts1.push(
-      $("<option>", {
+  const opts1 = storageOptions.map((element) => {
+    return  $("<option>", {
         value: element.value,
         text: element.text,
       })
-    );
   });
   select.empty();
   select.append(opts1);
   select.val(value);
 
   setStorageOptions(storageOptions);
-  /* console.log(
-    `## addRecentlyItem call saveSettings_by_api() storageOptions=${storageOptions}`
-  ); */
 }
 
 export {
