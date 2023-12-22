@@ -1,36 +1,16 @@
-import {
-  getMonthx,
-  adjustAsStr,
-  makeBtnA,
-  makeSelectA,
-  getCategoryName,
-  getSelectId,
-  getBtnId,
-  getJqueryId,
-} from "./util.js";
+import { getMonthx, adjustAsStr } from "./util.js";
 
 import {
-  getItems1,
-  getKeys,
-  getNumOfRows,
-  getMax,
   getPrefix,
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
 } from "./settings.js";
 
 import {
-  dumpTreeItemsX,
   dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
-  getItemHashByHierKeys,
-  getItem,
   setItem,
-  getItemHashKeys,
-  initItems,
-  printItemHashByHier,
-  printItemHash,
 } from "./data.js";
 
 /* folder追加処理 */
