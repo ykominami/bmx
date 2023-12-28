@@ -31,7 +31,6 @@ function dumpTreeItemsXTop(folder_id) {
 
 function getItemByHier(key) {
   let ret = null;
-  //console.log(`itemHash.keys=${ Object.keys(ItemHashByHier) }`)
   if (key in ItemHashByHier) {
     ret = ItemHashByHier[key];
   }
@@ -42,8 +41,8 @@ function setItemByHier(key, value) {
   return (ItemHashByHier[key] = value);
 }
 
-function getItemHashByHierKeys() {
-  return Object.keys(ItemHashByHier);
+function getKeysOfItemByHier(key, value) {
+  return (ItemHashByHier[key] = value);
 }
 
 function getItem(key) {
@@ -59,13 +58,18 @@ function setItem(key, value) {
   return (ItemHash[key] = value);
 }
 
-function getItemHashKeys() {
-  return Object.keys(ItemHash);
+function getKeysOfItem() {
+  return Object.keys(Item);
 }
 
+function addItem(item) {
+  // console.log(`addItem item=${JSON.stringify(item)}`);
+  setItem(item.id, item);
+  setItemByHier(item.hier, item);
+}
 function initItems() {
   ItemHashByHier = {};
-  ItemHash = [];
+  ItemHash = {};
 }
 
 function printItemHashByHier() {
@@ -82,10 +86,11 @@ export {
   dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
-  getItemHashByHierKeys,
+  getKeysOfItemByHier,
   getItem,
   setItem,
-  getItemHashKeys,
+  getKeysOfItem,
+  addItem,
   initItems,
   printItemHashByHier,
   printItemHash,
