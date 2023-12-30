@@ -1,33 +1,5 @@
-let ItemHashByHier;
-let ItemHash;
-
-function dumpTreeItemsX(bookmarkTreeNodes) {
-  let ary = [];
-  let ary_children = [];
-  for (let i = 0; i < bookmarkTreeNodes.length; i++) {
-    let element = bookmarkTreeNodes[i];
-    if (element.url) {
-      ary.push(element.url);
-    }
-
-    if (element.children) {
-      // ary = ary.concat(dumpTreeItemsX(element.children));
-      ary_children = dumpTreeItemsX(element.children);
-    }
-    ary = [...ary, ...ary_children];
-  }
-  return ary;
-}
-
-function dumpTreeItemsXTop(folder_id) {
-  let zary = [];
-  const item = getItem(folder_id);
-
-  chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
-    zary = dumpTreeItemsX(bookmarkTreeNodes);
-  });
-  return zary;
-}
+let ItemHashByHier = {};
+let ItemHash = {};
 
 function getItemByHier(key) {
   let ret = null;
@@ -42,7 +14,8 @@ function setItemByHier(key, value) {
 }
 
 function getKeysOfItemByHier(key, value) {
-  return (ItemHashByHier[key] = value);
+  let keys = Object.keys(ItemHashByHier);
+  // console.log(`keys.length=${keys.length}`);
 }
 
 function getItem(key) {
@@ -59,7 +32,7 @@ function setItem(key, value) {
 }
 
 function getKeysOfItem() {
-  return Object.keys(Item);
+  return Object.keys(ItemHash);
 }
 
 function addItem(item) {
@@ -81,9 +54,88 @@ function printItemHash() {
   debubPrint2("=ItemHash");
   debubPrint2(ItemHas);
 }
+
+function determine_kind(item) {
+  let kind = "folder";
+  if (item.url) {
+    kind = "url";
+  }
+  return kind;
+}
+function is_target(element, target) {
+  let ret = false;
+  let kind = determine_kind(element);
+  switch (target) {
+    case "URL":
+      if (kind == "url") {
+        ret = true;
+      }
+      break;
+    case "FOLDER":
+      if (kind == "folder") {
+        ret = true;
+      }
+      break;
+    default:
+      break;
+  }
+  return ret;
+}
+
+function dumpTreeItems(
+  bookmarkTreeNodes,
+  target = "FOLDER",
+  kind = "SELECT",
+  ignore_head
+) {
+  let ary = [];
+  for (let i = 0; i < bookmarkTreeNodes.length; i++) {
+    const element = bookmarkTreeNodes[i];
+    if (!ignore_head) {
+      switch (kind) {
+        case "SELECT":
+          ary.push(
+            $("<option>", {
+              value: element.id,
+              text: element.title,
+            })
+          );
+          break;
+        default:
+          ary.push(element);
+          break;
+      }
+      if (is_target(element, target)) {
+        // console.log(`A dumpTreeItems id=${element.id} title=${element.title}`);
+        ary.push(
+          $("<option>", {
+            value: element.id,
+            text: element.title,
+          })
+        );
+        /*
+        console.log(
+          `X element.id=${element.id} element.title=${element.title}`
+        );
+        */
+      }
+    }
+    if (element.children) {
+      let ary2 = dumpTreeItems(element.children, target, false);
+      /*
+      console.log(
+        `C dumpTreeItems children=${element.children} head_id2=${head_id2}`
+      );
+      */
+      ary = [...ary, ...ary2];
+      // ary = ary.concat(dumpTreeItems(element.children, false));
+    }
+  }
+  // console.log(`D dumpTreeItems ary=${ary} ary_id=${JSON.stringify(ary_id)}`);
+  return ary;
+}
+
 export {
-  dumpTreeItemsX,
-  dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
   getKeysOfItemByHier,
@@ -94,4 +146,5 @@ export {
   initItems,
   printItemHashByHier,
   printItemHash,
+  dumpTreeItems,
 };

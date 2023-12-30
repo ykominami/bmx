@@ -9,31 +9,24 @@ import { add_to_itemgroup, getItemFromRoot } from "./itemg.js";
 /* 一気に全フォルダの階層構造をつくることが目的である */
 function dumpTreeNodes(bookmarkTreeNodes) {
   /* bookmarkTreeNodes - フォルダと項目が混在している */
-
-  return bookmarkTreeNodes.map((element, index, array) => {
-    // console.log(`### dumpTreeNodes map element 1 element.url=${element.url}`);
-    //console.log(`DTs 2`);
+  // console.log(`bookmarkTreeNodes.length=${bookmarkTreeNodes.length}`);
+  return bookmarkTreeNodes.reduce((accumulator, element) => {
     let ret = null;
-
-    //console.log(`DTs 5`);
-    //console.log(`### dumpTreeNodes map element 2`);
     if (element != undefined) {
-      //console.log(`DTs 6`);
+      // console.log(`DTs 6`);
       //console.log(`### dumpTreeNodes map element 3`);
       ret = add_to_itemgroup(element);
+      // console.log(`DTs 4 ret.children=${JSON.stringify(ret)}`);
     }
-
-    //console.log(`DTs 4`);
-    return ret;
-  });
+    if (ret != null) {
+      accumulator.push(ret);
+    }
+    return accumulator;
+  }, []);
 }
 async function dumpTreeNodesAsync(bookmarkTreeNodes) {
-  // function dumpTreeNodesAsync(bookmarkTreeNodes) {
-  console.log(`DTNA 1`);
-
-  dumpTreeNodes(bookmarkTreeNodes);
+  await dumpTreeNodes(bookmarkTreeNodes);
   const hierKeys = getKeysOfItemByHier();
-  console.log(`hierKeys=${hierKeys}`);
   setStorageHiers(hierKeys);
 
   return bookmarkTreeNodes;
