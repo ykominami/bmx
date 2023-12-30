@@ -6,12 +6,7 @@ import {
   getFoldersFromDayPrefixes,
 } from "./settings.js";
 
-import {
-  dumpTreeItemsXTop,
-  getItemByHier,
-  setItemByHier,
-  setItem,
-} from "./data.js";
+import { getItemByHier, setItemByHier, setItem } from "./data.js";
 
 /* folder追加処理 */
 function getYearAndNextMonthAsString() {
@@ -82,9 +77,10 @@ function makeItem(element) {
 
 function makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
   let newFolderId = 0;
+  let parentidstr = `${parentidx}`;
   chrome.bookmarks.create(
     {
-      parentId: parentidx,
+      parentId: parentidstr,
       index: indexx,
       title: titlex,
     },
@@ -125,6 +121,18 @@ function addDayFolderx() {
 
   // "Y/Day"
   folders.map((parent) => {
+    if (parent == null) {
+      parent = "";
+    }
+    if (y_str == null) {
+      y_str = "";
+    }
+    if (ym_str == null) {
+      ym_str = "";
+    }
+    if (ymd_str == null) {
+      ymd_str = "";
+    }
     const arrayx = [parent, y_str, ym_str, ymd_str];
     // let parent_y_str = `${parent}/${y_str}`
     // let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
