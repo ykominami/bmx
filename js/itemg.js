@@ -3,6 +3,7 @@ import {
   getItemByHier,
   getKeysOfItemByHier,
   getItem,
+  dumpTreeItems,
 } from "./data.js";
 import { dumpTreeNodes } from "./treenode.js";
 import { getKeysOfStorageHiers } from "./global.js";
@@ -11,6 +12,22 @@ import { parseURLX } from "./util.js";
 let RootItems = [];
 let TopItems = [];
 // TODO: 引数elementには、chrome.bookmark.getTree()の返値が渡されると想定している
+
+function create_item(element) {
+  return {
+    id: element.id,
+    folder: true,
+    root: false,
+    top: false,
+    kind: "",
+    parentId: element.parentId,
+    posindex: element.index,
+    url: element.url,
+    title: element.title,
+    hier: "" /* hier */,
+    children: [],
+  };
+}
 function add_to_itemgroup(element) {
   // console.log(`add_to_itemgroup 0`);
   /* フォルダのみを処理する（項目は無視する） */
@@ -18,40 +35,39 @@ function add_to_itemgroup(element) {
   //  return null;
   //}
   let idnum = parseInt(element.id, 10);
-  // console.log(`add_to_itemgroup 1 idnum=${idnum}`);
+  // console.log(`idnum=${idnum}`);
   let parentIdnum = parseInt(element.parentId, 10);
-  let item = {
-    id: idnum,
-    folder: true,
-    root: false,
-    top: false,
-    parentId: parentIdnum,
-    posindex: element.index,
-    url: element.url,
-    title: element.title,
-    hier: "" /* hier */,
-    children: [],
-  };
-  if (idnum == NaN) {
-    // console.log(`add_to_itemgroup 2`);
-    item.root = true;
-    RootItems.push(item);
-    // item.hier = "";
-    // item.hier = item.title;
+  // console.log(`parentIdnum=${parentIdnum}`);
+
+  // console.log(`element.url=${element.url}`);
+
+  let item = create_item(element);
+  if (element.url) {
+    return null;
   } else {
-    /* 親フォルダがルート階層のフォルダであればトップ階層のフォルダにする */
-    if (item.parentId == "0") {
-      // console.log(`add_to_itemgroup 3 item.title=${item.title}`);
-      item.top = true;
+    if (Number.isNaN(parentIdnum)) {
+      // console.log(`a 2`);
+      item.root = true;
+      item.kind = "ROOT";
+      RootItems.push(item);
       // item.hier = "";
-      TopItems.push(item);
+      // item.hier = item.title;
     } else {
-      // console.log(`add_to_itemgroup 4 item.title=${item.title}`);
-      /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
-      // console.log(`add_to_itemgroup 5 item.parentId=${item.parentId}`);
-      if (item.parentId == NaN) {
-        // console.log(`add_to_itemgroup 6`);
+      // console.log(`a idnum=${idnum}}`);
+      // console.log(`a parentIdnum=${parentIdnum}}`);
+      /* 親フォルダがルート階層のフォルダであればトップ階層のフォルダにする */
+      if (parentIdnum == 0) {
+        // console.log(`a 3 item.title=${item.title}`);
+        item.top = true;
+        item.kind = "TOP";
+        // item.hier = "";
+        TopItems.push(item);
       } else {
+        item.kind = "FOLDER";
+
+        // console.log(`a 4 item.title=${item.title}`);
+        /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
+        // console.log(`add_to_itemgroup 5 item.parentId=${item.parentId}`);
         // console.log(`add_to_itemgroup 7 item.parentId=${item.parentId}`);
         let parent_item = getItem(item.parentId);
         if (parent_item == null) {
@@ -63,10 +79,24 @@ function add_to_itemgroup(element) {
       }
     }
   }
-  addItem(item);
-  if (element.children != undefined) {
-    if (element.children.length > 0) {
-      item.children = dumpTreeNodes(element.children);
+  if (item.folder == true) {
+    addItem(item);
+    if (element.children != undefined) {
+      if (element.children.length > 0) {
+        let ignore_head = true;
+        /* console.log(
+          `add_to_itemgroup element.children 2 root=${item.root} top=${item.top} parentIdnum=${parentIdnum} item.id=${item.id} item.title=${item.title}`
+        );
+        */
+        // dumpTreeItems(bookmarkTreeNodes, target = "FOLDER", ignore_head)
+        item.children = dumpTreeNodes(element.children);
+        // item.children = dumpTreeNodes(element.children);
+        // console.log(`2 getKeysOfItemByHier()=${getKeysOfItemByHier()}`);
+        /* console.log(
+          `add_to_itemgroup element.children item.children.length=${item.children.length}`
+        );
+        */
+      }
     }
   }
   return item;
