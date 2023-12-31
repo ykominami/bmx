@@ -205,13 +205,7 @@ export const items1 = [
 
 export const keys = [
   "/0/0-etc/0",
-<<<<<<< HEAD
   "/0/0-etc/2",
-||||||| d60c50ba
-  "/0/0-etc/2-2",
-  "/0/0-etc/2-1",
-=======
->>>>>>> 715af20ffd48b378eccfbaab9296fe5e2d933d7b
   "/0/action",
   "/0/AdventCalendar",
   "/Y/Day/2023/202308",
