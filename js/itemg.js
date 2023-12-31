@@ -3,7 +3,6 @@ import {
   getItemByHier,
   getKeysOfItemByHier,
   getItem,
-  dumpTreeItems,
 } from "./data.js";
 import { dumpTreeNodes } from "./treenode.js";
 import { getKeysOfStorageHiers } from "./global.js";
@@ -88,7 +87,6 @@ function add_to_itemgroup(element) {
           `add_to_itemgroup element.children 2 root=${item.root} top=${item.top} parentIdnum=${parentIdnum} item.id=${item.id} item.title=${item.title}`
         );
         */
-        // dumpTreeItems(bookmarkTreeNodes, target = "FOLDER", ignore_head)
         item.children = dumpTreeNodes(element.children);
         // item.children = dumpTreeNodes(element.children);
         // console.log(`2 getKeysOfItemByHier()=${getKeysOfItemByHier()}`);

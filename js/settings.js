@@ -205,12 +205,12 @@ export const items1 = [
 
 export const keys = [
   "/0/0-etc/0",
+  "/0/0-etc/2",
   "/0/action",
   "/0/AdventCalendar",
-  "/0/a-ref",
-  "/Y/Day/2022/202208",
-  "/Y/Day/2022/202209",
-  "/Y/Day/2022/202210",
+  "/Y/Day/2023/202308",
+  "/Y/Day/2023/202309",
+  "/Y/Day/2023/202310",
 ];
 
 export let folderPrefixes = { "/0/KU": "KU", "/0/Kindle": "K", "/0/本": "本" };

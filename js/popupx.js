@@ -229,12 +229,15 @@ function addSelectWaitingItemsX(select, item_id, target) {
   chrome.bookmarks.getSubTree(item_id, function (bookmarkTreeNodes) {
     // bookmarkTreeNodesには指定したブックマークフォルダのサブツリーに含まれるすべてのノードが含まれます。
     //console.log(bookmarkTreeNodes);
-    const zary = dumpTreeItems(bookmarkTreeNodes, target, "SELECT", false);
+    const zary = dumpTreeItems(bookmarkTreeNodes, "URL", "SELECT_OPTION");
+    // console.log(`addSelectWaitingItemsX zary=${JSON.stringify(zary)}`);
     clear_in_move_mode_area();
 
+    // select.empty();
     select.append(zary);
     select.prop("selectedIndex", 0);
     let item_id = select.val();
+    // console.log(`addSelectWaitingItemsX item_id=${item_id}`);
     selectWaitingItemsBtnHdr(item_id);
   });
   return true;
@@ -508,10 +511,8 @@ function makeMenuOnBottomArea() {
   let last_index = ary.length - 1;
   if (last_index >= 0) {
     $("#rinp").val(ary[last_index].value);
-    obj = ary[last_index];
   }
   if (ary.length > 0) {
-    obj = ary[0];
     updateSelectRecently(ary, $("#rinp"));
   }
 }
@@ -557,7 +558,7 @@ function makeMenuOnUpperArea(title, url) {
     console.log(`#zinp click value=${JSON.stringify(value)}`);
     if (value != null) {
       /* 対象フォルダに含まれるアイテム一覧作成 */
-      addSelectWaitingItemsX($("#zinp"), $("#yinp").val(), "FOLDER");
+      addSelectWaitingItemsX($("#yinp"), value, "FOLDER");
     }
   });
 

@@ -134,9 +134,6 @@ function addDayFolderx() {
       ymd_str = "";
     }
     const arrayx = [parent, y_str, ym_str, ymd_str];
-    // let parent_y_str = `${parent}/${y_str}`
-    // let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
-    // let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
     arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
       const parent_item = getItemByHier(accumulator);
       const hier = [accumulator, currentValue].join("/");
@@ -160,13 +157,7 @@ function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
   return new_item;
 }
 function lstree() {
-  const hier = "/Y/Day/2023/202311";
-  let item = getItemByHier(hier);
-  console.log(item);
-  if (item !== null) {
-    let ary = dumpTreeItemsXTop(item.id);
-    ary.map((item_id) => console.log(item_id));
-  }
+  // TODO: 未実装
 }
 export {
   getYearAndNextMonthAsString,

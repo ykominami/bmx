@@ -85,15 +85,16 @@ function is_target(element, target) {
 function dumpTreeItems(
   bookmarkTreeNodes,
   target = "FOLDER",
-  kind = "SELECT",
-  ignore_head
+  kind = "SELECT_OPTION"
 ) {
   let ary = [];
   for (let i = 0; i < bookmarkTreeNodes.length; i++) {
     const element = bookmarkTreeNodes[i];
-    if (!ignore_head) {
+    let ret = is_target(element, target);
+    // console.log(`H dumpTreeItems ret=${ret} kind=${kind} target=${target}`);
+    if (ret) {
       switch (kind) {
-        case "SELECT":
+        case "SELECT_OPTION":
           ary.push(
             $("<option>", {
               value: element.id,
@@ -105,33 +106,23 @@ function dumpTreeItems(
           ary.push(element);
           break;
       }
-      if (is_target(element, target)) {
-        // console.log(`A dumpTreeItems id=${element.id} title=${element.title}`);
-        ary.push(
-          $("<option>", {
-            value: element.id,
-            text: element.title,
-          })
-        );
-        /*
-        console.log(
-          `X element.id=${element.id} element.title=${element.title}`
-        );
-        */
-      }
-    }
-    if (element.children) {
-      let ary2 = dumpTreeItems(element.children, target, false);
       /*
       console.log(
-        `C dumpTreeItems children=${element.children} head_id2=${head_id2}`
+        `X element.id=${element.id} element.title=${element.title}`
       );
       */
+    }
+    /*
+    console.log(
+      `0 dumpTreeItems element.children=${JSON.stringify(element.children)}`
+    );
+    */
+    if (element.children) {
+      let ary2 = dumpTreeItems(element.children, target, kind);
       ary = [...ary, ...ary2];
-      // ary = ary.concat(dumpTreeItems(element.children, false));
     }
   }
-  // console.log(`D dumpTreeItems ary=${ary} ary_id=${JSON.stringify(ary_id)}`);
+  // console.log(`1 dumpTreeItems ary=${JSON.stringify(ary)}`);
   return ary;
 }
 
