@@ -553,7 +553,6 @@ function makeMenuOnUpperArea(title, url) {
   $("#zinp").click(() => {
     /* move-mode領域を選択状態にする */
     setTargetArea("#move-mode");
-<<<<<<< HEAD
     console.log("#zinp click");
     let value = $("#zinp").val();
     console.log(`#zinp click value=${JSON.stringify(value)}`);
@@ -561,23 +560,6 @@ function makeMenuOnUpperArea(title, url) {
       /* 対象フォルダに含まれるアイテム一覧作成 */
       addSelectWaitingItemsX($("#yinp"), value, "FOLDER");
     }
-||||||| d60c50ba
-    /* 対象フォルダに含まれるアイテム一覧作成 */
-    addSelectWaitingItemsX($("#yinp"), $("#zinp").val());
-  });
-  /* move-mode時の移動対象アイテム選択時の動作 */
-  /*** ★hrome bookmarks APIにはidが必要。これは隠れフィールドoidに設定しておく***/
-  $("#yinp").click(() => {
-    selectWaitingItemsBtnHdr($("#yinp").val());
-=======
-    console.log("#zinp click");
-    let value = $("#zinp").val();
-    console.log(`#zinp click value=${JSON.stringify(value)}`);
-    if (value != null) {
-      /* 対象フォルダに含まれるアイテム一覧作成 */
-      addSelectWaitingItemsX($("#zinp"), $("#yinp").val(), "FOLDER");
-    }
->>>>>>> 715af20ffd48b378eccfbaab9296fe5e2d933d7b
   });
 
   /* add-mode領域を選択状態にする(デフォルトにする) */
