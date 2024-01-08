@@ -58,6 +58,11 @@ function parseURLX(url) {
   return ret;
 }
 
+function parseURLX2(url) {
+  return parseURLAsync(url).then((parser) => {
+    return parser;
+  });
+}
 function x() {
   let ret = parseURLAsync(url)
     .then((parser) => {
@@ -119,4 +124,5 @@ export {
   getJqueryId,
   parseURLAsync,
   parseURLX,
+  parseURLX2,
 };

@@ -6,7 +6,9 @@ import {
 } from "./data.js";
 import { dumpTreeNodes } from "./treenode.js";
 import { getKeysOfStorageHiers } from "./global.js";
-import { parseURLX } from "./util.js";
+import { Mover } from "./mover.js";
+import { Movergroup } from "./movergroup.js";
+import { parseURLX , parseURLX2 } from "./util.js";
 
 let RootItems = [];
 let TopItems = [];
@@ -178,48 +180,113 @@ function logItems2(bookmarkItem, indent) {
   }
   indent--;
 }
-function moveItemA(bookmarkItem, target_hostname, dest_parent_id) {
-  if (bookmarkItem.url) {
-    let hostname = parseURLX(bookmarkItem.url).then((hostname) => {
-      // console.log(`${bookmarkItem.id} ${bookmarkItem.url} ${hostname}`);
-      if (hostname == target_hostname) {
-        console.log(
-          `${bookmarkItem.id} ${
-            bookmarkItem.url
-          } ${hostname} dest_parent_id=${JSON.stringify(dest_parent_id)}`
-        );
-        chrome.bookmarks.move(bookmarkItem.id, {
-          parentId: dest_parent_id,
-        });
-      }
-    });
+
+async function call_mover_group_move(mover_group, bookmarkItem) {
+  	   mover_group.move(bookmarkItem);
+}
+
+async function moveBMXFolderBase(mover_group, src_folder_id) {
+  let bookmarkItems = []
+  await chrome.bookmarks
+  .getChildren(`${src_folder_id}`)
+  .then( (bms) => bookmarkItems = bms )  
+  bookmarkItems.map((bookmarkItem) => {
+  	  console.log(`bookmarkItem.title = ${bookmarkItem.title}`)
+  	   mover_group.move(bookmarkItem);
+  } )
+}
+function parse_b(parser){
+			   	   console.log(`pathname=${parser.pathname} host=${parser.host} `)
+					   
+	   	   			let searchParams = parser.searchParams;
+console.log(`${searchParams.toString()}`)
+//			   	   	let iterator = searchParams.keys();
+			   	   let origin = parser.origin;
+			   	   let port = parser.port;
+			   	   console.log(`origin=${origin} port=${port}`);
+			   	   let hash = parser.hash
+					
+			   	   	let iterator = searchParams.entries();
+			   	   let iteratorResult;
+			   	   console.log(`==== START`)
+			   	   while(true){
+					    iteratorResult = iterator.next(); // 順番に値を取りだす
+					    if(iteratorResult.done) break; // 取り出し終えたなら、break
+					    console.log(iteratorResult.value); // 値をコンソールに出力
+					}
+			   	   console.log(`==== END`)
+					console.log(`${searchParams.get('s')}`)
+					console.log(`${searchParams.get('sr')}`)
+
+					searchParams.forEach((value, name) => {
+						console.log(`${name}:${value}`)
+					})
+			   	   console.log(`hash[s]=${ hash['s'] }`)
+			   	   console.log(`hash[sr]=${ hash['sr'] }`)
+			   	   // let keys = searchParams.keys()\
+			   	   // X let keys = searchParams.key()
+			   	   // console.log( JSON.stringify(keys));
+			   	   // keys.map( key => console.log(`key=${key} ${hash[key]}`) )
+}
+async function moveBMXFolderCheck(mover_group, src_folder_id) {
+  let bookmarkItems = []
+  await chrome.bookmarks
+  .getChildren(`${src_folder_id}`)
+  .then( (bms) => {
+  	  bms.map( (bm) => {
+  	  	  if (bm.url != undefined ){
+		 	 parseURLX2(bm.url) 
+	  			.then(parser => {
+	  	  	  	  console.log(`bm.title=${bm.title}`)
+	  	  	  	  	  parse_b(parser);
+	  			} )
+	  		}
+  	  }
+  	 )
+ } )
+ }
+
+function moveBMX3() {
+  let hier = "/Amazon/Amazon"
+  let group = Movergroup.get_mover_group();
+  let obj = getItemByHier(hier)
+  if( obj.id != null ){
+  	  console.log( `obj.id=${obj.id}` )
+	moveBMXFolderCheck(group, obj.id)
+  }
+}
+	/*
+	1 ブックマークツールバー
+	2 その他のブックマーク
+	3 モバイルのブックマーク
+	*/
+function moveBMX2() {
+	// console.log(`moveBMX2 1`)
+	// moveBMXbase("2")
+  let hier = "/0/0-etc/0"
+  let group = Movergroup.get_mover_group();
+  console.log(`hier=${hier}`)
+  let obj = getItemByHier(hier)
+  console.log(`obj.id=${obj.id}`)
+  if( obj.id != null ){
+	moveBMXFolderBase(group, obj.id)
+  }
+  else{
+	console.log(`obj=${obj}`)
   }
 }
 
 function moveBMX() {
-  // console.log("moveBMX");
-  // let keys = getKeysOfStorageHiers();
-  // console.log(`keys=${keys}`);
-  const dest_parent_item = getItemByHier("/Video");
-  if (dest_parent_item == null) {
-    console.log(`dest_parent_item is null`);
-    let keys = getKeysOfItemByHier();
-    console.log(`keys=${keys}`);
-    return;
-  }
-  console.log(`dest_parent_item.id=${dest_parent_item.id}`);
-  chrome.bookmarks
-    .getChildren("1")
-    .then((bookmarkItems) =>
-      bookmarkItems.map((bookmarkItem) =>
-        moveItemA(bookmarkItem, "www.youtube.com", `${dest_parent_item.id}`)
-      )
-    );
+    let group = Movergroup.get_mover_group();
+	moveBMXFolderBase(group, "1")
 }
+
 
 export {
   add_to_itemgroup,
   getItemFromRootByHostname,
   getItemFromRoot,
   moveBMX,
+  moveBMX2,
+  moveBMX3,
 };

@@ -295,7 +295,7 @@ function addRecentlyItem(select, value, text) {
   const ind = storageOptions.findIndex((element, index, array) => {
     return element.value == value;
   });
-  console.log(`addRecentlyItem ind=${ind}`);
+  // console.log(`addRecentlyItem ind=${ind}`);
   if (ind >= 0) {
     storageOptions.splice(ind, 1);
   }
