@@ -43,6 +43,16 @@ add_anchor2("#table2", "https://northern-corss.info", "NORTHERN-CROSS");
 */
 console.log("options.js");
 
+function add_make_filter() {
+  let tr0 = table.insertRow(-1);
+  let td0 = tr0.insertCell(-1);
+  let input = document.createElement("input");
+  input.type = "text";
+  input.id = "filter";
+  input.value = "";
+  td0.appendChild(input);
+}
+
 async function start_options() {
   initItems();
   // console.log("start 2");
