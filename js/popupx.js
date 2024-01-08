@@ -38,7 +38,7 @@ import { loadAsync, updateSelectRecently } from "./async.js";
 
 import { dumpTreeNodes, dumpTreeNodesAsync } from "./treenode.js";
 
-import { moveBMX } from "./itemg.js";
+import { moveBMX, moveBMX2, moveBMX3 } from "./itemg.js";
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
@@ -233,7 +233,7 @@ function addSelectWaitingItemsX(select, item_id, target) {
     // console.log(`addSelectWaitingItemsX zary=${JSON.stringify(zary)}`);
     clear_in_move_mode_area();
 
-    // select.empty();
+    select.empty();
     select.append(zary);
     select.prop("selectedIndex", 0);
     let item_id = select.val();
@@ -335,9 +335,13 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
     const text = $("#oname").val();
     const url = $("#ourl").val();
     const id = $("#oid").val();
+  	//  console.log(`createOrMoveBKItem move-mode 1 id=${id}`)
     if (text != "" && url != "" && id != "") {
+  	  // console.log(`createOrMoveBKItem move-mode 2`)
       chrome.bookmarks.get(id, (result) => {
-        moveBKItem(id, result[0].parentId, parent_id);
+	   	  // console.log(`createOrMoveBKItem move-mode 3`)
+       	  let ret = moveBKItem(id, result[0].parentId, parent_id);
+       	  addSelectWaitingItemsX($("#yinp"), $("#zinp").val(), "URL");
       });
     } else {
       alert("Can't move bookmark");
@@ -433,18 +437,22 @@ function dumpBookmarksFromSubTree(parentId, query) {
 }
 
 function moveBKItem(id, src_parent_id, dest_parent_id) {
+  let ret = false;
   if (id != "") {
     chrome.bookmarks.move(id, {
       parentId: dest_parent_id,
-    });
-    console.log(
-      `moveBKItem A src_parent_id=${src_parent_id} dest_parent_id=${dest_parent_id}`
-    );
-    /* dumpBookmarksFromSubTree(src_parent_id, ""); */
-    addSelectWaitingItemsX($("#yinp"), src_parent_id, "URL");
+    })
+   	.then(
+	    //console.log(
+	    //  `moveBKItem A src_parent_id=${src_parent_id} dest_parent_id=${dest_parent_id}`
+	    //)
+    )
+    .then( addSelectWaitingItemsX($("#yinp"), src_parent_id, "URL") )
+     .then( ret = true )
   } else {
     alert("Can't move bookmark");
   }
+  return ret;
 }
 
 /* ===== ----- ==== */
@@ -584,7 +592,7 @@ function makeMenuOnUpperArea(title, url) {
         url: ourl,
       },
       (tab) => {
-        console.log(["sid=", sid, "ourl=", ourl]);
+        // console.log(["sid=", sid, "ourl=", ourl]);
       }
     );
   });
@@ -603,13 +611,6 @@ function makeMenuOnUpperArea(title, url) {
       addSelectWaitingItemsX($("#yinp"), parent_id, "URL");
     });
   });
-  $("#bk").change(() => {
-    // debugPrint2($("#bk").val());
-  });
-  $("#todaybtn").click(() => {
-    // removeSettings();
-    moveBMX();
-  });
   $("#removebtn").click(() => {
     removeSettings();
   });
@@ -622,8 +623,17 @@ function makeMenuOnUpperArea(title, url) {
   $("#addDbtn").click(() => {
     addDayFolderx();
   });
-  $("#addFbbtn").click(() => {
-    console.log("addFbbtn");
+  $("#moveBMX").click(() => {
+    // removeSettings();
+    moveBMX();
+  });
+  $("#moveBMX2").click(() => {
+  	moveBMX2();
+//    console.log("moveBMX2");
+  });
+  $("#moveBMX3").click(() => {
+  	moveBMX3();
+//    console.log("moveBMX2");
   });
   $("#addFcbtn").click(() => {
     console.log("addFcbtn");
@@ -639,11 +649,15 @@ function makeMenuOnUpperArea(title, url) {
 
 /* move-mode領域の */
 function selectWaitingItemsBtnHdr(option_value) {
-  // console.log(`selectWaitingItemsBtnHdr option_value=${option_value}`);
+  // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 1`);
   if (option_value != null || option_value != undefined) {
+	// console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 2`);
+	
     chrome.bookmarks.get(option_value, (BookmarkTreeNodes) => {
       let len = BookmarkTreeNodes.length;
+      // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 3`);
       if (len > 0) {
+        // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 4`);
         let bt = BookmarkTreeNodes[0];
         let title = bt.title;
         let url = bt.url;
