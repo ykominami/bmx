@@ -854,6 +854,19 @@ async function setupPopupWindowAsync() {
   const title = current.title;
   const url = current.url;
   $('#sid').val(current.id);
+function setupPopupWindowAsync() {
+  return new Promise((resolve, reject) => {
+    // debugPrint2("setupPopupWindowAsync 1");
+    chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true,
+      },
+      (tabs) => {
+        const current = tabs[0];
+        const title = current.title;
+        const url = current.url;
+        $('#sid').val(current.id);
 
   makeMenuOnUpperArea(title, url);
 }
