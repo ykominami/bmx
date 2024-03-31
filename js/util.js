@@ -45,24 +45,6 @@ function getJqueryId(id) {
   return "#" + id;
 }
 
-async function parseURLAsync(url) {
-  let parser = new URL(url);
-
-  return parser;
-}
-
-function parseURLX(url) {
-  let ret = parseURLAsync(url).then((parser) => {
-    return parser.hostname;
-  });
-  return ret;
-}
-
-function parseURLX2(url) {
-  return parseURLAsync(url).then((parser) => {
-    return parser;
-  });
-}
 export {
   getMonthx,
   adjustAsStr,
@@ -72,7 +54,4 @@ export {
   getSelectId,
   getBtnId,
   getJqueryId,
-  parseURLAsync,
-  parseURLX,
-  parseURLX2,
 };
