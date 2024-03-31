@@ -1,9 +1,11 @@
 import { getMonthx, adjustAsStr } from './util.js';
+import { getMonthx, adjustAsStr } from './util.js';
 
 import {
   getPrefix,
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
+} from './settings.js';
 } from './settings.js';
 
 import {
@@ -11,6 +13,8 @@ import {
   getItemByHier,
   setItemByHier,
   setItem,
+} from './data.js';
+import { debugPrint2, debugPrint } from './debug.js';
 } from './data.js';
 import { debugPrint2, debugPrint } from './debug.js';
 
@@ -88,6 +92,7 @@ function makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
   chrome.bookmarks.create(
     {
       parentId: parentidstr,
+      parentId: parentidstr,
       index: indexx,
       title: titlex,
     },
@@ -145,11 +150,12 @@ function addDayFolderx() {
       const hier = [accumulator, currentValue].join('/');
       let item = getItemByHier(hier);
       if (item === null) {
+      if (item === null) {
         makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
         item = getItemByHier(hier);
         console.log(`item=${JSON.stringify(item)}`);
       }
-      console.log(`parent=${parent} hier=${hier} item=${item}`);
+      debugPrint2(`parent=${parent} hier=${hier}`);
 
       return hier;
     });
