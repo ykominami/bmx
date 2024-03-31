@@ -6,7 +6,12 @@ import {
   getFoldersFromDayPrefixes,
 } from "./settings.js";
 
-import { getItemByHier, setItemByHier, setItem } from "./data.js";
+import {
+  dumpTreeItemsXTop,
+  getItemByHier,
+  setItemByHier,
+  setItem,
+} from "./data.js";
 
 /* folder追加処理 */
 function getYearAndNextMonthAsString() {
@@ -77,10 +82,9 @@ function makeItem(element) {
 
 function makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
   let newFolderId = 0;
-  let parentidstr = `${parentidx}`;
   chrome.bookmarks.create(
     {
-      parentId: parentidstr,
+      parentId: parentidx,
       index: indexx,
       title: titlex,
     },
@@ -101,12 +105,12 @@ function addFolderx() {
 
   folders.map((parent) => {
     const parent_item = getItemByHier(parent);
-    if (parent_item !== null) {
+    if (parent_item !== undefined) {
       let prefix = getPrefix(parent);
       let title = `${prefix}-${year_month}`;
       let new_keytop = `${parent}/${title}`;
       let new_item = getItemByHier(new_keytop);
-      if (new_item === null) {
+      if (new_item === undefined) {
         makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
       }
     }
@@ -121,28 +125,19 @@ function addDayFolderx() {
 
   // "Y/Day"
   folders.map((parent) => {
-    if (parent == null) {
-      parent = "";
-    }
-    if (y_str == null) {
-      y_str = "";
-    }
-    if (ym_str == null) {
-      ym_str = "";
-    }
-    if (ymd_str == null) {
-      ymd_str = "";
-    }
     const arrayx = [parent, y_str, ym_str, ymd_str];
+    // let parent_y_str = `${parent}/${y_str}`
+    // let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
+    // let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
     arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
       const parent_item = getItemByHier(accumulator);
       const hier = [accumulator, currentValue].join("/");
       let item = getItemByHier(hier);
-      if (item === null) {
+      if (item === undefined) {
         makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
         item = getItemByHier(hier);
       }
-      console.log(`parent=${parent} hier=${hier} item=${item}`);
+      console.log(`parent=${parent} hier=${hier}`);
 
       return hier;
     });
@@ -150,21 +145,24 @@ function addDayFolderx() {
 }
 function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
   let new_item = getItemByHier(new_keytop);
-  if (new_item === null) {
+  if (new_item === undefined) {
     makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
     new_item = getItemByHier(new_keytop);
   }
   return new_item;
 }
 function lstree() {
-  // TODO: 未実装
+  const hier = "/Y/Day/2023/202311";
+  let item = getItemByHier(hier);
+  console.log(item);
+  let ary = dumpTreeItemsXTop(item.id);
+  ary.map((item_id) => console.log(item_id));
 }
 export {
   getYearAndNextMonthAsString,
   registerx,
   makeElement,
   makeItem,
-  makeAndRegisterBookmarkFolder,
   addFolderx,
   addDayFolderx,
   lstree,

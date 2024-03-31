@@ -1,48 +1,59 @@
-let ItemHashByHier = {};
-let ItemHash = {};
+let ItemHashByHier;
+let ItemHash;
+
+function dumpTreeItemsX(bookmarkTreeNodes) {
+  let ary = [];
+  let i;
+  for (i = 0; i < bookmarkTreeNodes.length; i++) {
+    const element = bookmarkTreeNodes[i];
+    if (element.url) {
+      ary.push(element.id);
+    }
+
+    if (element.children) {
+      ary = ary.concat(dumpTreeItemsX(element.children));
+    }
+  }
+  return ary;
+}
+
+function dumpTreeItemsXTop(folder_id) {
+  let zary = [];
+  const item = getItem(folder_id);
+
+  chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
+    zary = dumpTreeItemsX(bookmarkTreeNodes);
+  });
+  return zary;
+}
 
 function getItemByHier(key) {
-  let ret = null;
-  if (key in ItemHashByHier) {
-    ret = ItemHashByHier[key];
-  }
-  return ret;
+  return ItemHashByHier[key];
 }
 
 function setItemByHier(key, value) {
   return (ItemHashByHier[key] = value);
 }
 
-function getKeysOfItemByHier(key, value) {
-  let keys = Object.keys(ItemHashByHier);
-  // console.log(`keys.length=${keys.length}`);
+function getItemHashByHierKeys() {
+  return Object.keys(ItemHashByHier);
 }
 
 function getItem(key) {
-  let ret = null;
-  //console.log(`itemHash.keys=${ Object.keys(ItemHash) }`)
-  if (key in ItemHash) {
-    ret = ItemHash[key];
-  }
-  return ret;
+  return ItemHash[key];
 }
 
 function setItem(key, value) {
   return (ItemHash[key] = value);
 }
 
-function getKeysOfItem() {
+function getItemHashKeys() {
   return Object.keys(ItemHash);
 }
 
-function addItem(item) {
-  // console.log(`addItem item=${JSON.stringify(item)}`);
-  setItem(item.id, item);
-  setItemByHier(item.hier, item);
-}
 function initItems() {
   ItemHashByHier = {};
-  ItemHash = {};
+  ItemHash = [];
 }
 
 function printItemHashByHier() {
@@ -54,88 +65,16 @@ function printItemHash() {
   debubPrint2("=ItemHash");
   debubPrint2(ItemHas);
 }
-
-function determine_kind(item) {
-  let kind = "folder";
-  if (item.url) {
-    kind = "url";
-  }
-  return kind;
-}
-function is_target(element, target) {
-  let ret = false;
-  let kind = determine_kind(element);
-  switch (target) {
-    case "URL":
-      if (kind == "url") {
-        ret = true;
-      }
-      break;
-    case "FOLDER":
-      if (kind == "folder") {
-        ret = true;
-      }
-      break;
-    default:
-      break;
-  }
-  return ret;
-}
-
-function dumpTreeItems(
-  bookmarkTreeNodes,
-  target = "FOLDER",
-  kind = "SELECT_OPTION"
-) {
-  let ary = [];
-  for (let i = 0; i < bookmarkTreeNodes.length; i++) {
-    const element = bookmarkTreeNodes[i];
-    let ret = is_target(element, target);
-    // console.log(`H dumpTreeItems ret=${ret} kind=${kind} target=${target}`);
-    if (ret) {
-      switch (kind) {
-        case "SELECT_OPTION":
-          ary.push(
-            $("<option>", {
-              value: element.id,
-              text: element.title,
-            })
-          );
-          break;
-        default:
-          ary.push(element);
-          break;
-      }
-      /*
-      console.log(
-        `X element.id=${element.id} element.title=${element.title}`
-      );
-      */
-    }
-    /*
-    console.log(
-      `0 dumpTreeItems element.children=${JSON.stringify(element.children)}`
-    );
-    */
-    if (element.children) {
-      let ary2 = dumpTreeItems(element.children, target, kind);
-      ary = [...ary, ...ary2];
-    }
-  }
-  // console.log(`1 dumpTreeItems ary=${JSON.stringify(ary)}`);
-  return ary;
-}
-
 export {
+  dumpTreeItemsX,
+  dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
-  getKeysOfItemByHier,
+  getItemHashByHierKeys,
   getItem,
   setItem,
-  getKeysOfItem,
-  addItem,
+  getItemHashKeys,
   initItems,
   printItemHashByHier,
   printItemHash,
-  dumpTreeItems,
 };
