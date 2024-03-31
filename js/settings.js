@@ -18,6 +18,8 @@ export const items1 = [
   ["Y1/HotWire.love/32", "/Y1/HotWire.love/32"],
   ["Y1/HotWire.love/4", "/Y1/HotWire.love/4"],
   ["Y1/HotWire.love/5", "/Y1/HotWire.love/5"],
+  ["Y1/HotWire.love/52", "/Y1/HotWire.love/52"],
+  ["Y1/HotWire.love/53", "/Y1/HotWire.love/53"],
   ["Y1/HotWire", "/Y1/HotWire"],
   ["Y1/HotWire-2", "/Y1/HotWire-2"],
   ["Y1/HotWire-3", "/Y1/HotWire-3"],
