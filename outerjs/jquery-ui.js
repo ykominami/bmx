@@ -13909,6 +13909,7 @@ var widgetsSelectable = $.widget( "ui.selectable", $.ui.mouse, {
 				that._addClass( selectee.$element, "ui-unselecting" );
 				selectee.unselecting = true;
 
+				// selectable UNSELECTING callback
 				that._trigger( "unselecting", event, {
 					unselecting: selectee.element
 				} );
@@ -13927,6 +13928,7 @@ var widgetsSelectable = $.widget( "ui.selectable", $.ui.mouse, {
 				selectee.selecting = doSelect;
 				selectee.selected = doSelect;
 
+				// selectable (UN)SELECTING callback
 				if ( doSelect ) {
 					that._trigger( "selecting", event, {
 						selecting: selectee.element

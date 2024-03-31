@@ -1,58 +1,108 @@
-// import { dumpTreeItemsX } from "./data.js";
-import { getItems1, getKeys, getNumOfRows, getMax } from "./settings.js";
-import { addFolderx, addDayFolderx, lstree } from "./addfolder.js";
 import {
+  getItems1,
+  getKeys,
+  getNumOfRows,
+  getMax,
+  getPrefix,
+  getFoldersFromPrefixes,
+  getFoldersFromDayPrefixes,
+} from "./settings.js";
+import {
+  getYearAndNextMonthAsString,
+  registerx,
+  makeElement,
+  makeItem,
+  addFolderx,
+  addDayFolderx,
+  lstree,
+} from "./addfolder.js";
+import {
+  getMonthx,
+  adjustAsStr,
   makeBtnA,
   makeSelectA,
   getCategoryName,
   getSelectId,
   getBtnId,
   getJqueryId,
-  parseURLAsync,
-  parseURLX,
 } from "./util.js";
 import {
-  dumpTreeItems,
-  getKeysOfItemByHier,
-  getItem,
   getItemByHier,
+  setItemByHier,
+  getItemHashByHierKeys,
+  getItem,
+  setItem,
+  getItemHashKeys,
   initItems,
+  printItemHashByHier,
+  printItemHash,
 } from "./data.js";
 
 import { debugPrint2, debugPrint } from "./debug.js";
 
 import {
   adjustValue,
+  setSettings,
+  saveSettings_by_api,
+  setSettingsFromLoad,
+  setSettingsFromLoad2,
+  StorageOptions,
+  StorageSelected,
+  StorageHiers,
+  getStorageHiers,
   ANOTHER_FOLER,
   initSettings_all,
+  getSettingsByKey,
   setStorageSelected,
   getStorageOptions,
   setStorageHiers,
   setStorageOptions,
+  setStorageMisc,
+  storageOptionsUnshift,
+  saveSettings,
+  loadSettings,
+  loadSettings2,
   loadSettings_by_api,
   removeSettings,
+  copyFromLoadToSettingsX,
+  copyFromLoad2ToSettingsX,
+  printSettings,
+  printSettingsFromLoad,
+  printSettingsFromLoad2,
+  printBase,
   addRecentlyItemX,
 } from "./global.js";
 
 import { loadAsync, updateSelectRecently } from "./async.js";
-
-import { dumpTreeNodes, dumpTreeNodesAsync } from "./treenode.js";
-
-import { moveBMX, moveBMX2, moveBMX3 } from "./itemg.js";
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
  * ついての情報。
  */
 let Target;
+let RootItems = [];
+let TopItems = [];
+
 // always waits the document to be loaded when shown
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("popupBtn").addEventListener("click", function () {});
+  // opens a communication between scripts
+  // let port = chrome.runtime.connect();
+
+  // listens to the click of the button into the popup content
+  document.getElementById("popupBtn").addEventListener("click", function () {
+    // sends a message throw the communication port
+    // port.postMessage({
+    //     'from': 'popup',
+    //     'start': 'Y'
+    // V});
+  });
 });
 
 /* ===== popup window 下部 下位関数 ==== */
 function makeMenuRecentlyAndCategorySelectBtn(category_max, items) {
-  const ary = [makeMenuXrecently()];
+  const ary = [];
+
+  ary.push(makeMenuXrecently());
   const ary2 = ary.concat(makeMenuXcategory(category_max, items));
 
   return ary2;
@@ -61,9 +111,6 @@ function makeMenuRecentlyAndCategorySelectBtn(category_max, items) {
 function importUrls(urls) {
   const keytop = "/0/0-etc/1";
   const parent_item = getItemByHier(keytop);
-  if (parent_item === null) {
-    return;
-  }
   const parent_id = parent_item.id;
 
   urls.map(function (item) {
@@ -129,7 +176,6 @@ function makeMenuXcategory(max, items) {
  * @param {string} keytop bookmarkのサブツリーを指定する文字列(サブツリーまで
  */
 function makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
-  // console.log(`select_jquery_id=${select_jquery_id}`);
   /* select作成 */
   addSelect($(select_jquery_id), keytop);
   /* ボタンハンドラ作成 */
@@ -145,43 +191,50 @@ function makeMenuXrecently() {
     second: makeSelectA("box d", "rinp"),
   };
 }
-
 function addSelect(select, keytop) {
+  let opts1 = [];
   let item, item2, value;
   if (keytop != null) {
     item = getItemByHier(keytop);
-    // console.log(`0 addSelect keytop=${keytop} item=${JSON.stringify(item)})`);
-
-    if (item != null) {
-      const xary = getSelectOption(item, true);
-      // console.log(`addSelect 2-0 addSelect xary=${JSON.stringify(xary)}`);
-      let opts1 = xary.map((element) => {
-        return $("<option>", {
-          value: element.value,
-          text: element.text,
-        });
+    if (item !== null && item !== undefined) {
+      let xary = getSelectOption(item, true);
+      xary.forEach((element, index, array) => {
+        opts1.push(
+          $("<option>", {
+            value: element.value,
+            text: element.text,
+          })
+        );
       });
-
+      if (opts1.length == 0) {
+        let item2 = getItemByHier(keytop);
+        opts1.push(
+          $("<option>", {
+            value: item2.id,
+            text: item2.title,
+          })
+        );
+      }
       opts1.push(
         $("<option>", {
           value: ANOTHER_FOLER,
           text: "#別のフォルダ#",
         })
       );
-      // console.log(`addSelect 2 addSelect opts1=${JSON.stringify(opts1)}`);
-      select.empty();
       select.append(opts1);
-      if (opts1.length > 0) {
-        select.val(xary[0].value);
-      } else {
-        //		do nothing
-      }
+
+      // x(keytop);
+    } else {
+      //		do nothing
     }
   }
 }
 
 function getSelectOption(item, ignore_head) {
-  let ary = [];
+  ignore_head =
+    ignore_head === null || ignore_head === undefined ? false : ignore_head;
+
+  const ary = [];
   if (!ignore_head) {
     ary.push({
       value: item.id,
@@ -189,13 +242,14 @@ function getSelectOption(item, ignore_head) {
     });
   }
   if (item.children.length > 0) {
-    ary = item.children.map((element) => {
-      return getSelectOption(element, false);
+    item.children.forEach((element, index, array) => {
+      Array.prototype.push.apply(ary, getSelectOption(element));
     });
   }
-  let ary10 = ary.flat();
-  return ary10;
+  return ary;
 }
+
+/* ===== */
 
 /* ===== popup window 上部 下位関数 ===== */
 function setTargetArea(val) {
@@ -218,35 +272,34 @@ function setTargetArea(val) {
     }
   }
 }
-function addSelectWaitingItemsX(select, item_id, target) {
-  const item = getItem(item_id);
 
-  // console.log(`addSelectWaitingItemsX item_id=${item_id} item=${item}`);
+function addSelectWaitingItemsX(select, folder_id) {
+  const item = getItem(folder_id);
+  console.log(`folder_id=${folder_id}`);
+  console.log(`item.id=${item.id}`);
+  // debugPrint2(["folder_id=", folder_id]);
 
-  if (item == null) {
-    return false;
-  }
-  chrome.bookmarks.getSubTree(item_id, function (bookmarkTreeNodes) {
-    // bookmarkTreeNodesには指定したブックマークフォルダのサブツリーに含まれるすべてのノードが含まれます。
-    //console.log(bookmarkTreeNodes);
-    const zary = dumpTreeItems(bookmarkTreeNodes, "URL", "SELECT_OPTION");
-    // console.log(`addSelectWaitingItemsX zary=${JSON.stringify(zary)}`);
-    clear_in_move_mode_area();
-
+  chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
     select.empty();
+    const zary = dumpTreeItems(bookmarkTreeNodes, true);
     select.append(zary);
-    select.prop("selectedIndex", 0);
-    let item_id = select.val();
-    // console.log(`addSelectWaitingItemsX item_id=${item_id}`);
-    selectWaitingItemsBtnHdr(item_id);
+    const folder_id = select.val();
+    console.log(`addSelectWaitingItemsX 2 folder_id=${folder_id}`);
+    if (folder_id) {
+      console.log(`addSelectWaitingItemsX 3 folder_id=${folder_id}`);
+      selectWaitingItemsBtnHdr(folder_id);
+    }
   });
-  return true;
 }
 
 /* 非同期タブ問い合わせ */
-async function tab_query_async(query) {
-  const tabs = await chrome.tabs.query(query);
-  return tabs;
+function tab_query_async(query) {
+  const promise = new Promise(function (resolve, reject) {
+    chrome.tabs.query(query, (tabs) => {
+      resolve(tabs);
+    });
+  });
+  return promise;
 }
 
 /* ボタンクリックハンドラの実体 */
@@ -265,15 +318,15 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
       currentWindow: true,
     }).then(
       (cur_tabs) => {
-        // ("createOrMoveBKItem 1");
+        console.log("createOrMoveBKItem 1");
         const current_tab = cur_tabs[0];
         tab_query_async({
           currentWindow: true,
         }).then((tabs) => {
-          // console.log("createOrMoveBKItem 2");
+          console.log("createOrMoveBKItem 2");
           let i;
           const radioval = $("input[name='add-mode']:checked").val();
-          // console.log(`createOrMoveBKItem radioval=${radioval}`);
+          console.log(`createOrMoveBKItem radioval=${radioval}`);
           switch (radioval) {
             case "s":
               chrome.bookmarks.create({
@@ -284,9 +337,9 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
               /* chrome.tabs.removebtn(current_tab.id) */
               break;
             case "m-r":
-              // console.log("createOrMoveBKItem 3");
+              console.log("createOrMoveBKItem 3");
               for (i = current_tab.index /* + 1*/; i < tabs.length; i++) {
-                // console.log([i, tabs[i].text, tabs[i].url]);
+                console.log([i, tabs[i].text, tabs[i].url]);
                 chrome.bookmarks.create({
                   parentId: parent_id,
                   title: tabs[i].title,
@@ -313,13 +366,6 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
                 chrome.bookmarks.remove(tabs[i].id);
               }
               break;
-            case "x":
-              const id = $("#oid").val();
-              if (id != "") {
-                console.log(`id=${id}`);
-              }
-
-              break;
             default:
               chrome.bookmarks.create({
                 parentId: parent_id,
@@ -335,19 +381,21 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
     const text = $("#oname").val();
     const url = $("#ourl").val();
     const id = $("#oid").val();
-  	//  console.log(`createOrMoveBKItem move-mode 1 id=${id}`)
     if (text != "" && url != "" && id != "") {
-  	  // console.log(`createOrMoveBKItem move-mode 2`)
       chrome.bookmarks.get(id, (result) => {
-	   	  // console.log(`createOrMoveBKItem move-mode 3`)
-       	  let ret = moveBKItem(id, result[0].parentId, parent_id);
-       	  addSelectWaitingItemsX($("#yinp"), $("#zinp").val(), "URL");
+        moveBKItem(id, result[0].parentId, parent_id);
       });
     } else {
       alert("Can't move bookmark");
     }
   }
+
   addRecentlyItemX($("#rinp"), parent_id, parent_text);
+
+  const bucket = await chrome.storage.local.get();
+  console.log("createOrMoveBKItem");
+  console.log(Object.entries(bucket));
+  console.log("createOrMoveBKItem END ====");
 }
 
 /* ボタンクリックハンドラの実体 */
@@ -388,75 +436,88 @@ function closeTabs() {
   );
 }
 
-function addSelectWaitingFolders(select, subselect) {
+function addSelectWaitingFolders(select) {
+  const opts1 = [];
+  const values = [];
+  // let item;
   const key_array = getKeys();
 
-  const array = key_array.reduce(
-    function (previousValue, currentValue) {
-      const item = getItemByHier(currentValue);
-      // console.log(`item=${item}`);
-      if (item != null) {
-        let item_title = item.title;
-        let obj = {
+  console.log(key_array);
+
+  key_array.forEach((element, index, array) => {
+    console.log(`element=${element}`);
+    let item = getItemByHier(element);
+    console.log(`item=${item}`);
+    if (item !== null && item !== undefined) {
+      values.push(item.id);
+      opts1.push(
+        $("<option>", {
           value: item.id,
-          text: item.title,
-        };
-        previousValue[0].push($("<option>", obj));
-        previousValue[1].push(obj);
-      }
-      return previousValue;
-    },
-    [[], []]
-  ); // => 6
-
-  let opts1 = array[0];
-  let objs = array[1];
-
+          text: element,
+        })
+      );
+    }
+  });
   opts1.push(
     $("<option>", {
       value: ANOTHER_FOLER,
       text: "#別のフォルダ#",
     })
   );
-  if (opts1.length > 1) {
-    select.empty();
-    select.append(opts1);
-    select.prop("selectedIndex", 0);
-    // console.log(`addSelectWaitingFolders A select.val=${objs[0].value}`);
-    addSelectWaitingItemsX(subselect, select.val(), "URL");
-  }
+  select.append(opts1);
+  // debugPrint2("addSelectWaitingFolders");
+  console.log(values);
+  addSelectWaitingItemsX($("#yinp"), values[0]);
 }
 
 function dumpBookmarksFromSubTree(parentId, query) {
   chrome.bookmarks.getSubTree(parentId, (bookmarkTreeNodes) => {
     let item = getItem(parentId);
-    item.children = dumpTreeNodes(bookmarkTreeNodes);
-    console.log(`dumpBookmarksFromSubTree B parentId=${parentId}}`);
-    addSelectWaitingItemsX($("#yinp"), parentId, "URL");
+    item.children = dumpTreeNodes(bookmarkTreeNodes, {});
+    addSelectWaitingItemsX($("#yinp"), parentId);
   });
 }
 
 function moveBKItem(id, src_parent_id, dest_parent_id) {
-  let ret = false;
   if (id != "") {
     chrome.bookmarks.move(id, {
       parentId: dest_parent_id,
-    })
-   	.then(
-	    //console.log(
-	    //  `moveBKItem A src_parent_id=${src_parent_id} dest_parent_id=${dest_parent_id}`
-	    //)
-    )
-    .then( addSelectWaitingItemsX($("#yinp"), src_parent_id, "URL") )
-     .then( ret = true )
+    });
+    dumpBookmarksFromSubTree(src_parent_id, "");
+    /* addSelectWaitingItemsX($('#yinp') , src_parent_id) */
   } else {
     alert("Can't move bookmark");
   }
-  return ret;
 }
 
 /* ===== ----- ==== */
 /***** bookmark 関連 下位関数 *****/
+function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
+  // ignore_head =
+  //  ignore_head === null || ignore_head === undefined ? false : ignore_head;
+
+  let ary = [];
+  let i;
+  for (i = 0; i < bookmarkTreeNodes.length; i++) {
+    const element = bookmarkTreeNodes[i];
+    if (!ignore_head) {
+      if (element.url) {
+        ary.push(
+          $("<option>", {
+            value: element.id,
+            text: element.title,
+          })
+        );
+      }
+    }
+    if (element.children) {
+      ary = ary.concat(dumpTreeItems(element.children, false));
+    }
+  }
+  return ary;
+}
+
+/*********************/
 
 /* ====== popup window 下部 ===== */
 function makeMenuOnBottomArea() {
@@ -471,7 +532,7 @@ function makeMenuOnBottomArea() {
   /* recentlyのメニュー項目データの配列と対象フォルダ指定用selectとbuttonの作成 */
   const els = makeMenuRecentlyAndCategorySelectBtn(count, items);
   /* 一つの対象フォルダの指定は、一組のbuttonとselectで実現するため、配置の指定には要素数を2倍にする */
-  let aryx = new Array(els.length * 2);
+  const aryx = new Array(els.length * 2);
 
   els.forEach(function (element, index, array) {
     ind = index % w;
@@ -499,7 +560,7 @@ function makeMenuOnBottomArea() {
   $("#menu").addClass("wrapper");
   $("#menu").append(aryx);
 
-  /* getItems1() itemsは次の構造の配列　[メニュー項目名 , フォルダ名の階層構造]　 settings.jsで定義 */
+  /* getItems1() itemsは次の構造の配列　[メニュー項目名 , フォルダ名の階層構造]　という settings.jsで定義 */
   /* 全対象フォルダselect作成 */
   makeDistinationMenu(getItems1());
   /* recently ボタンクリック処理の設定 */
@@ -508,31 +569,28 @@ function makeMenuOnBottomArea() {
   });
 
   /* recently selectの選択肢の更新 */
+  /*
   let storageOptions = getStorageOptions();
 
-  let ary = adjustValue(storageOptions);
-  // console.log(`***** ================== makeMenuOnBottomArea Options ${Object.entries(storageOptions["Options"])}`);
-  setStorageOptions(ary);
-  setStorageHiers(getKeysOfItemByHier());
-  $("#rinp").empty();
-  $("#rinp").append(ary);
-  let last_index = ary.length - 1;
-  if (last_index >= 0) {
-    $("#rinp").val(ary[last_index].value);
-  }
-  if (ary.length > 0) {
-    updateSelectRecently(ary, $("#rinp"));
-  }
+  storageOptions["Options"] = adjustValue(storageOptions["Options"]);
+  console.log(`Options ${Object.entries(storageOptions["Options"])}`);
+  updateSelectRecently(storageOptions["Options"], $("#rinp"));
+*/
 }
 
-async function makeMenuOnBottomAreaAsync() {
-  makeMenuOnBottomArea();
-}
-
-function clear_in_move_mode_area() {
-  $("#oname").val("");
-  $("#ourl").val("");
-  $("#oid").val("");
+function makeMenuOnBottomAreaAsync() {
+  return new Promise((resolve, reject) => {
+    // debugPrint2("makeMenuOnBottomAreaAsyc 1");
+    makeMenuOnBottomArea();
+    // saveSettings();
+    // debugPrint2("makeMenuOnBottomAreaAsyc 2");
+    /*
+	    let keys = getItemHashByHierKeys()
+		console.log(keys);
+		console.log("======");
+*/
+    resolve();
+  });
 }
 
 /* ===== popup window 上部 ===== */
@@ -648,94 +706,152 @@ function makeMenuOnUpperArea(title, url) {
 }
 
 /* move-mode領域の */
-function selectWaitingItemsBtnHdr(option_value) {
-  // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 1`);
-  if (option_value != null || option_value != undefined) {
-	// console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 2`);
-	
-    chrome.bookmarks.get(option_value, (BookmarkTreeNodes) => {
-      let len = BookmarkTreeNodes.length;
-      // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 3`);
-      if (len > 0) {
-        // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 4`);
-        let bt = BookmarkTreeNodes[0];
-        let title = bt.title;
-        let url = bt.url;
-        let id = bt.id;
-
-        $("#oname").val(`${len} ${title}`);
-        $("#ourl").val(`${url}`);
-        $("#oid").val(`${id}`);
-        $("#ox").val(`abc`);
-        // url = null;
-        let ret = parseURLAsync(url)
-          .then((parser) => {
-            let href = parser.href;
-            let host = parser.host;
-            let hostname = parser.hostname;
-            let pathname = parser.pathname;
-            let protocol = parser.protocol;
-            // $('#ox') = href;
-            $("#ox").val(hostname);
-            console.log(`href=${href}`);
-            return hostname;
-          })
-          .catch((error) => {
-            // return e;
-            //alert(error.message);
-            // $("#ox").val(error.message);
-          });
-        /*
-        console.log(
-          `############  selectWaitingItemsBtnHdr folder_id=${folder_id} || #oid=${$(
-            "#oid"
-          ).val()}|| ${BookmarkTreeNodes.length}`
-        );
-        */
-      }
-    });
-  }
-}
-
-/* ===== popup windowsの作成 ===== */
-async function setupPopupWindowAsync() {
-  const tabs = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
+function selectWaitingItemsBtnHdr(folder_id) {
+  chrome.bookmarks.get(folder_id, (BookmarkTreeNodes) => {
+    $("#oname").val(BookmarkTreeNodes[0].title);
+    $("#ourl").val(BookmarkTreeNodes[0].url);
+    $("#oid").val(BookmarkTreeNodes[0].id);
   });
-  const current = tabs[0];
-  const title = current.title;
-  const url = current.url;
-  $("#sid").val(current.id);
-
-  makeMenuOnUpperArea(title, url);
 }
 
-async function dumpBookmarksAsync() {
-  // console.log("dumpBookmarksAsync 1");
-  const bookmarkTreeNodes = chrome.bookmarks.getTree();
-  // console.log("dumpBookmarksAsync 3");
-  return bookmarkTreeNodes;
+/* ===== bookmarkの情報を取得 ===== */
+/* 指定フォルダ以下の対象フォルダの一覧取得(配列として) */
+/* この関数は再帰的に呼び出されるが、内部処理は必ず最初はchromeのbookmarksのトップに対
+    して呼び出されることを想定している */
+/* 一気に全フォルダの階層構造をつくることが目的である */
+function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
+  //	debugPrint2("dTN 1")
+  let ary = [];
+
+  // debugPrint2(bookmarkTreeNodes)
+  /* bookmarkTreeNodes - フォルダと項目が混在している */
+  bookmarkTreeNodes.forEach((element, index, array) => {
+    /* フォルダのみを処理する（項目は無視する） */
+    if (!element.url) {
+      let item = {
+        id: element.id,
+        folder: true,
+        root: false,
+        top: false,
+        parentId: element.parentId,
+        posindex: element.index,
+        url: element.url,
+        title: element.title,
+        hier: "" /* hier */,
+        children: [],
+      };
+      /* 親フォルダがなければ、ルート階層のフォルダとする */
+      if (!item.parentId) {
+        item.root = true;
+        RootItems.push(item.id);
+        item.hier = item.title;
+      } else {
+        /* 親フォルダがルート階層のフォルダであればトップ階層のフォルダにする */
+        if (parent_item.root) {
+          item.top = true;
+          item.hier = "";
+          TopItems.push(item.id);
+        } else {
+          /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
+          item.hier = parent_item.hier + "/" + item.title;
+        }
+      }
+
+      setItem(item.id, item);
+      setItemByHier(item.hier, item);
+      if (element.children.length > 0) {
+        item.children = dumpTreeNodes(element.children, item);
+      }
+      ary.push(item);
+    }
+  });
+  return ary;
+}
+function dumpTreeNodesAsync(bookmarkTreeNodes) {
+  return new Promise((resolve, reject) => {
+    // debugPrint2("Promise dumpTreeNodes 1");
+    dumpTreeNodes(bookmarkTreeNodes, {
+      root: true,
+    });
+    const hierKeys = getItemHashByHierKeys();
+    setStorageHiers(hierKeys);
+
+    resolve({});
+  });
 }
 
-document.querySelector("#go-to-options").addEventListener("click", () => {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL("options.html"));
-  }
-});
+function dumpTreeNodesAsync_0(bookmarkTreeNodes) {
+  return new Promise((resolve, reject) => {
+    dumpTreeNodes(bookmarkTreeNodes, {
+      root: true,
+      s,
+    });
+    const hierKeys = getItemHashByHierKeys();
+    setStorageHiers(hierKeys);
+    /*
+     let d = new Date();
+    let str = `${d.getSeconds()}`;
+    console.log(`==str MISC = ${str}`);
+    setStorageMisc(str);
+    */
+    loadSettings_by_api("P2");
+    // saveSettings_by_api();
+    // loadSettings_by_api("P2");
+    resolve({});
+  });
+}
+/* ===== popup windowsの作成 ===== */
+function setupPopupWindowAsync() {
+  return new Promise((resolve, reject) => {
+    // debugPrint2("setupPopupWindowAsync 1");
+    chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true,
+      },
+      (tabs) => {
+        const current = tabs[0];
+        const title = current.title;
+        const url = current.url;
+        $("#sid").val(current.id);
+
+        makeMenuOnUpperArea(title, url);
+        // debugPrint2("setupPopupWindowAsync 2");
+        resolve({});
+      }
+    );
+  });
+}
+
+function dumpBookmarksAsync() {
+  return new Promise((resolve, reject) => {
+    chrome.bookmarks.getTree((bookmarkTreeNodes) => {
+      resolve(bookmarkTreeNodes);
+    });
+  });
+}
+
+function gotooptions() {
+  $("#go-to-options").click(() => {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL("optionsy.html"));
+    }
+  });
+}
 
 async function start() {
-  initItems();
-  // console.log("start 2");
+  // await initSettings_all();
 
+  initItems();
+
+  gotooptions();
   dumpBookmarksAsync()
     .then((bookmarkTreeNodes) => {
       dumpTreeNodesAsync(bookmarkTreeNodes);
     })
     .then(
-      // console.log("start call loadAsync 02"),
       loadAsync()
         .then(setupPopupWindowAsync)
         .then(makeMenuOnBottomAreaAsync)
@@ -743,5 +859,32 @@ async function start() {
         .then(initSettings_all)
     );
 }
-// console.log(`before start`);
+
+function startA() {
+  initSettings();
+  initItems();
+
+  gotooptions();
+  loadAsync()
+    .then(dumpBookmarksAsync())
+    .then((bookmarkTreeNodes) => {
+      dumpTreeNodesAsync(bookmarkTreeNodes);
+    })
+    .then(loadSettings_by_api("P3"));
+}
+
+function start1() {
+  initSettings();
+  initItems();
+
+  gotooptions();
+  loadAsync()
+    .then(dumpBookmarksAsync())
+    .then((bookmarkTreeNodes) => {
+      dumpTreeNodesAsync(bookmarkTreeNodes);
+    })
+    .then(loadSettings_by_api("P3"))
+    .then(setupPopupWindowAsync)
+    .then(makeMenuOnBottomAreaAsync);
+}
 start();
