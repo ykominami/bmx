@@ -1,8 +1,4 @@
 import { debugPrint2, debugPrint } from './debug.js';
-import { restoreSelectRecently } from './async.js';
-import { makeItemHashX } from './data.js';
-
-let Settings = {};
 
 const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴() */
 const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
@@ -24,11 +20,11 @@ function getKeysOfStorageHiers(key, value) {
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
   let val2 = [];
-
   let val3 = null;
   // if (val == null || val === undefined) {
   if (val != null) {
     if (val !== undefined) {
+      if (val !== 'undefined') {
       if (val !== 'undefined') {
         val2 = val;
         val3 = 0;
@@ -49,79 +45,170 @@ function adjustValue(val) {
   return val2;
 }
 
-async function loadSettings() {
-  let value = null;
-  let str2 = '';
-  return chrome.storage.local.get(null).then((result) => {
-    if (result['all']) {
-      value = result['all'];
-      let str = JSON.stringify(value);
-      let size = str.length;
-      let str2 = '';
-      if (str.length < 100) {
-        str2 = str;
-      } else {
-        str2 = `${size}`;
-      }
-    } else {
-      value = {};
-    }
-    return value;
-  });
+async function loadSettings_by_api(mes = '') {
+  // TODO: remove argument mes
+  let result = await chrome.storage.local.get();
+  let value = result['all'];
+  Settings = value == null || value == undefined ? {} : value;
+  // console.log(`loadSettings_by_api Settings=${Settings}`);
+
+  return Settings;
 }
-function initSettings_a() {
-  Keyvalues.map(([key, value]) => setSettingsByKey(Settings, key, value));
+
+function loadSettings(mes = '') {
+  let valStorageOptions = adjustValue(localStorage[StorageOptions]);
+  let valStorageSelected = adjustValue(localStorage[StorageSelected]);
+  let valStorageHiers = adjustValue(localStorage[StorageHiers]);
+  let valStorageMisc = adjustValue(localStorage[StorageMisc]);
+
+  setSettingsByKey(Settings, StorageOptions, valStorageOptions);
+  setSettingsByKey(Settings, StorageSelected, valStorageSelected);
+  setSettingsByKey(Settings, StorageHiers, valStorageHiers);
+  setSettingsByKey(Settings, StorageMisc, valStorageMisc);
+
+  return Settings;
+}
+
+function initSettings_z() {
+  let c;
+
+  setSettingsByKey(Settings, StorageOptions, []);
+  setSettingsByKey(Settings, StorageSelected, {});
+  setSettingsByKey(Settings, StorageHiers, {});
+  setSettingsByKey(Settings, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad2, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad2, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad2, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad2, StorageMisc, {});
+
+  // let c = loadSettings_by_api("Y1");
+  // let c = loadSettings("Y1");
+  console.log(`StorageOptions ${c[StorageOptions]}`);
+  Object.entries(c).map((key) => {
+    console.log(`key=${key}`);
+  });
+  console.log(`StorageSelected ${c[StorageSelected]}`);
+
+  setSettings(c);
+  setSettingsFromLoad(c);
+  setSettingsFromLoad2(c);
+  copyFromLoad2ToSettingsX();
+
+  saveSettings();
+}
+
+async function initSettings_0() {
+  let c;
+
+  setSettingsByKey(Settings, StorageOptions, []);
+  setSettingsByKey(Settings, StorageSelected, {});
+  setSettingsByKey(Settings, StorageHiers, {});
+  setSettingsByKey(Settings, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad, StorageMisc, {});
+
+  setSettingsByKey(SettingsFromLoad2, StorageOptions, []);
+  setSettingsByKey(SettingsFromLoad2, StorageSelected, {});
+  setSettingsByKey(SettingsFromLoad2, StorageHiers, {});
+  setSettingsByKey(SettingsFromLoad2, StorageMisc, {});
+}
+
+async function initSettings_1(c) {
+  console.log(`StorageOptions ${c[StorageOptions]}`);
+  Object.entries(c).map((key) => {
+    console.log(`key=${key}`);
+  });
+  console.log(`StorageSelected ${c[StorageSelected]}`);
+
+  setSettings(c);
+  setSettingsFromLoad(c);
+  setSettingsFromLoad2(c);
+  copyFromLoad2ToSettingsX();
+
+  saveSettings();
 }
 
 async function initSettings_all() {
-  await loadSettings().then((c) => {
-    const itemhashx = makeItemHashX(StorageHiers);
-    replace_in_Settings(c);
-    replace_in_Settings(itemhashx);
-  });
+  console.log('0');
+  await initSettings_0();
+  console.log('1');
+  let c = loadSettings_by_api();
+  console.log('=====================================================2');
+  await initSettings_1(c);
+  console.log('3');
 }
 
 /* ===== グローバル変数 関連 ===== */
+function setSettings(val) {
+  console.log(`================= setSettings ${JSON.stringify(val)}`);
+  Settings = val;
+}
+
+function setSettingsFromLoad(val) {
+  SettingsFromLoad = val;
+}
+
+function setSettingsFromLoad2(val) {
+  SettingsFromLoad2 = val;
+}
+
 function getSettingsByKey(assoc, key) {
-  if (assoc[key]) {
-    return assoc[key];
-  } else {
-    return null;
-  }
+  return assoc[key];
 }
 
 function setSettingsByKey(assoc, key, value) {
+  /*
+  console.log(
+    `================= setSettingsByKey key=${key} value=${JSON.stringify(
+      value
+    )}`
+  );
+  */
   assoc[key] = value;
 }
 
-function replace_in_Settings(asoc) {
-  Keyvalues.map(([key, value]) => {
-    // console.log(`replace_in_settings `);
-    if (asoc[key]) {
-      setSettingsByKey(Settings, key, asoc[key]);
+function setStorageSelected(keytop, value) {
+  if (
+    Settings[StorageSelected] !== null &&
+    Settings[StorageSelected] !== undefined &&
+    typeof Settings[StorageSelected] === 'object'
+  ) {
+    if (
+      Settings[StorageSelected][keytop] !== null &&
+      Settings[StorageSelected][keytop] !== undefined
+    ) {
+      if (typeof Settings[StorageSelected][keytop] === 'object') {
+        Settings[StorageSelected][keytop] = {};
+      }
     }
-  });
+  } else {
+    Settings[StorageSelected] = {};
+  }
+  Settings[StorageSelected][keytop] = value;
 }
 
 function getStorageSelected() {
   let selected = adjustValue(Settings[StorageSelected]);
-  // (`getStorageSelected ${selected}`);
+  console.log(`getStorageSelected ${selected}`);
   return selected;
 }
 
-function addStorageSelected(key, value) {
-  // console.log(`Settings=${Settings}`);
-  // console.log(`Settings[StorageSelected]=${Settings[StorageSelected]}`);
-  setSettingsByKey(Settings[StorageSelected], key, value);
-}
-
-function setStorageOptions(value) {
-  Settings[StorageOptions] = value;
-}
-
-
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
+  if (typeof options == 'undefined') {
+    options = [];
+    setSettingsByKey(Settings, StorageOptions, options);
+    console.log(`############### 3 getStorageOptions undefined`);
+  }
   if (Array.isArray(options) == false) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
@@ -129,129 +216,143 @@ function getStorageOptions() {
   return options;
 }
 
+function setStorageOptions(value) {
+  console.log(
+    `================= setStorageOptions value=${JSON.stringify(value)}`
+  );
+  Settings[StorageOptions] = value;
+  localStorage[StorageOptions] = value;
+}
+
 function getStorageHiers() {
-  if (Settings[StorageHiers]) {
-    return Settings[StorageHiers];
-  } else {
-    return [];
-  }
+  return Settings[StorageHiers];
 }
 
-async function setStorageHiers(value) {
-  //Settings[StorageHiers] = value;
-  // let d = getStorageHiers();
-  Settings[StorageHiers] = {};
-  await chrome.storage.local.set({ all: Settings });
+function setStorageHiers(value) {
+  /*
+  console.log(
+    `================= setStorageHiers value=${JSON.stringify(value)}`
+  );
+  */
   Settings[StorageHiers] = value;
+  localStorage[StorageHiers] = value;
 }
 
-async function setStorageMisc(value) {
+function setStorageMisc(value) {
   Settings[StorageMisc] = value;
-  await chrome.storage.local.set({ all: Settings });
+  localStorage[StorageMisc] = value;
 }
 
-async function storageOptionsUnshift(obj) {
+function storageOptionsUnshift(obj) {
   Settings[StorageOptions].unshift(obj);
-  await chrome.storage.local.set({ all: Settings });
-  let objx = Settings[StorageOptions];
-  // console.log(`storageOptionsUnshift obj=${JSON.stringify(objx)}`);
+  // localStorage[StorageOptions] = Settings[StorageOptions];
+  let objx = localStorage[StorageOptions];
+  console.log(typeof objx);
+  localStorage[StorageOptions] = objx;
 }
 
 async function saveSettings() {
-  await chrome.storage.local.set({ all: Settings }).then(() => {
-    // console.log(`Settings saved!`);
+  let val = {};
+  val[StorageOptions] = getStorageOptions();
+  val[StorageSelected] = getStorageSelected();
+  // val[StorageHiers] = getStorageHiers();
+  val[StorageSelected] = [];
+  // val[StorageMisc] = getStorageMisc();
+
+  console.log('==################################ saveSettings == 1');
+  console.log(Object.entries(val));
+
+  await chrome.storage.local.set(val);
+  console.log('==################################ saveSettings == 2');
+
+  localStorage[StorageOptions] = val[StorageOptions];
+  localStorage[StorageSelected] = val[StorageSelected];
+  localStorage[StorageHiers] = val[StorageHiers];
+  localStorage[StorageMisc] = val[StorageMisc];
+
+  console.log('========   saveSettings');
+  console.log(
+    `========   saveSettings localStorage[StorageSelected]=${localStorage[StorageSelected]}`
+  );
+}
+const loadSettings2 = (key = null) =>
+  new Promise((resolve) => {
+    chrome.storage.local.get(key, resolve);
   });
+
+async function loadSettings2_orig(mes = '') {
+  const storagex = (await chrome.storage.local.get()).then((val) => val);
+  // [StorageOptions, StorageSelected, StorageHiers, StorageMisc]
+  return storagex;
 }
 
-async function removeSettings() {
-  await chrome.storage.local.remove(
+function removeSettings() {
+  chrome.storage.local.remove(
     [StorageOptions, StorageSelected, StorageHiers],
     (result) => {}
   );
 }
 
+function copyFromLoadToSettingsX() {
+  copyFromLoadToSettings(StorageOptions);
+  copyFromLoadToSettings(StorageSelected);
+  copyFromLoadToSettings(StorageHiers);
+  copyFromLoadToSettings(StorageMisc);
+}
+
+function copyFromLoad2ToSettingsX() {
+  copyFromLoad2ToSettings(StorageOptions);
+  copyFromLoad2ToSettings(StorageSelected);
+  copyFromLoad2ToSettings(StorageHiers);
+  copyFromLoad2ToSettings(StorageMisc);
+}
+
+function copyFromLoadToSettings(key) {
+  // SettingsFromLoad[key] = Settings[key];
+  console.log(`================= copyFromLoadToSettings key=${key}`);
+  if (typeof SettingsFromLoad != 'undefined') {
+    if (typeof SettingsFromLoad[key] != 'undefined') {
+      Settings[key] = SettingsFromLoad[key];
+    }
+  }
+}
+
+function copyFromLoad2ToSettings(key) {
+  /* console.log(
+    `================= copyFromLoad2ToSettings key=${key}|${SettingsFromLoad2[key]}`
+  );
+  */
+  if (typeof SettingsFromLoad2 != 'undefined') {
+    if (typeof SettingsFromLoad2[key] != 'undefined') {
+      Settings[key] = SettingsFromLoad2[key];
+    }
+  }
+}
+
 function printBase(va, mes = '') {
   console.log(`||| ${mes} |${va}`);
   Object.entries(va).map(([key, value]) => {
-    console.log(`${key} | ${JSON.stringify(value)}`);
+    debugPrint2(`${key} | ${JSON.stringify(value)}`);
   });
-  console.log(`|||====`);
+  debugPrint2(`|||====`);
 }
 
 function printSettingsBase(var_name, va, mes = '') {
-  console.log(`||| ${mes} loadSettings ${var_name}`);
+  debugPrint2(`||| ${mes} loadSettings ${var_name}`);
   Object.entries(va).map(([key, value]) => {
-    console.log(`${key} | ${JSON.stringify(value)}`);
+    debugPrint2(`${key} | ${JSON.stringify(value)}`);
   });
 }
 function printSettings(mes = '') {
   printSettingsBase('Settings', Settings, (mes = ''));
 }
 
-// const sOptions = getStorageOptions();
-function addRecentlyItemX(select, sOptions) {
-  /* selectにアイテムを追加する(いったんselectの内容を消去して、追加したデータを改めてselectに設定する) */
-  const opts1 = makeSelectOptionsData(sOptions);
-
-  select.empty();
-  if (opts1.length > 0) {
-    select.append(opts1);
-    const selected_value = select.find('option:first').val();
-    select.val(selected_value);
-  }
+function printSettingsFromLoad(mes = '') {
+  printSettingsBase('SettingsFromLoad', SettingsFromLoad, (mes = ''));
 }
 
-function adjustRecentrlyFolder(value, text) {
-  const sOptions = getStorageOptions();
-  const ind = sOptions.findIndex((element, index, array) => {
-    return element.value == value;
-  });
-  if (ind >= 0) {
-    sOptions.splice(ind, 1);
-  }
-  storageOptionsUnshift({
-    value: value,
-    text: text,
-  });
-}
-function makeSelectOptionsData(options) {
-  const opts1 = [];
-  options.map((element, index, array) => {
-    opts1.push(
-      $('<option>', {
-        value: element.value,
-        text: element.text,
-      })
-    );
-    console.log(
-      `global.js | addRecentlyItem | element.value=${element.value} element.text=${element.text}| global.js`
-    );
-  });
-  return opts1;
-}
-function addRecentlyItem(select, value = null, text = null) {
-  // console.log(`## addRecentlyItem value=${value} text=${text} | global.js`);
-  /* 現在選択された対象フォルダが過去にも選択されていれば、過去の対象フォルダを直近に移動させる（つまりあらかじめ、過去の記録を削除する） */
-  /* 直近で同一対象フォルダが選択されていても、いったん削除する */
-  const sOptions = getStorageOptions();
-  // console.log(`sOptions=${JSON.stringify(sOptions)} | global.js`);
-  if (value != null && text != null) {
-    adjustRecentrlyFolder(value, text);
-  }
-
-  /* selectにアイテムを追加する(いったんslectの内容を消去して、追加したデータを改めてselectに設定する) */
-  const opts1 = makeSelectOptionsData(sOptions);
-  // console.log(`## addRecentlyItem opts1=${JSON.stringify(opts1)} | global.js`);
-
-  select.empty();
-  if (opts1.length > 0) {
-    select.append(opts1);
-    const selected_value = select.find('option:first').val();
-    select.val(selected_value);
-    // saveSettings();
-  }
-
-  replace_in_Settings(sOptions);
+function printSettingsFromLoad2(mes = '') {
+  printSettingsBase('SettingsFromLoad2', SettingsFromLoad2, (mes = ''));
 }
 
 export {
@@ -260,23 +361,31 @@ export {
   StorageHiers,
   ANOTHER_FOLER,
   adjustValue,
-  initSettings_a,
+  loadSettings_by_api,
   initSettings_all,
   //
-  replace_in_Settings,
-  addStorageSelected,
+  setSettings,
+  setSettingsFromLoad,
+  setSettingsFromLoad2,
+  getSettingsByKey,
+  setStorageSelected,
   getStorageOptions,
   setStorageOptions,
-  getKeysOfStorageHiers,
   getStorageHiers,
   setStorageHiers,
+  getStorageMisc,
   setStorageMisc,
   storageOptionsUnshift,
   saveSettings,
   loadSettings,
+  loadSettings2,
   removeSettings,
+  copyFromLoadToSettingsX,
+  copyFromLoad2ToSettingsX,
+  copyFromLoadToSettings,
+  copyFromLoad2ToSettings,
   printBase,
   printSettings,
-  addRecentlyItem,
-  addRecentlyItemX,
+  printSettingsFromLoad,
+  printSettingsFromLoad2,
 };
