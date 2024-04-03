@@ -28,7 +28,11 @@ function dumpTreeItemsXTop(folder_id) {
 }
 
 function getItemByHier(key) {
-  return ItemHashByHier[key];
+  if (ItemHashByHier[key]) {
+    return ItemHashByHier[key];
+  } else {
+    return null;
+  }
 }
 
 function setItemByHier(key, value) {
@@ -40,7 +44,11 @@ function getItemHashByHierKeys() {
 }
 
 function getItem(key) {
-  return ItemHash[key];
+  if (ItemHash[key]) {
+    return ItemHash[key];
+  } else {
+    return null;
+  }
 }
 
 function setItem(key, value) {
@@ -57,12 +65,12 @@ function initItems() {
 }
 
 function printItemHashByHier() {
-  debubPrint2("=ItemHashByHier");
+  debubPrint2('=ItemHashByHier');
   debubPrint2(ItemHashByHier);
 }
 
 function printItemHash() {
-  debubPrint2("=ItemHash");
+  debubPrint2('=ItemHash');
   debubPrint2(ItemHas);
 }
 export {

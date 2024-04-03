@@ -4,29 +4,47 @@ import {
   setStorageOptions,
   adjustValue,
   addRecentlyItem,
-} from "./global.js";
+} from './global.js';
+import { debugPrint2 } from './debug.js';
 
-function updateSelectRecently(ary2, select) {
+function updateSelectRecently_0(ary2, select) {
+  debugPrint2(`#- updateSelectRecently_0 | async.js`);
   ary2.map((element) => {
+    debugPrint2(
+      `async.js | updateSelectRecently element.value=${element.value} element.text=${element.text}`
+    );
     addRecentlyItem(select, element.value, element.text);
   });
+}
+function updateSelectRecently(select) {
+  debugPrint2(`#- updateSelectRecently | async.js`);
+  addRecentlyItem(select, null, null);
 }
 
 // async function loadAsync(mes = "") {
 async function loadAsync() {
-  let ret = await loadSettings_by_api("from loadAsync");
+  let ret = await loadSettings_by_api('from loadAsync');
   let storageOptions = getStorageOptions();
 
-  storageOptions["Options"] = adjustValue(storageOptions["Options"]);
-  console.log(
-    `loadSettings_by_api --- Options ${Object.entries(ret["Options"])}`
+  debugPrint2(
+    `loadSettings_by_api 0 --- Options=${JSON.stringify(
+      Object.entries(ret['Options'])
+    )}||`
   );
-  console.log(`ret= ${Object.entries(ret)}`);
+  storageOptions['Options'] = adjustValue(storageOptions['Options']);
+  debugPrint2(
+    `loadSettings_by_api 1 --- Options=${JSON.stringify(
+      Object.entries(ret['Options'])
+    )}||`
+  );
+  debugPrint2(`ret=${JSON.stringify(Object.entries(ret))}||`);
   // updateSelectRecently(storageOptions["Options"], $("#rinp"));
 
-  let options = [...ret["Options"]];
-  setStorageOptions([]);
-  updateSelectRecently(options, $("#rinp"));
+  let options = [...ret['Options']];
+  debugPrint2(`async.js | loadAsync options=${JSON.stringify(options)}||`);
+  // setStorageOptions([]);
+  // updateSelectRecently(options, $('#rinp'));
+  updateSelectRecently($('#rinp'));
 }
 
 export { loadAsync, updateSelectRecently };
