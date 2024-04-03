@@ -12,8 +12,8 @@ function adjustAsStr(num) {
 
 /* buttonのjqueryオブジェクト */
 function makeBtnA(name, class_name, id) {
-  return $("<button>", {
-    type: "button",
+  return $('<button>', {
+    type: 'button',
     name: name,
     class: class_name,
     id: id,
@@ -23,26 +23,45 @@ function makeBtnA(name, class_name, id) {
 
 /* selectのjqueryオブジェクト */
 function makeSelectA(class_name, id) {
-  return $("<select>", {
+  return $('<select>', {
     class: class_name,
     id: id,
   });
 }
 
 function getCategoryName(i) {
-  return "c" + i;
+  return 'c' + i;
 }
 
 function getSelectId(name) {
-  return name + "inp";
+  return name + 'inp';
 }
 
 function getBtnId(name) {
-  return name + "btn";
+  return name + 'btn';
 }
 
 function getJqueryId(id) {
-  return "#" + id;
+  return '#' + id;
+}
+
+async function parseURLAsync(url) {
+  let parser = new URL(url);
+
+  return parser;
+}
+
+function parseURLX(url) {
+  let ret = parseURLAsync(url).then((parser) => {
+    return parser.hostname;
+  });
+  return ret;
+}
+
+function parseURLX2(url) {
+  return parseURLAsync(url).then((parser) => {
+    return parser;
+  });
 }
 
 export {
@@ -54,4 +73,7 @@ export {
   getSelectId,
   getBtnId,
   getJqueryId,
+  parseURLAsync,
+  parseURLX,
+  parseURLX2,
 };

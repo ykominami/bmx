@@ -1,17 +1,18 @@
-import { getMonthx, adjustAsStr } from "./util.js";
+import { getMonthx, adjustAsStr } from './util.js';
 
 import {
   getPrefix,
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
-} from "./settings.js";
+} from './settings.js';
 
 import {
   dumpTreeItemsXTop,
   getItemByHier,
   setItemByHier,
   setItem,
-} from "./data.js";
+} from './data.js';
+import { debugPrint2, debugPrint } from './debug.js';
 
 /* folder追加処理 */
 function getYearAndNextMonthAsString() {
@@ -74,7 +75,7 @@ function makeItem(element) {
     posindex: element.index,
     url: element.url,
     title: element.title,
-    hier: "" /* hier */,
+    hier: '' /* hier */,
     children: [],
   };
   return item;
@@ -131,7 +132,7 @@ function addDayFolderx() {
     // let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
     arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
       const parent_item = getItemByHier(accumulator);
-      const hier = [accumulator, currentValue].join("/");
+      const hier = [accumulator, currentValue].join('/');
       let item = getItemByHier(hier);
       if (item === undefined) {
         makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
@@ -152,7 +153,7 @@ function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
   return new_item;
 }
 function lstree() {
-  const hier = "/Y/Day/2023/202311";
+  const hier = '/Y/Day/2023/202311';
   let item = getItemByHier(hier);
   console.log(item);
   let ary = dumpTreeItemsXTop(item.id);
