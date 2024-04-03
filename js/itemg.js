@@ -3,12 +3,13 @@ import {
   getItemByHier,
   getKeysOfItemByHier,
   getItem,
-} from "./data.js";
-import { dumpTreeNodes } from "./treenode.js";
-import { getKeysOfStorageHiers } from "./global.js";
-import { Mover } from "./mover.js";
-import { Movergroup } from "./movergroup.js";
-import { parseURLX , parseURLX2 } from "./util.js";
+} from './data.js';
+import { dumpTreeNodes } from './treenode.js';
+import { getKeysOfStorageHiers } from './global.js';
+import { Mover } from './mover.js';
+import { Movergroup } from './movergroup.js';
+import { parseURLX, parseURLX2 } from './util.js';
+import { debugPrint2, debugPrint } from './debug.js';
 
 let RootItems = [];
 let TopItems = [];
@@ -20,12 +21,12 @@ function create_item(element) {
     folder: true,
     root: false,
     top: false,
-    kind: "",
+    kind: '',
     parentId: element.parentId,
     posindex: element.index,
     url: element.url,
     title: element.title,
-    hier: "" /* hier */,
+    hier: '' /* hier */,
     children: [],
   };
 }
@@ -49,7 +50,7 @@ function add_to_itemgroup(element) {
     if (Number.isNaN(parentIdnum)) {
       // console.log(`a 2`);
       item.root = true;
-      item.kind = "ROOT";
+      item.kind = 'ROOT';
       RootItems.push(item);
       // item.hier = "";
       // item.hier = item.title;
@@ -60,11 +61,11 @@ function add_to_itemgroup(element) {
       if (parentIdnum == 0) {
         // console.log(`a 3 item.title=${item.title}`);
         item.top = true;
-        item.kind = "TOP";
+        item.kind = 'TOP';
         // item.hier = "";
         TopItems.push(item);
       } else {
-        item.kind = "FOLDER";
+        item.kind = 'FOLDER';
 
         // console.log(`a 4 item.title=${item.title}`);
         /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
@@ -72,10 +73,10 @@ function add_to_itemgroup(element) {
         // console.log(`add_to_itemgroup 7 item.parentId=${item.parentId}`);
         let parent_item = getItem(item.parentId);
         if (parent_item == null) {
-          item.hier = "";
+          item.hier = '';
         } else {
           let parent_hier = parent_item.hier;
-          item.hier = parent_hier + "/" + item.title;
+          item.hier = parent_hier + '/' + item.title;
         }
       }
     }
@@ -117,7 +118,7 @@ function getItemFromRoot(key) {
 }
 
 function makeIndent(indentLength) {
-  return ".".repeat(indentLength);
+  return '.'.repeat(indentLength);
 }
 
 function logItems(bookmarkItem, indent) {
@@ -182,105 +183,99 @@ function logItems2(bookmarkItem, indent) {
 }
 
 async function call_mover_group_move(mover_group, bookmarkItem) {
-  	   mover_group.move(bookmarkItem);
+  mover_group.move(bookmarkItem);
 }
 
 async function moveBMXFolderBase(mover_group, src_folder_id) {
-  let bookmarkItems = []
+  let bookmarkItems = [];
   await chrome.bookmarks
-  .getChildren(`${src_folder_id}`)
-  .then( (bms) => bookmarkItems = bms )  
+    .getChildren(`${src_folder_id}`)
+    .then((bms) => (bookmarkItems = bms));
   bookmarkItems.map((bookmarkItem) => {
-  	  console.log(`bookmarkItem.title = ${bookmarkItem.title}`)
-  	   mover_group.move(bookmarkItem);
-  } )
+    console.log(`bookmarkItem.title = ${bookmarkItem.title}`);
+    mover_group.move(bookmarkItem);
+  });
 }
-function parse_b(parser){
-			   	   console.log(`pathname=${parser.pathname} host=${parser.host} `)
-					   
-	   	   			let searchParams = parser.searchParams;
-console.log(`${searchParams.toString()}`)
-//			   	   	let iterator = searchParams.keys();
-			   	   let origin = parser.origin;
-			   	   let port = parser.port;
-			   	   console.log(`origin=${origin} port=${port}`);
-			   	   let hash = parser.hash
-					
-			   	   	let iterator = searchParams.entries();
-			   	   let iteratorResult;
-			   	   console.log(`==== START`)
-			   	   while(true){
-					    iteratorResult = iterator.next(); // 順番に値を取りだす
-					    if(iteratorResult.done) break; // 取り出し終えたなら、break
-					    console.log(iteratorResult.value); // 値をコンソールに出力
-					}
-			   	   console.log(`==== END`)
-					console.log(`${searchParams.get('s')}`)
-					console.log(`${searchParams.get('sr')}`)
+function parse_b(parser) {
+  console.log(`pathname=${parser.pathname} host=${parser.host} `);
 
-					searchParams.forEach((value, name) => {
-						console.log(`${name}:${value}`)
-					})
-			   	   console.log(`hash[s]=${ hash['s'] }`)
-			   	   console.log(`hash[sr]=${ hash['sr'] }`)
-			   	   // let keys = searchParams.keys()\
-			   	   // X let keys = searchParams.key()
-			   	   // console.log( JSON.stringify(keys));
-			   	   // keys.map( key => console.log(`key=${key} ${hash[key]}`) )
+  let searchParams = parser.searchParams;
+  console.log(`${searchParams.toString()}`);
+  //			   	   	let iterator = searchParams.keys();
+  let origin = parser.origin;
+  let port = parser.port;
+  console.log(`origin=${origin} port=${port}`);
+  let hash = parser.hash;
+
+  let iterator = searchParams.entries();
+  let iteratorResult;
+  console.log(`==== START`);
+  while (true) {
+    iteratorResult = iterator.next(); // 順番に値を取りだす
+    if (iteratorResult.done) break; // 取り出し終えたなら、break
+    console.log(iteratorResult.value); // 値をコンソールに出力
+  }
+  console.log(`==== END`);
+  console.log(`${searchParams.get('s')}`);
+  console.log(`${searchParams.get('sr')}`);
+
+  searchParams.forEach((value, name) => {
+    console.log(`${name}:${value}`);
+  });
+  console.log(`hash[s]=${hash['s']}`);
+  console.log(`hash[sr]=${hash['sr']}`);
+  // let keys = searchParams.keys()\
+  // X let keys = searchParams.key()
+  // console.log( JSON.stringify(keys));
+  // keys.map( key => console.log(`key=${key} ${hash[key]}`) )
 }
 async function moveBMXFolderCheck(mover_group, src_folder_id) {
-  let bookmarkItems = []
-  await chrome.bookmarks
-  .getChildren(`${src_folder_id}`)
-  .then( (bms) => {
-  	  bms.map( (bm) => {
-  	  	  if (bm.url != undefined ){
-		 	 parseURLX2(bm.url) 
-	  			.then(parser => {
-	  	  	  	  console.log(`bm.title=${bm.title}`)
-	  	  	  	  	  parse_b(parser);
-	  			} )
-	  		}
-  	  }
-  	 )
- } )
- }
+  let bookmarkItems = [];
+  await chrome.bookmarks.getChildren(`${src_folder_id}`).then((bms) => {
+    bms.map((bm) => {
+      if (bm.url != undefined) {
+        parseURLX2(bm.url).then((parser) => {
+          console.log(`bm.title=${bm.title}`);
+          parse_b(parser);
+        });
+      }
+    });
+  });
+}
 
 function moveBMX3() {
-  let hier = "/Amazon/Amazon"
+  let hier = '/Amazon/Amazon';
   let group = Movergroup.get_mover_group();
-  let obj = getItemByHier(hier)
-  if( obj.id != null ){
-  	  console.log( `obj.id=${obj.id}` )
-	moveBMXFolderCheck(group, obj.id)
+  let obj = getItemByHier(hier);
+  if (obj.id != null) {
+    console.log(`obj.id=${obj.id}`);
+    moveBMXFolderCheck(group, obj.id);
   }
 }
-	/*
+/*
 	1 ブックマークツールバー
 	2 その他のブックマーク
 	3 モバイルのブックマーク
 	*/
 function moveBMX2() {
-	// console.log(`moveBMX2 1`)
-	// moveBMXbase("2")
-  let hier = "/0/0-etc/0"
+  // console.log(`moveBMX2 1`)
+  // moveBMXbase("2")
+  let hier = '/0/0-etc/0';
   let group = Movergroup.get_mover_group();
-  console.log(`hier=${hier}`)
-  let obj = getItemByHier(hier)
-  console.log(`obj.id=${obj.id}`)
-  if( obj.id != null ){
-	moveBMXFolderBase(group, obj.id)
-  }
-  else{
-	console.log(`obj=${obj}`)
+  console.log(`hier=${hier}`);
+  let obj = getItemByHier(hier);
+  console.log(`obj.id=${obj.id}`);
+  if (obj.id != null) {
+    moveBMXFolderBase(group, obj.id);
+  } else {
+    console.log(`obj=${obj}`);
   }
 }
 
 function moveBMX() {
-    let group = Movergroup.get_mover_group();
-	moveBMXFolderBase(group, "1")
+  let group = Movergroup.get_mover_group();
+  moveBMXFolderBase(group, '1');
 }
-
 
 export {
   add_to_itemgroup,
