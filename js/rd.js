@@ -1,10 +1,12 @@
-const array = ["Day", "2023", "202311", "20231125"]
+import { debugPrint2, debugPrint } from './debug.js';
 
-let result = array.reduce( (accumulator, currentValue, currentIndex, array) => {
-	console.log(accumulator);
-	console.log(currentValue);
-	console.log("==");
-	return [accumulator, currentValue].join('/');
+const array = ['Day', '2023', '202311', '20231125'];
+
+let result = array.reduce((accumulator, currentValue, currentIndex, array) => {
+  debugPrint2(accumulator);
+  debugPrint2(currentValue);
+  debugPrint2('==');
+  return [accumulator, currentValue].join('/');
 });
 
-console.log(result);
+debugPrint2(result);
