@@ -1,3 +1,3 @@
-import { debugPrint2, debugPrint } from './debug.js';
+import { console.log, debugPrint } from './debug.js';
 
-debugPrint2(dayjs());
+console.log(dayjs());

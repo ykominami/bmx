@@ -9,9 +9,9 @@ export class Mover {
   }
   async move(bookmarkItem) {
     let ret = true;
-    //	  debugPrint2(`Mover move`)
+    //	  console.log(`Mover move`)
     if (bookmarkItem.url) {
-      // debugPrint2(`${bookmarkItem.id} ${bookmarkItem.url} ${bookmarkItem.title}`);
+      // console.log(`${bookmarkItem.id} ${bookmarkItem.url} ${bookmarkItem.title}`);
       let prom = await chrome.bookmarks
         .move(bookmarkItem.id, {
           parentId: this.dest_parent_item.id,
@@ -22,7 +22,7 @@ export class Mover {
             // console.error(chrome.runtime.lastError.message);
             ret2 = false;
           } else {
-            // debugPrint2('Bookmark moved', movedBookmark);
+            // console.log('Bookmark moved', movedBookmark);
           }
           return ret2;
         })

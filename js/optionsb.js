@@ -1,10 +1,6 @@
 import { getItemHashByHierKeys, initItems } from './data.js';
 import { makeBtnA } from './util.js';
-import {
-  getStorageHiers,
-  printSettings,
-  printSettingsFromLoad,
-} from './global.js';
+import { getStorageHiers, printSettings } from './global.js';
 import { loadAsync } from './async.js';
 import { debugPrint2, debugPrint } from './debug.js';
 
@@ -55,8 +51,8 @@ function xyz(name, class_name, id) {
 function xyz1() {
   let keys = getStorageHiers();
   printSettings();
-  debugPrint2('Settings = ');
-  debugPrint2(keys);
+  console.log('Settings = ');
+  console.log(keys);
 
   let aryx = keys.map((value, idx) => {
     let btn = xyz(value, `g-${idx + 1}-1`, `${value}-${idx + 1}`);
@@ -71,7 +67,6 @@ function xyz1() {
 // initSettings();
 initItems();
 printSettings();
-printSettingsFromLoad();
 await loadAsync(2);
 xyz1();
 
