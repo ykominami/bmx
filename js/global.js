@@ -24,6 +24,7 @@ function getKeysOfStorageHiers(key, value) {
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
   let val2 = [];
+
   let val3 = null;
   // if (val == null || val === undefined) {
   if (val != null) {
@@ -43,8 +44,8 @@ function adjustValue(val) {
     val2 = [];
     val3 = 30;
   }
-  // console.log(`adjustValue 1 val2=${val2}`);
-  // console.log(`adjustValue 1 val3=${val3}`);
+  // debugPrint2(`adjustValue 1 val2=${val2}`);
+  // debugPrint2(`adjustValue 1 val3=${val3}`);
   return val2;
 }
 
@@ -121,16 +122,13 @@ function setStorageOptions(value) {
 
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
-  if (options == null) {
+  if (Array.isArray(options) == false) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
-    // console.log(`############### 3 getStorageOptions null`);
-    // console.log(`Settings=${JSON.stringify(Object.keys(Settings))}`);
-    // console.log(`StorageOptions=${StorageOptions}`);
-    // console.log(`Settings[StorageOptions]=${Settings[StorageOptions]}`);
   }
   return options;
 }
+
 function getStorageHiers() {
   if (Settings[StorageHiers]) {
     return Settings[StorageHiers];
@@ -224,6 +222,9 @@ function makeSelectOptionsData(options) {
         value: element.value,
         text: element.text,
       })
+    );
+    debugPrint2(
+      `global.js | addRecentlyItem | element.value=${element.value} element.text=${element.text}| global.js`
     );
   });
   return opts1;

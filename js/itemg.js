@@ -31,35 +31,35 @@ function create_item(element) {
   };
 }
 function add_to_itemgroup(element) {
-  // console.log(`add_to_itemgroup 0`);
+  // debugPrint2(`add_to_itemgroup 0`);
   /* フォルダのみを処理する（項目は無視する） */
   // if (element.url) {
   //  return null;
   //}
   let idnum = parseInt(element.id, 10);
-  // console.log(`idnum=${idnum}`);
+  // debugPrint2(`idnum=${idnum}`);
   let parentIdnum = parseInt(element.parentId, 10);
-  // console.log(`parentIdnum=${parentIdnum}`);
+  // debugPrint2(`parentIdnum=${parentIdnum}`);
 
-  // console.log(`element.url=${element.url}`);
+  // debugPrint2(`element.url=${element.url}`);
 
   let item = create_item(element);
   if (element.url) {
     return null;
   } else {
     if (Number.isNaN(parentIdnum)) {
-      // console.log(`a 2`);
+      // debugPrint2(`a 2`);
       item.root = true;
       item.kind = 'ROOT';
       RootItems.push(item);
       // item.hier = "";
       // item.hier = item.title;
     } else {
-      // console.log(`a idnum=${idnum}}`);
-      // console.log(`a parentIdnum=${parentIdnum}}`);
+      // debugPrint2(`a idnum=${idnum}}`);
+      // debugPrint2(`a parentIdnum=${parentIdnum}}`);
       /* 親フォルダがルート階層のフォルダであればトップ階層のフォルダにする */
       if (parentIdnum == 0) {
-        // console.log(`a 3 item.title=${item.title}`);
+        // debugPrint2(`a 3 item.title=${item.title}`);
         item.top = true;
         item.kind = 'TOP';
         // item.hier = "";
@@ -67,10 +67,10 @@ function add_to_itemgroup(element) {
       } else {
         item.kind = 'FOLDER';
 
-        // console.log(`a 4 item.title=${item.title}`);
+        // debugPrint2(`a 4 item.title=${item.title}`);
         /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
-        // console.log(`add_to_itemgroup 5 item.parentId=${item.parentId}`);
-        // console.log(`add_to_itemgroup 7 item.parentId=${item.parentId}`);
+        // debugPrint2(`add_to_itemgroup 5 item.parentId=${item.parentId}`);
+        // debugPrint2(`add_to_itemgroup 7 item.parentId=${item.parentId}`);
         let parent_item = getItem(item.parentId);
         if (parent_item == null) {
           item.hier = '';
@@ -86,14 +86,14 @@ function add_to_itemgroup(element) {
     if (element.children != undefined) {
       if (element.children.length > 0) {
         let ignore_head = true;
-        /* console.log(
+        /* debugPrint2(
           `add_to_itemgroup element.children 2 root=${item.root} top=${item.top} parentIdnum=${parentIdnum} item.id=${item.id} item.title=${item.title}`
         );
         */
         item.children = dumpTreeNodes(element.children);
         // item.children = dumpTreeNodes(element.children);
-        // console.log(`2 getKeysOfItemByHier()=${getKeysOfItemByHier()}`);
-        /* console.log(
+        // debugPrint2(`2 getKeysOfItemByHier()=${getKeysOfItemByHier()}`);
+        /* debugPrint2(
           `add_to_itemgroup element.children item.children.length=${item.children.length}`
         );
         */
@@ -121,16 +121,16 @@ function logItems(bookmarkItem, indent) {
     return;
   }
   if (bookmarkItem.url) {
-    console.log(makeIndent(indent) + bookmarkItem.url);
+    debugPrint2(makeIndent(indent) + bookmarkItem.url);
   } else {
-    console.log(`${makeIndent(indent)}Folder`);
-    console.log(
+    debugPrint2(`${makeIndent(indent)}Folder`);
+    debugPrint2(
       `${makeIndent(indent)}bookmarkItem.parentId=${bookmarkItem.parentId}`
     );
-    console.log(
+    debugPrint2(
       `${makeIndent(indent)}bookmarkItem.title=${bookmarkItem.title}`
     );
-    console.log(`${makeIndent(indent)}bookmarkItem.id=${bookmarkItem.id}`);
+    debugPrint2(`${makeIndent(indent)}bookmarkItem.id=${bookmarkItem.id}`);
     indent++;
   }
   if (bookmarkItem.children) {
@@ -141,7 +141,7 @@ function logItems(bookmarkItem, indent) {
   indent--;
 }
 function onRejected(error) {
-  console.log(`An error: ${error}`);
+  debugPrint2(`An error: ${error}`);
 }
 
 function logTree(bookmarkItems) {
@@ -157,16 +157,16 @@ function logItems2(bookmarkItem, indent) {
     return;
   }
   if (bookmarkItem.url) {
-    console.log(makeIndent(indent) + bookmarkItem.url);
+    debugPrint2(makeIndent(indent) + bookmarkItem.url);
   } else {
-    console.log(`${makeIndent(indent)}Folder`);
-    console.log(
+    debugPrint2(`${makeIndent(indent)}Folder`);
+    debugPrint2(
       `${makeIndent(indent)}bookmarkItem.parentId=${bookmarkItem.parentId}`
     );
-    console.log(
+    debugPrint2(
       `${makeIndent(indent)}bookmarkItem.title=${bookmarkItem.title}`
     );
-    console.log(`${makeIndent(indent)}bookmarkItem.id=${bookmarkItem.id}`);
+    debugPrint2(`${makeIndent(indent)}bookmarkItem.id=${bookmarkItem.id}`);
     indent++;
   }
   if (bookmarkItem.children) {

@@ -1,4 +1,4 @@
-import { console.log, debugPrint } from './debug.js';
+import { debugPrint2, debugPrint } from './debug.js';
 
 // background.js
 chrome.runtime.onInstalled.addListener(() => {
@@ -12,6 +12,6 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'refresh') {
     // 定期的な処理
-    console.log('アラームイベントが発生しました。');
+    debugPrint2('アラームイベントが発生しました。');
   }
 });
