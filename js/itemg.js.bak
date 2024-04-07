@@ -223,16 +223,6 @@ function parse_b(parser) {
   // X let keys = searchParams.key()
   // console.log( JSON.stringify(keys));
   // keys.map( key => console.log(`key=${key} ${hash[key]}`) )
-			   	   // qid 本、Kindleを問わず同一
-			   	   // sr  本、Kindleを問わず同一
-			   	   // s:books 本のみ または Kindleのみ（Kindleにはそもそも存在しない)
-			   	   //  
-			   	   // k: ASINの値
-			   	   // i: stripgbooks
-			   	   // __mk__ja_JP
-			   	   // crid:
-			   	   // sprefix: ASINの値, stripbooks, 204
-			   	   // ref: nb_sb_noss
 }
 async function moveBMXFolderCheck(mover_group, src_folder_id) {
   let bookmarkItems = [];
