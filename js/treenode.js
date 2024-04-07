@@ -1,7 +1,4 @@
-import { setStorageHiers } from './global.js';
-import { getKeysOfItemByHier } from './data.js';
 import { add_to_itemgroup, getItemFromRoot } from './itemg.js';
-import { debugPrint2, debugPrint } from './debug.js';
 
 /* ===== bookmarkの情報を取得 ===== */
 /* 指定フォルダ以下の対象フォルダの一覧取得(配列として) */
