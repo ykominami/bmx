@@ -23,7 +23,7 @@ export class Movergroup {
   add(hostname, hier) {
     let mover = new Mover(hostname, hier);
     if (mover.dest_parent_item == null) {
-      debugPrint2(
+      console.log(
         `Movergroup.add hier=${hier} hostname=${hostname} mover.dest_parent_item=${mover.dest_parent_item}`
       );
     }
@@ -32,22 +32,22 @@ export class Movergroup {
   }
   move(bookmarkItem) {
     let ret = false;
-    // debugPrint2(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
-    // debugPrint2(`Movergroup.move keys=${ Object.keys(this.group) }`)
+    // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
+    // console.log(`Movergroup.move keys=${ Object.keys(this.group) }`)
     if (bookmarkItem.url) {
       let hostname = parseURLX(bookmarkItem.url).then((hostname) => {
-        // debugPrint2(`Movergroup.move || hostname=${hostname}`)
+        // console.log(`Movergroup.move || hostname=${hostname}`)
         if (this.keys.includes(hostname)) {
-          // debugPrint2(`Movergroup.move IN hostname=${hostname} T`)
+          // console.log(`Movergroup.move IN hostname=${hostname} T`)
           ret = this.group[hostname].move(bookmarkItem).then((result) => {
             ret = result;
           });
         } else {
-          // debugPrint2(`Movergroup.move IN keys=${this.keys} hostname=${hostname} F`)
+          // console.log(`Movergroup.move IN keys=${this.keys} hostname=${hostname} F`)
         }
       });
     } else {
-      // debugPrint2(`Movergroup.move not undefined`)
+      // console.log(`Movergroup.move not undefined`)
     }
     return ret;
   }

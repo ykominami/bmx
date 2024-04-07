@@ -34,9 +34,9 @@ function getYearAndMonthAndDayAsString() {
   let monthx = getMonthx(current);
   let year = current.getFullYear();
 
-  debugPrint2(`month=${month}`);
-  debugPrint2(`monthx=${monthx}`);
-  //  debugPrint2(`next_month=${next_month}`);
+  console.log(`month=${month}`);
+  console.log(`monthx=${monthx}`);
+  //  console.log(`next_month=${next_month}`);
 
   let month_str = adjustAsStr(monthx);
   let date = current.getDate();
@@ -153,6 +153,33 @@ function addDayFolderx() {
     });
   });
 }
+
+function addDayFolderx_0() {
+  let folders = getFoldersFromDayPrefixes();
+  let [y_str, ym_str, ymd_str] = getYearAndMonthAndDayAsString();
+  let y_m_str = `${y_str}${ym_str}`;
+  let y_m_d_str = `${y_str}${ym_str}${ymd_str}`;
+
+  // "Y/Day"
+  folders.map((parent) => {
+    const arrayx = [parent, y_str, ym_str, ymd_str];
+    // let parent_y_str = `${parent}/${y_str}`
+    // let parent_y_m_str = `${parent}/${y_str}/${y_m_str}`
+    // let parent_y_m_d_str = `${parent}/${y_str}/${y_m_str}/${y_m_d_str}`
+    arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
+      const parent_item = getItemByHier(accumulator);
+      const hier = [accumulator, currentValue].join('/');
+      let item = getItemByHier(hier);
+      if (item === undefined) {
+        makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
+        item = getItemByHier(hier);
+      }
+      console.log(`parent=${parent} hier=${hier} item=${JSON.stringify(item)}`);
+
+      return hier;
+    });
+  });
+}
 function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
   let new_item = getItemByHier(new_keytop);
   if (new_item === undefined) {
@@ -164,9 +191,9 @@ function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
 function lstree() {
   const hier = '/Y/Day/2023/202311';
   let item = getItemByHier(hier);
-  debugPrint2(item);
+  console.log(item);
   let ary = dumpTreeItemsXTop(item.id);
-  ary.map((item_id) => debugPrint2(item_id));
+  ary.map((item_id) => console.log(item_id));
 }
 export {
   getYearAndNextMonthAsString,
