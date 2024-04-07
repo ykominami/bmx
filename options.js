@@ -1,4 +1,5 @@
 import { console.log, debugPrint } from './debug.js';
+import { initSettings_all } from './global.js';
 // document.addEventListener("DOMContentLoaded", restoreOptions);
 
 const add_anchor = (id_str, url, text) => {
@@ -53,7 +54,7 @@ async function start_options() {
     })
     .then(
       // console.log("start call loadAsync 02"),
-      loadAsync().then(loadSettings_by_api('P2')).then(initSettings_all)
+      loadSettings().then(initSettings_all)
     );
 }
 // console.log(`before start`);

@@ -23,7 +23,7 @@ function getKeysOfStorageHiers(key, value) {
 
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
-  let val2 = [];
+  let val2;
   let val3 = null;
   // if (val == null || val === undefined) {
   if (val != null) {
@@ -63,7 +63,7 @@ async function loadSettings() {
         str2 = `${size}`;
       }
     } else {
-      value = {};
+      str2 = {};
     }
     return value;
   });
@@ -113,11 +113,6 @@ function addStorageSelected(key, value) {
   // console.log(`Settings[StorageSelected]=${Settings[StorageSelected]}`);
   setSettingsByKey(Settings[StorageSelected], key, value);
 }
-
-function setStorageOptions(value) {
-  Settings[StorageOptions] = value;
-}
-
 
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
@@ -265,7 +260,7 @@ export {
   replace_in_Settings,
   addStorageSelected,
   getStorageOptions,
-  setStorageOptions,
+  // setStorageOptions,
   getKeysOfStorageHiers,
   getStorageHiers,
   setStorageHiers,
