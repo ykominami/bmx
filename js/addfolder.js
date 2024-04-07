@@ -34,9 +34,9 @@ function getYearAndMonthAndDayAsString() {
   let monthx = getMonthx(current);
   let year = current.getFullYear();
 
-  console.log(`month=${month}`);
-  console.log(`monthx=${monthx}`);
-  //  console.log(`next_month=${next_month}`);
+  debugPrint2(`month=${month}`);
+  debugPrint2(`monthx=${monthx}`);
+  //  debugPrint2(`next_month=${next_month}`);
 
   let month_str = adjustAsStr(monthx);
   let date = current.getDate();
@@ -164,9 +164,9 @@ function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
 function lstree() {
   const hier = '/Y/Day/2023/202311';
   let item = getItemByHier(hier);
-  console.log(item);
+  debugPrint2(item);
   let ary = dumpTreeItemsXTop(item.id);
-  ary.map((item_id) => console.log(item_id));
+  ary.map((item_id) => debugPrint2(item_id));
 }
 export {
   getYearAndNextMonthAsString,

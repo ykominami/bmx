@@ -249,7 +249,11 @@ function addSelectWaitingItemsX(select, folder_id) {
 
   chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
     select.empty();
+    debugPrint2(
+      `addSelectWaitingItemsX 0 bookmarkTreeNodes=${bookmarkTreeNodes}`
+    );
     const zary = dumpTreeItems(bookmarkTreeNodes, true);
+    debugPrint2(`addSelectWaitingItemsX 1 zary=${zary}`);
     select.append(zary);
     const folder_id = select.val();
     if (folder_id) {
@@ -541,12 +545,17 @@ function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
             text: element.title,
           })
         );
+        debugPrint2(`in popupx.js call dumpTreeItems 1 ary=${ary}`);
       }
     }
+    debugPrint2(
+      `in popupx.js call dumpTreeItems element.children=${element.children}|`
+    );
     if (element.children) {
       ary = ary.concat(dumpTreeItems(element.children, false));
     }
   }
+  debugPrint2(`in popupx.js call dumpTreeItems END ary=${ary}`);
   return ary;
 }
 
@@ -728,7 +737,7 @@ function selectWaitingItemsBtnHdr_0(folder_id) {
 
 /* ===== popup window 上部 ===== */
 function makeMenuOnUpperArea(title, url) {
-  // console.log("++++++++++++++++++++++++++++ ==== makeMenuOnUpperArea");
+  // debugPrint2("++++++++++++++++++++++++++++ ==== makeMenuOnUpperArea");
   /* add-mode領域 */
   $('#name').val(title);
   $('#url').val(url);
@@ -783,7 +792,7 @@ function makeMenuOnUpperArea(title, url) {
         url: ourl,
       },
       (tab) => {
-        // console.log(["sid=", sid, "ourl=", ourl]);
+        // debugPrint2(["sid=", sid, "ourl=", ourl]);
       }
     );
   });
