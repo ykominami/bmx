@@ -44,8 +44,8 @@ function adjustValue(val) {
     val2 = [];
     val3 = 30;
   }
-  // debugPrint2(`adjustValue 1 val2=${val2}`);
-  // debugPrint2(`adjustValue 1 val3=${val3}`);
+  // console.log(`adjustValue 1 val2=${val2}`);
+  // console.log(`adjustValue 1 val3=${val3}`);
   return val2;
 }
 
@@ -223,7 +223,7 @@ function makeSelectOptionsData(options) {
         text: element.text,
       })
     );
-    debugPrint2(
+    console.log(
       `global.js | addRecentlyItem | element.value=${element.value} element.text=${element.text}| global.js`
     );
   });
