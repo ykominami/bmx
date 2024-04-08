@@ -4,10 +4,12 @@ function restoreSelectRecently(select) {
   let sOptions = getStorageOptions();
   addRecentlyItemX(select, sOptions);
 }
-function updateSelectRecently(select) {
-  debugPrint2(`#- updateSelectRecently | async.js`);
+/*
+ * function updateSelectRecently(select) {
+  console.log(`#- updateSelectRecently | async.js`);
   addRecentlyItem(select, null, null);
 }
+*/
 
 function updateSelectRecently(ary, select) {
   // console.log(`updateSelectRecently ary=${JSON.stringify(ary)}`);
