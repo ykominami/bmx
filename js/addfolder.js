@@ -84,6 +84,7 @@ function makeItem(element) {
 function makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
   let newFolderId = 0;
   let parentidstr = `${parentidx}`;
+  console.log(`makeAndRegisterBookmarkFolder parentidstr=${parentidstr}`);
   chrome.bookmarks.create(
     {
       parentId: parentidstr,
@@ -146,6 +147,7 @@ function addDayFolderx() {
       if (item === null) {
         makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier);
         item = getItemByHier(hier);
+        console.log(`item=${JSON.stringify(item)}`);
       }
       console.log(`parent=${parent} hier=${hier} item=${item}`);
 
@@ -155,7 +157,7 @@ function addDayFolderx() {
 }
 function makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
   let new_item = getItemByHier(new_keytop);
-  if (new_item === undefined) {
+  if (new_item === null) {
     makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title);
     new_item = getItemByHier(new_keytop);
   }
