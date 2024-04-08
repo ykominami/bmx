@@ -12,6 +12,6 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'refresh') {
     // 定期的な処理
-    debugPrint2('アラームイベントが発生しました。');
+    console.log('アラームイベントが発生しました。');
   }
 });
