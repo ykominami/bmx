@@ -14,7 +14,7 @@ const add_anchor = (id_str, url, text) => {
 
 const add_anchor2 = (id_str, url, text) => {
   const table = document.querySelector(id_str);
-  debugPrint2(table);
+  console.log(table);
   let tr0 = table.insertRow(-1);
   // let tr1 = table.insertRow(-1);
 
@@ -46,7 +46,7 @@ function add_make_filter() {
 
 async function start_options() {
   initItems();
-  // debugPrint2("start 2");
+  // console.log("start 2");
 
   dumpBookmarksAsync()
     .then((bookmarkTreeNodes) => {
@@ -57,5 +57,5 @@ async function start_options() {
       loadSettings().then(initSettings_all)
     );
 }
-// debugPrint2(`before start`);
+// console.log(`before start`);
 start_options();
