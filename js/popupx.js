@@ -161,7 +161,7 @@ function addSelect(select, keytop) {
   if (keytop != null) {
     item = getItemByHier(keytop);
     if (item != null) {
-      const xary = getSelectOption(item, true);
+      const xary = getSelectOption(item, false);
       // console.log(`addSelect 2-0 addSelect xary=${JSON.stringify(xary)}`);
       let opts1 = xary.map((element) => {
         return $('<option>', {
@@ -195,9 +195,6 @@ function addSelect(select, keytop) {
   }
 }
 function getSelectOption(item, ignore_head) {
-  ignore_head =
-    ignore_head === null || ignore_head === undefined ? false : ignore_head;
-
   let ary = [];
   if (!ignore_head) {
     ary.push({
@@ -210,8 +207,8 @@ function getSelectOption(item, ignore_head) {
       return getSelectOption(element, false);
     });
   }
-  let ary10 = ary.flat();
-  return ary10;
+  const aryx = ary.flat();
+  return aryx;
 }
 
 /* ===== */
