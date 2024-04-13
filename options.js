@@ -1,9 +1,9 @@
-import { debugPrint2, debugPrint } from './debug.js';
+import { console.log, debugPrint } from './debug.js';
 // document.addEventListener("DOMContentLoaded", restoreOptions);
 
 const add_anchor = (id_str, url, text) => {
   const element = document.querySelector(id_str);
-  debugPrint2(element);
+  console.log(element);
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.textContent = text;
@@ -22,37 +22,20 @@ const add_anchor2 = (id_str, url, text) => {
 
   if (url != null) {
     const anchor = document.createElement('a');
-    const anchor = document.createElement('a');
     anchor.href = url;
     anchor.textContent = text;
     // element.insertBefore(anchor, element.firstChild);
     td0.appendChild(anchor);
   } else {
     const anchor = document.createElement('a');
-    const anchor = document.createElement('a');
     tr0.textContent = text;
   }
 };
-/*
-add_anchor2("#table1", "https://www.google.com", "GOOGLE");
-add_anchor2("#table1", "https://northern-corss.info", "NORTHERN-CROSS");
-
-add_anchor2("#table2", null, "Category1");
-add_anchor2("#table2", "https://www.google.com", "GOOGLE");
-add_anchor2("#table2", "https://northern-corss.info", "NORTHERN-CROSS");
-add_anchor2("#table2", null, "Category2");
-add_anchor2("#table2", "https://www.google.com", "GOOGLE");
-add_anchor2("#table2", "https://northern-corss.info", "NORTHERN-CROSS");
-*/
-debugPrint2('options.js');
+console.log('options.js');
 
 function add_make_filter() {
   let tr0 = table.insertRow(-1);
   let td0 = tr0.insertCell(-1);
-  let input = document.createElement('input');
-  input.type = 'text';
-  input.id = 'filter';
-  input.value = '';
   let input = document.createElement('input');
   input.type = 'text';
   input.id = 'filter';
@@ -69,7 +52,7 @@ async function start_options() {
       dumpTreeNodesAsync(bookmarkTreeNodes);
     })
     .then(
-      // debugPrint2("start call loadAsync 02"),
+      // console.log("start call loadAsync 02"),
       loadAsync().then(loadSettings_by_api('P2')).then(initSettings_all)
     );
 }

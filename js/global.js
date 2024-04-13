@@ -2,23 +2,28 @@ import { debugPrint2, debugPrint } from './debug.js';
 import { restoreSelectRecently } from './async.js';
 import { makeItemHashX } from './data.js';
 
-let Settings = {};
-
-const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴() */
-const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
-const StorageHiers = 'Hiers'; /* 各keytop毎の選択された対象フォルダ */
-const StorageMisc = 'Misc'; /* Misc */
-const ANOTHER_FOLER = -1;
-const Keyvalues = [
-  [StorageOptions, []],
-  [StorageSelected, {}],
-  [StorageHiers, {}],
-  [StorageMisc, {}],
-];
+let promise = null;
+async function wait_flag() {
+  if (promise == null) {
+    promise = new Promise((resolve) => {
+      resolve();
+    });
+  }
+  promise.then();
+}
 
 function getKeysOfStorageHiers(key, value) {
   let keys = Object.keys(StorageHiers);
   return keys;
+}
+
+function set_flag() {
+  if (promise == null) {
+    promise = new Promise((resolve) => {
+      resolve();
+    });
+  }
+  promise.then();
 }
 
 function adjustValue(val) {
@@ -147,7 +152,7 @@ async function setStorageHiers(value) {
 
 async function setStorageMisc(value) {
   Settings[StorageMisc] = value;
-  await chrome.storage.local.set({ all: Settings });
+  chrome.storage.local.set({ StorageMisc: value });
 }
 
 async function storageOptionsUnshift(obj) {
@@ -174,7 +179,9 @@ function printBase(va, mes = '') {
   console.log(`||| ${mes} |${va}`);
   Object.entries(va).map(([key, value]) => {
     console.log(`${key} | ${JSON.stringify(value)}`);
+    console.log(`${key} | ${JSON.stringify(value)}`);
   });
+  console.log(`|||====`);
   console.log(`|||====`);
 }
 
@@ -203,6 +210,9 @@ function addRecentlyItemX(select, sOptions) {
 
 function adjustRecentrlyFolder(value, text) {
   const sOptions = getStorageOptions();
+  console.log(
+    `global.js adjustRecentrlyFolder sOptions=${JSON.stringify(sOptions)}`
+  );
   const ind = sOptions.findIndex((element, index, array) => {
     return element.value == value;
   });
@@ -263,20 +273,20 @@ export {
   initSettings_a,
   initSettings_all,
   //
-  replace_in_Settings,
-  addStorageSelected,
+  setSettings,
+  setStorageSelected,
   getStorageOptions,
   setStorageOptions,
+  getKeysOfStorageHiers,
   getKeysOfStorageHiers,
   getStorageHiers,
   setStorageHiers,
   setStorageMisc,
   storageOptionsUnshift,
   saveSettings,
-  loadSettings,
+  loadSettings_by_api2,
   removeSettings,
   printBase,
   printSettings,
-  addRecentlyItem,
   addRecentlyItemX,
 };

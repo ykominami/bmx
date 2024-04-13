@@ -1,22 +1,6 @@
 let ItemHashByHier = {};
 let ItemHash = {};
 
-function makeItemHashX(key) {
-  let hash = {};
-  hash[key] = {
-    ItemHashByHier: ItemHashByHier,
-    ItemHash: ItemHash,
-  };
-  return hash;
-}
-
-function getItemHash() {
-  return ItemHash;
-}
-function getItemHashByHier() {
-  return ItemHashByHier;
-}
-
 function dumpTreeItemsX(bookmarkTreeNodes) {
   let ary = [];
   let i;
