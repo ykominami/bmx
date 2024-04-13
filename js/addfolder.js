@@ -1,11 +1,9 @@
 import { getMonthx, adjustAsStr } from './util.js';
-import { getMonthx, adjustAsStr } from './util.js';
 
 import {
   getPrefix,
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
-} from './settings.js';
 } from './settings.js';
 
 import {
@@ -13,8 +11,6 @@ import {
   getItemByHier,
   setItemByHier,
   setItem,
-} from './data.js';
-import { debugPrint2, debugPrint } from './debug.js';
 } from './data.js';
 import { debugPrint2, debugPrint } from './debug.js';
 

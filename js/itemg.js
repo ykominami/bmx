@@ -183,7 +183,10 @@ async function call_mover_group_move(mover_group, bookmarkItem) {
 
 async function moveBMXFolderBase(mover_group, src_folder_id) {
   let bookmarkItems = [];
+  let bookmarkItems = [];
   await chrome.bookmarks
+    .getChildren(`${src_folder_id}`)
+    .then((bms) => (bookmarkItems = bms));
     .getChildren(`${src_folder_id}`)
     .then((bms) => (bookmarkItems = bms));
   bookmarkItems.map((bookmarkItem) => {
