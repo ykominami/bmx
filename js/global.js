@@ -1,8 +1,4 @@
 import { debugPrint2, debugPrint } from './debug.js';
-import { restoreSelectRecently } from './async.js';
-import { makeItemHashX } from './data.js';
-
-let Settings = {};
 
 const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴() */
 const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
@@ -21,7 +17,6 @@ let SettingsFromLoad2 = {};
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
   let val2;
-
   let val3 = null;
   // if (val == null || val === undefined) {
   if (val != null) {
@@ -206,7 +201,6 @@ function getStorageSelected() {
 
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
-  if (Array.isArray(options) == false) {
   if (typeof options == 'undefined') {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
@@ -220,6 +214,14 @@ function getStorageOptions() {
   return options;
 }
 
+function setStorageOptions(value) {
+  console.log(
+    `================= setStorageOptions value=${JSON.stringify(value)}`
+  );
+  Settings[StorageOptions] = value;
+  localStorage[StorageOptions] = value;
+}
+
 function getStorageHiers() {
   return Settings[StorageHiers];
 }
@@ -231,11 +233,6 @@ function setStorageHiers(value) {
   );
   */
   Settings[StorageHiers] = value;
-  localStorage[StorageHiers] = value;
-}
-
-function getStorageMisc() {
-  return Settings[StorageMisc];
   localStorage[StorageHiers] = value;
 }
 
@@ -338,7 +335,6 @@ function copyFromLoad2ToSettings(key) {
 }
 
 function printBase(va, mes = '') {
-  debugPrint2(`||| ${mes} |${va}`);
   debugPrint2(`||| ${mes} |${va}`);
   Object.entries(va).map(([key, value]) => {
     debugPrint2(`${key} | ${JSON.stringify(value)}`);

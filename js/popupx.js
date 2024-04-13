@@ -27,7 +27,6 @@ import {
   getBtnId,
   getJqueryId,
 } from './util.js';
-} from './util.js';
 import {
   getItemByHier,
   setItemByHier,
@@ -38,14 +37,8 @@ import {
   initItems,
   printItemHashByHier,
   printItemHash,
-  setItem,
-  getItemHashKeys,
-  initItems,
-  printItemHashByHier,
-  printItemHash,
 } from './data.js';
 
-import { debugPrint2, debugPrint } from './debug.js';
 import { debugPrint2, debugPrint } from './debug.js';
 
 import {
@@ -78,8 +71,7 @@ import {
   printBase,
 } from './global.js';
 
-import { restoreSelectRecently } from './async.js';
-import { moveBMX, moveBMX2, moveBMX3 } from './itemg.js';
+import { loadAsync } from './async.js';
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
@@ -225,8 +217,8 @@ function addSelect(select, keytop) {
       xary.forEach((element, index, array) => {
         opts1.push(
           $('<option>', {
-            value: item2.id,
-            text: item2.title,
+            value: element.value,
+            text: element.text,
           })
         );
       });
@@ -668,13 +660,6 @@ function makeMenuOnUpperArea(title, url) {
   /*** ★hrome bookmarks APIにはidが必要。これは隠れフィールドoidに設定しておく***/
   $('#yinp').click(() => {
     selectWaitingItemsBtnHdr($('#yinp').val());
-    debugPrint2('#zinp click');
-    let value = $('#zinp').val();
-    debugPrint2(`#zinp click value=${JSON.stringify(value)}`);
-    if (value != null) {
-      /* 対象フォルダに含まれるアイテム一覧作成 */
-      addSelectWaitingItemsX($('#yinp'), value, 'FOLDER');
-    }
   });
 
   /* add-mode領域を選択状態にする(デフォルトにする) */
@@ -885,15 +870,6 @@ function dumpTreeNodesAsync_0(bookmarkTreeNodes) {
   });
 }
 /* ===== popup windowsの作成 ===== */
-async function setupPopupWindowAsync() {
-  const tabs = await chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  });
-  const current = tabs[0];
-  const title = current.title;
-  const url = current.url;
-  $('#sid').val(current.id);
 function setupPopupWindowAsync() {
   return new Promise((resolve, reject) => {
     // debugPrint2("setupPopupWindowAsync 1");
