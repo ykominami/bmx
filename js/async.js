@@ -1,23 +1,11 @@
-import { getStorageOptions, addRecentlyItemX } from './global.js';
+import { loadSettings, loadSettings_by_api } from './global.js';
 
-function restoreSelectRecently(select) {
-  let sOptions = getStorageOptions();
-  addRecentlyItemX(select, sOptions);
-}
-/*
- * function updateSelectRecently(select) {
-  console.log(`#- updateSelectRecently | async.js`);
-  addRecentlyItem(select, null, null);
-}
-*/
+function loadAsync(mes = '') {
+  return new Promise((resolve, reject) => {
+    // loadSettings(mes);
+    loadSettings_by_api(mes);
 
-function updateSelectRecently(ary, select) {
-  // console.log(`updateSelectRecently ary=${JSON.stringify(ary)}`);
-  const opts1 = ary.map((element) => {
-    return $('<option>', {
-      value: element.value,
-      text: element.text,
-    });
+    resolve({});
   });
 }
 
