@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<title></title>
-	<script src="outerjs/jquery-3.7.1.min.js"></script>
+	<script src="outerjs/jquery-3.1.0.min.js"></script>
 	<link rel="stylesheet" href="outerjs/jquery-ui.min.css">
 	<script src="outerjs/jquery-ui.min.js"></script>
 	<script src="./outerjs/dayjs.min.js"></script>
@@ -20,27 +20,26 @@
 
 	<div class="wrapper2">
 		<div id="add-mode" class="not-selected">
+			<button type="button" name="today" id="todaybtn">tod</button>
 			<button type="button" name="rm" id="removebtn">rm</button>
 			<!-- <input type="radio" name="add-mode"  id="removebtn"><label>remove</label></input>  -->
 			<button type="button" name="cl" id="closebtn">cls</button>
 			<button type="button" name="addF" id="addFolderbtn">addF</button>
-			<button id="go-to-options">Gtopt</button>
+			<button id="go-to-options">Gtop</button>
 			<button id="addDbtn">addD</button>
-			<button id="moveBMX">BX</button>
-			<button id="moveBMX2">BX2</button>
-			<button id="moveBMX3">BX3</button>
+			<button id="addFbbtn">Fb</button>
 			<button id="addFcbtn">Fc</button>
 			<button id="lsbtn">ls</button>
 			<button id="popupBtn">popup</button>
-
-			<input type="radio" title="add-mode" name="add-mode" value="s"><label>s</label></input>
-			<input type="radio" title="add-mode" name="add-mode" value="m-r"><label>m-r</label></input>
-			<input type="radio" title="add-mode" name="add-mode" value="m-l"><label>m-l</label></input>
-			<input type="radio" title="add-mode" name="add-mode" value="x"><label>x</label></input>
-			<input type="text" title="name" id="name" class="input">
-			<input type="text" title="url" id="url" class="input">
-			<input type="text" title="item_name" id="item_name" class="input">
-			<input type="text" title="item_name_2" id="item_name_2" class="input">
+			<button id="pageBtn">page</button>
+			
+			<input type="radio" name="add-mode" value="s"><label>s</label></input>
+			<input type="radio" name="add-mode" value="m-r"><label>m-r</label></input>
+			<input type="radio" name="add-mode" value="m-l"><label>m-l</label></input>
+			<input type="text" id="name" class="input">
+			<input type="text" id="url" class="input">
+			<input type="text" id="item_name" class="input">
+			<input type="text" id="item_name_2" class="input">
 		</div>
 		<div id="move-mode" class="not-selected wrapper4">
 			<button type="button" name="removeitem" class="button" id="removeitembtn">remove</button>
@@ -48,13 +47,12 @@
 			<button type="button" name="importurls" class="button" id="importbtn">import</button>
 			<input id="sid" name="sid" type="hidden" value="">
 			<div class="wrapper3">
-				<select type="text" id="zinp" title="zinp" class="select"></select>
-				<select type="text" id="yinp" title="yinp" class="select"></select>
+				<select type="text" id="zinp" class="select"></select>
+				<select type="text" id="yinp" class="select"></select>
 			</div>
-			<input type="text" title="oname" id="oname" class="input">
-			<input type="text" title="ourl" id="ourl" class="input">
-			<input type="text" title="ox" id="ox" class="input">
-			<div type="hidden" class="label"><input type="text" title="oid" id="oid" class="input"></div>
+			<input type="text" id="oname" class="input">
+			<input type="text" id="ourl" class="input">
+			<div type="hidden" class="label"><input type="text" id="oid" class="input"></div>
 		</div>
 	</div>
 	<div id="menu"></div>
