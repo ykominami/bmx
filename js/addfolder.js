@@ -18,7 +18,6 @@ import {
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
 } from './settings.js';
-} from './settings.js';
 
 import {
   dumpTreeItemsX,
