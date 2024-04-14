@@ -1,5 +1,4 @@
-import { debugPrint2, debugPrint } from './debug.js';
-
+let Settings = {};
 const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴() */
 const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
 const StorageHiers = 'Hiers'; /* 各keytop毎の選択された対象フォルダ */
@@ -8,7 +7,7 @@ const ANOTHER_FOLER = -1;
 const Keyvalues = [
   [StorageOptions, []],
   [StorageSelected, {}],
-  [StorageHiers, {}],
+  [StorageHiers, {}], 
   [StorageMisc, {}],
 ];
 
@@ -24,7 +23,6 @@ function adjustValue(val) {
   // if (val == null || val === undefined) {
   if (val != null) {
     if (val !== undefined) {
-      if (val !== 'undefined') {
       if (val !== 'undefined') {
         val2 = val;
         val3 = 0;
@@ -44,6 +42,7 @@ function adjustValue(val) {
   // console.log(`adjustValue 1 val3=${val3}`);
   return val2;
 }
+
 
 async function loadSettings_by_api(mes = '') {
   // TODO: remove argument mes
@@ -96,9 +95,6 @@ function initSettings_z() {
   console.log(`StorageSelected ${c[StorageSelected]}`);
 
   setSettings(c);
-  setSettingsFromLoad(c);
-  setSettingsFromLoad2(c);
-  copyFromLoad2ToSettingsX();
 
   saveSettings();
 }
@@ -110,16 +106,6 @@ async function initSettings_0() {
   setSettingsByKey(Settings, StorageSelected, {});
   setSettingsByKey(Settings, StorageHiers, {});
   setSettingsByKey(Settings, StorageMisc, {});
-
-  setSettingsByKey(SettingsFromLoad, StorageOptions, []);
-  setSettingsByKey(SettingsFromLoad, StorageSelected, {});
-  setSettingsByKey(SettingsFromLoad, StorageHiers, {});
-  setSettingsByKey(SettingsFromLoad, StorageMisc, {});
-
-  setSettingsByKey(SettingsFromLoad2, StorageOptions, []);
-  setSettingsByKey(SettingsFromLoad2, StorageSelected, {});
-  setSettingsByKey(SettingsFromLoad2, StorageHiers, {});
-  setSettingsByKey(SettingsFromLoad2, StorageMisc, {});
 }
 
 async function initSettings_1(c) {
@@ -130,9 +116,6 @@ async function initSettings_1(c) {
   console.log(`StorageSelected ${c[StorageSelected]}`);
 
   setSettings(c);
-  setSettingsFromLoad(c);
-  setSettingsFromLoad2(c);
-  copyFromLoad2ToSettingsX();
 
   saveSettings();
 }
@@ -151,14 +134,6 @@ async function initSettings_all() {
 function setSettings(val) {
   console.log(`================= setSettings ${JSON.stringify(val)}`);
   Settings = val;
-}
-
-function setSettingsFromLoad(val) {
-  SettingsFromLoad = val;
-}
-
-function setSettingsFromLoad2(val) {
-  SettingsFromLoad2 = val;
 }
 
 function getSettingsByKey(assoc, key) {
@@ -257,7 +232,6 @@ async function saveSettings() {
   val[StorageSelected] = getStorageSelected();
   // val[StorageHiers] = getStorageHiers();
   val[StorageSelected] = [];
-  // val[StorageMisc] = getStorageMisc();
 
   console.log('==################################ saveSettings == 1');
   console.log(Object.entries(val));
@@ -293,20 +267,6 @@ function removeSettings() {
   );
 }
 
-function copyFromLoadToSettingsX() {
-  copyFromLoadToSettings(StorageOptions);
-  copyFromLoadToSettings(StorageSelected);
-  copyFromLoadToSettings(StorageHiers);
-  copyFromLoadToSettings(StorageMisc);
-}
-
-function copyFromLoad2ToSettingsX() {
-  copyFromLoad2ToSettings(StorageOptions);
-  copyFromLoad2ToSettings(StorageSelected);
-  copyFromLoad2ToSettings(StorageHiers);
-  copyFromLoad2ToSettings(StorageMisc);
-}
-
 function copyFromLoadToSettings(key) {
   // SettingsFromLoad[key] = Settings[key];
   console.log(`================= copyFromLoadToSettings key=${key}`);
@@ -332,15 +292,15 @@ function copyFromLoad2ToSettings(key) {
 function printBase(va, mes = '') {
   console.log(`||| ${mes} |${va}`);
   Object.entries(va).map(([key, value]) => {
-    debugPrint2(`${key} | ${JSON.stringify(value)}`);
+    console.log(`${key} | ${JSON.stringify(value)}`);
   });
-  debugPrint2(`|||====`);
+  console.log(`|||====`);
 }
 
 function printSettingsBase(var_name, va, mes = '') {
-  debugPrint2(`||| ${mes} loadSettings ${var_name}`);
+  console.log(`||| ${mes} loadSettings ${var_name}`);
   Object.entries(va).map(([key, value]) => {
-    debugPrint2(`${key} | ${JSON.stringify(value)}`);
+    console.log(`${key} | ${JSON.stringify(value)}`);
   });
 }
 function printSettings(mes = '') {
@@ -354,38 +314,27 @@ function printSettingsFromLoad(mes = '') {
 function printSettingsFromLoad2(mes = '') {
   printSettingsBase('SettingsFromLoad2', SettingsFromLoad2, (mes = ''));
 }
-
 export {
   StorageOptions,
   StorageSelected,
   StorageHiers,
   ANOTHER_FOLER,
   adjustValue,
-  loadSettings_by_api,
-  initSettings_all,
   //
-  setSettings,
-  setSettingsFromLoad,
-  setSettingsFromLoad2,
-  getSettingsByKey,
-  setStorageSelected,
-  getStorageOptions,
-  setStorageOptions,
-  getStorageHiers,
-  setStorageHiers,
-  getStorageMisc,
-  setStorageMisc,
-  storageOptionsUnshift,
-  saveSettings,
   loadSettings,
-  loadSettings2,
-  removeSettings,
-  copyFromLoadToSettingsX,
-  copyFromLoad2ToSettingsX,
+  loadSettings_by_api,
+  setSettings,
+  getSettingsByKey,
+  getStorageOptions,
+  saveSettings,
+  initSettings_all,
   copyFromLoadToSettings,
   copyFromLoad2ToSettings,
-  printBase,
-  printSettings,
-  printSettingsFromLoad,
-  printSettingsFromLoad2,
-};
+  loadSettings2,
+  removeSettings,
+  setStorageHiers,
+  setStorageMisc,
+  setStorageOptions,
+  setStorageSelected,
+  storageOptionsUnshift
+}

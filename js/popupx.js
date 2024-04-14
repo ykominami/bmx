@@ -39,20 +39,10 @@ import {
   printItemHash,
 } from './data.js';
 
-import { debugPrint2, debugPrint } from './debug.js';
-
 import {
   adjustValue,
-  setSettings,
-  setSettingsFromLoad,
-  setSettingsFromLoad2,
-  StorageOptions,
-  StorageSelected,
-  StorageHiers,
-  getStorageHiers,
   ANOTHER_FOLER,
   initSettings_all,
-  getSettingsByKey,
   setStorageSelected,
   getStorageOptions,
   setStorageHiers,
@@ -60,15 +50,8 @@ import {
   setStorageMisc,
   storageOptionsUnshift,
   saveSettings,
-  loadSettings,
   loadSettings2,
   removeSettings,
-  copyFromLoadToSettingsX,
-  copyFromLoad2ToSettingsX,
-  printSettings,
-  printSettingsFromLoad,
-  printSettingsFromLoad2,
-  printBase,
 } from './global.js';
 
 import { loadAsync } from './async.js';
@@ -284,7 +267,7 @@ function addSelectWaitingItemsX(select, folder_id) {
   const item = getItem(folder_id);
   console.log(`folder_id=${folder_id}`);
   console.log(`item.id=${item.id}`);
-  // debugPrint2(["folder_id=", folder_id]);
+  // console.log(["folder_id=", folder_id]);
 
   chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
     select.empty();
@@ -459,7 +442,6 @@ function addSelectWaitingFolders(select) {
       values.push(item.id);
       opts1.push(
         $('<option>', {
-        $('<option>', {
           value: item.id,
           text: element,
         })
@@ -473,7 +455,7 @@ function addSelectWaitingFolders(select) {
     })
   );
   select.append(opts1);
-  // debugPrint2("addSelectWaitingFolders");
+  // console.log("addSelectWaitingFolders");
   console.log(values);
   addSelectWaitingItemsX($('#yinp'), values[0]);
 }
@@ -567,7 +549,7 @@ function dumpTreeItems(bookmarkTreeNodes, ignore_head) {
 
 /* ====== popup window 下部 ===== */
 function makeMenuOnBottomArea() {
-  // debugPrint2("makeMenuOnBottomArea 1");
+  // console.log("makeMenuOnBottomArea 1");
   const w = getNumOfRows();
   const count = getMax();
   let ind;
@@ -623,10 +605,10 @@ function makeMenuOnBottomArea() {
 
 function makeMenuOnBottomAreaAsync() {
   return new Promise((resolve, reject) => {
-    // debugPrint2("makeMenuOnBottomAreaAsyc 1");
+    // console.log("makeMenuOnBottomAreaAsyc 1");
     makeMenuOnBottomArea();
     // saveSettings();
-    // debugPrint2("makeMenuOnBottomAreaAsyc 2");
+    // console.log("makeMenuOnBottomAreaAsyc 2");
     /*
 	    let keys = getItemHashByHierKeys()
 		console.log(keys);
@@ -669,20 +651,13 @@ function makeMenuOnUpperArea(title, url) {
 
   $('#add-mode').click(() => {
     setTargetArea('#add-mode');
-  $('#add-mode').click(() => {
-    setTargetArea('#add-mode');
   });
-  $('#move-mode').click(() => {
-    setTargetArea('#move-mode');
   $('#move-mode').click(() => {
     setTargetArea('#move-mode');
   });
 
   $('#gotobtn').click(() => {
-  $('#gotobtn').click(() => {
     /* 隠しフィールドに設定したtab idは、val()で取得しただけでは文字列になるので、整数値にする */
-    const sid = parseInt($('#sid').val(), 10);
-    const ourl = $('#ourl').val();
     const sid = parseInt($('#sid').val(), 10);
     const ourl = $('#ourl').val();
     chrome.tabs.update(
@@ -695,7 +670,6 @@ function makeMenuOnUpperArea(title, url) {
       }
     );
   });
-  $('#importbtn').click(() => {
   $('#importbtn').click(() => {
     if (getUrls !== null && getUrls !== undefined) {
       importUrls(getUrls());
@@ -711,7 +685,7 @@ function makeMenuOnUpperArea(title, url) {
     });
   });
   $('#bk').change(() => {
-    // debugPrint2($("#bk").val());
+    // console.log($("#bk").val());
   });
   $('#todaybtn').click(() => {
     removeSettings();
@@ -719,7 +693,6 @@ function makeMenuOnUpperArea(title, url) {
   $('#removebtn').click(() => {
     removeSettings();
   });
-  $('#closebtn').click(() => {
   $('#closebtn').click(() => {
     closeTabs();
   });
@@ -733,10 +706,9 @@ function makeMenuOnUpperArea(title, url) {
     console.log('addFbbtn');
   });
   $('#addFcbtn').click(() => {
-    debugPrint2('addFcbtn');
+    console.log('addFcbtn');
   });
 
-  $('#lsbtn').click(() => {
   $('#lsbtn').click(() => {
     lstree();
   });
@@ -774,10 +746,10 @@ function selectWaitingItemsBtnHdr(folder_id) {
     して呼び出されることを想定している */
 /* 一気に全フォルダの階層構造をつくることが目的である */
 function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
-  //	debugPrint2("dTN 1")
+  //	console.log("dTN 1")
   let ary = [];
 
-  // debugPrint2(bookmarkTreeNodes)
+  // console.log(bookmarkTreeNodes)
   /* bookmarkTreeNodes - フォルダと項目が混在している */
   bookmarkTreeNodes.forEach((element, index, array) => {
     /* フォルダのみを処理する（項目は無視する） */
@@ -823,7 +795,7 @@ function dumpTreeNodes(bookmarkTreeNodes, parent_item) {
 }
 function dumpTreeNodesAsync(bookmarkTreeNodes) {
   return new Promise((resolve, reject) => {
-    // debugPrint2("Promise dumpTreeNodes 1");
+    // console.log("Promise dumpTreeNodes 1");
     dumpTreeNodes(bookmarkTreeNodes, {
       root: true,
     });
@@ -841,19 +813,6 @@ function dumpTreeNodesAsync_0(bookmarkTreeNodes) {
       root: true,
       s,
     });
-    // let storagex = loadSettings2("P1").then((value) => {});
-    /*
-    let storagex = loadSettings2("P1");
-    setSettingsFromLoad2(storagex);
-    copyFromLoad2ToSettingsX();
-    console.log(
-      " ==dumpTreeNodesAsync_0 =========================================="
-    );
-    printSettings();
-    console.log("============================================");
-    console.log("P1 in loadSettings2 then END");
-    */
-    // const keys = getItemHashKeys();
     const hierKeys = getItemHashByHierKeys();
     setStorageHiers(hierKeys);
     let d = new Date();
@@ -864,8 +823,6 @@ function dumpTreeNodesAsync_0(bookmarkTreeNodes) {
 
     saveSettings();
     let storagex2 = loadSettings2('P2');
-    // setSettingsFromLoad2(storagex2);
-    // copyFromLoad2ToSettingsX();
     resolve({});
   });
 }
@@ -903,19 +860,6 @@ async function make_popup_ui() {
   await setupPopupWindowAsync();
   await makeMenuOnBottomAreaAsync();
   // console.log(`startI 4`);
-}
-async function get_bookmarks() {
-  dumpBookmarksAsync().then((bookmarkTreeNodes) => {
-    dumpTreeNodesAsync(bookmarkTreeNodes);
-  });
-}
-
-function dumpBookmarksAsync() {
-  return new Promise((resolve, reject) => {
-    chrome.bookmarks.getTree((bookmarkTreeNodes) => {
-      resolve(bookmarkTreeNodes);
-    });
-  });
 }
 
 function gotooptions() {
