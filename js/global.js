@@ -4,15 +4,18 @@ const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴(
 const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
 const StorageHiers = 'Hiers'; /* 各keytop毎の選択された対象フォルダ */
 const StorageMisc = 'Misc'; /* Misc */
-const StorageOptions = 'Options'; /* 選択された対象フォルダの履歴() */
-const StorageSelected = 'Selected'; /* 各keytop毎の選択された対象フォルダ */
-const StorageHiers = 'Hiers'; /* 各keytop毎の選択された対象フォルダ */
-const StorageMisc = 'Misc'; /* Misc */
 const ANOTHER_FOLER = -1;
 
-let Settings = {};
-let SettingsFromLoad = {};
-let SettingsFromLoad2 = {};
+
+
+
+
+
+
+
+
+
+
 
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
@@ -209,7 +212,6 @@ function getStorageOptions() {
   if (Array.isArray(options) == false) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
-    console.log(`############### 4 getStorageOptions not Array`);
   }
   return options;
 }
@@ -236,14 +238,8 @@ function setStorageHiers(value) {
   localStorage[StorageHiers] = value;
 }
 
-function getStorageMisc() {
-  return Settings[StorageMisc];
-}
 
-function setStorageMisc(value) {
-  console.log(
-    `================= setStorageMisc value=${JSON.stringify(value)}`
-  );
+function getStorageMisc() {
   Settings[StorageMisc] = value;
   localStorage[StorageMisc] = value;
 }
