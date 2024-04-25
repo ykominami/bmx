@@ -1,4 +1,4 @@
-import { dumpTreeNodes } from './treenode.js';
+import { dumpTreeNodes, moveBMX, moveBMX2, moveBMX3 } from './treenode.js';
 import { updateSelectRecently } from './async.js';
 import { getItems1, getKeys, getNumOfRows, getMax } from './settings.js';
 import { addFolderx, addDayFolderx, lstree } from './addfolder.js';
@@ -37,7 +37,6 @@ import {
 } from './global.js';
 
 import { restoreSelectRecently } from './async.js';
-import { moveBMX, moveBMX2, moveBMX3 } from './itemg.js';
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
@@ -240,17 +239,10 @@ function addSelectWaitingItemsX(select, folder_id) {
   if (item == null) {
     return;
   }
-  // console.log(`folder_id=${folder_id}`);
-  // console.log(`item.id=${item.id}`);
-  // console.log(["folder_id=", folder_id]);
 
   chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
     select.empty();
-    console.log(
-      `addSelectWaitingItemsX 0 bookmarkTreeNodes=${bookmarkTreeNodes}`
-    );
     const zary = dumpTreeItems(bookmarkTreeNodes, true);
-    console.log(`addSelectWaitingItemsX 1 zary=${zary}`);
     select.append(zary);
     const folder_id = select.val();
     if (folder_id) {
@@ -279,7 +271,6 @@ async function add_mode_x([cur_tabs, parent_id, parent_text]) {
         title: current_tab.title,
         url: current_tab.url,
       });
-      /* chrome.tabs.removebtn(current_tab.id) */
       break;
     case 'm-r':
       for (i = current_tab.index /* + 1*/; i < tabs.length; i++) {
@@ -369,7 +360,7 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
       chrome.bookmarks.get(id, (result) => {
         // console.log(`createOrMoveBKItem move-mode 3`)
         let ret = moveBKItem(id, result[0].parentId, parent_id);
-        addSelectWaitingItemsX($('#yinp'), $('#zinp').val(), 'URL');
+        addSelectWaitingItemsX($('#yinp'), $('#zinp').val());
       });
     } else {
       alert("Can't move bookmark");
@@ -450,7 +441,7 @@ function addSelectWaitingFolders_0(select, subselect) {
     select.append(opts1);
     select.prop('selectedIndex', 0);
     // console.log(`addSelectWaitingFolders A select.val=${objs[0].value}`);
-    addSelectWaitingItemsX(subselect, select.val(), 'URL');
+    addSelectWaitingItemsX(subselect, select.val());
   }
 }
 function addSelectWaitingFolders(select, subselect) {
@@ -488,7 +479,7 @@ function addSelectWaitingFolders(select, subselect) {
     select.append(opts1);
     select.prop('selectedIndex', 0);
     // console.log(`addSelectWaitingFolders A select.val=${objs[0].value}`);
-    addSelectWaitingItemsX(subselect, select.val(), 'URL');
+    addSelectWaitingItemsX(subselect, select.val());
   }
 }
 
@@ -508,11 +499,8 @@ function moveBKItem(id, src_parent_id, dest_parent_id) {
         parentId: dest_parent_id,
       })
       .then
-      //console.log(
-      //  `moveBKItem A src_parent_id=${src_parent_id} dest_parent_id=${dest_parent_id}`
-      //)
       ()
-      .then(addSelectWaitingItemsX($('#yinp'), src_parent_id, 'URL'))
+      .then(addSelectWaitingItemsX($('#yinp'), src_parent_id))
       .then((ret = true));
   } else {
     alert("Can't move bookmark");
@@ -527,13 +515,6 @@ function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
   let i;
   for (i = 0; i < bookmarkTreeNodes.length; i++) {
     const element = bookmarkTreeNodes[i];
-    /* console.log(
-      `in popupx.js call dumpTreeItems i=${i} element=${JSON.stringify(
-        element
-      )} ignore_head=${ignore_head} element.url=${element.url} element.id=${
-        element.id
-      } element.title=${element.title}`
-    );    */
     if (!ignore_head) {
       if (!element.url) {
         ary.push(
@@ -542,17 +523,13 @@ function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
             text: element.title,
           })
         );
-        console.log(`in popupx.js call dumpTreeItems 1 ary=${ary}`);
+        // console.log(`in popupx.js call dumpTreeItems 1 ary=${ary}`);
       }
     }
-    console.log(
-      `in popupx.js call dumpTreeItems element.children=${element.children}|`
-    );
     if (element.children) {
       ary = ary.concat(dumpTreeItems(element.children, false));
     }
   }
-  console.log(`in popupx.js call dumpTreeItems END ary=${ary}`);
   return ary;
 }
 
@@ -669,17 +646,7 @@ function selectWaitingItemsBtnHdr(option_value) {
             return hostname;
           })
           .catch((error) => {
-            // return e;
-            //alert(error.message);
-            // $("#ox").val(error.message);
           });
-        /*
-        console.log(
-          `############  selectWaitingItemsBtnHdr folder_id=${folder_id} || #oid=${$(
-            "#oid"
-          ).val()}|| ${BookmarkTreeNodes.length}`
-        );
-        */
       }
     });
   }
@@ -692,9 +659,7 @@ function selectWaitingItemsBtnHdr_0(folder_id) {
     $('#oid').val(BookmarkTreeNodes[0].id);
   });
   let len = BookmarkTreeNodes.length;
-  // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 3`);
   if (len > 0) {
-    // console.log(`selectWaitingItemsBtnHdr option_value=${option_value} 4`);
     let bt = BookmarkTreeNodes[0];
     let title = bt.title;
     let url = bt.url;
@@ -704,7 +669,6 @@ function selectWaitingItemsBtnHdr_0(folder_id) {
     $('#ourl').val(`${url}`);
     $('#oid').val(`${id}`);
     $('#ox').val(`abc`);
-    // url = null;
     let ret = parseURLAsync(url)
       .then((parser) => {
         let href = parser.href;
@@ -718,24 +682,12 @@ function selectWaitingItemsBtnHdr_0(folder_id) {
         return hostname;
       })
       .catch((error) => {
-        // return e;
-        //alert(error.message);
-        // $("#ox").val(error.message);
       });
-    /*
-        console.log(
-          `############  selectWaitingItemsBtnHdr folder_id=${folder_id} || #oid=${$(
-            "#oid"
-          ).val()}|| ${BookmarkTreeNodes.length}`
-        );
-        */
   }
 }
 
 /* ===== popup window 上部 ===== */
 function makeMenuOnUpperArea(title, url) {
-  // console.log("++++++++++++++++++++++++++++ ==== makeMenuOnUpperArea");
-  /* add-mode領域 */
   $('#name').val(title);
   $('#url').val(url);
 
@@ -747,9 +699,7 @@ function makeMenuOnUpperArea(title, url) {
 
   /* move-mode領域のフォルダ名選択時の動作 */
   $('#yinp').click(() => {
-    /* move-mode領域を選択状態にする */
     setTargetArea('#move-mode');
-    // console.log(`yinp click`);
     let value = $('#yinp').val();
     selectWaitingItemsBtnHdr(value);
   });
@@ -758,12 +708,10 @@ function makeMenuOnUpperArea(title, url) {
   $('#zinp').click(() => {
     /* move-mode領域を選択状態にする */
     setTargetArea('#move-mode');
-    // console.log('#zinp click');
     let value = $('#zinp').val();
-    // console.log(`#zinp click value=${JSON.stringify(value)}`);
     if (value != null) {
       /* 対象フォルダに含まれるアイテム一覧作成 */
-      addSelectWaitingItemsX($('#yinp'), value, 'FOLDER');
+      addSelectWaitingItemsX($('#yinp'), value);
     }
   });
 
@@ -805,7 +753,7 @@ function makeMenuOnUpperArea(title, url) {
       const parent_id = $('#zinp').val();
       clear_in_move_mode_area();
       $('#yinp').empty();
-      addSelectWaitingItemsX($('#yinp'), parent_id, 'URL');
+      addSelectWaitingItemsX($('#yinp'), parent_id);
     });
   });
   $('#removebtn').click(() => {
@@ -859,9 +807,7 @@ async function setupPopupWindowAsync() {
 }
 
 async function dumpBookmarksAsync() {
-  // console.log("dumpBookmarksAsync 1");
   const bookmarkTreeNodes = chrome.bookmarks.getTree();
-  // console.log("dumpBookmarksAsync 3");
   return bookmarkTreeNodes;
 }
 
@@ -885,10 +831,6 @@ async function get_bookmarks() {
   });
 }
 async function dumpTreeNodesAsync(bookmarkTreeNodes) {
-  /* console.log(
-    `### dumpTreeNodesAsync bookmarkTreeNodes.length= ${bookmarkTreeNodes.length}`
-  );
-  */
   dumpTreeNodes(bookmarkTreeNodes, {
     root: true,
   });
