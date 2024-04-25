@@ -1,5 +1,3 @@
-import { debugPrint2, debugPrint } from './debug.js';
-import { restoreSelectRecently } from './async.js';
 import { makeItemHashX } from './data.js';
 
 let Settings = {};
@@ -44,25 +42,14 @@ function adjustValue(val) {
     val2 = [];
     val3 = 30;
   }
-  // console.log(`adjustValue 1 val2=${val2}`);
-  // console.log(`adjustValue 1 val3=${val3}`);
   return val2;
 }
 
 async function loadSettings() {
   let value = null;
-  let str2 = '';
   return chrome.storage.local.get(null).then((result) => {
     if (result['all']) {
       value = result['all'];
-      let str = JSON.stringify(value);
-      let size = str.length;
-      let str2 = '';
-      if (str.length < 100) {
-        str2 = str;
-      } else {
-        str2 = `${size}`;
-      }
     } else {
       value = {};
     }
@@ -110,15 +97,12 @@ function getStorageSelected() {
 }
 
 function addStorageSelected(key, value) {
-  // console.log(`Settings=${Settings}`);
-  // console.log(`Settings[StorageSelected]=${Settings[StorageSelected]}`);
   setSettingsByKey(Settings[StorageSelected], key, value);
 }
 
 function setStorageOptions(value) {
   Settings[StorageOptions] = value;
 }
-
 
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
@@ -138,8 +122,6 @@ function getStorageHiers() {
 }
 
 async function setStorageHiers(value) {
-  //Settings[StorageHiers] = value;
-  // let d = getStorageHiers();
   Settings[StorageHiers] = {};
   await chrome.storage.local.set({ all: Settings });
   Settings[StorageHiers] = value;
@@ -154,7 +136,6 @@ async function storageOptionsUnshift(obj) {
   Settings[StorageOptions].unshift(obj);
   await chrome.storage.local.set({ all: Settings });
   let objx = Settings[StorageOptions];
-  // console.log(`storageOptionsUnshift obj=${JSON.stringify(objx)}`);
 }
 
 async function saveSettings() {
@@ -223,9 +204,9 @@ function makeSelectOptionsData(options) {
         text: element.text,
       })
     );
-    console.log(
+    /* console.log(
       `global.js | addRecentlyItem | element.value=${element.value} element.text=${element.text}| global.js`
-    );
+    ); */
   });
   return opts1;
 }
