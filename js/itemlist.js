@@ -16,5 +16,4 @@ export class ItemList {
 		}
 		return ret;
 	}
-
 }
