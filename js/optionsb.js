@@ -2,7 +2,6 @@ import { getItemHashByHierKeys, initItems } from './data.js';
 import { makeBtnA } from './util.js';
 import { getStorageHiers, printSettings } from './global.js';
 import { loadAsync } from './async.js';
-import { debugPrint2, debugPrint } from './debug.js';
 
 function setKeyItems() {
   const keys2 = getItemHashByHierKeys();
@@ -26,14 +25,10 @@ function saveOptions() {
   );
 }
 
-// const saveOptions2 = () => {
 function saveOptions2() {
   alert('ALERT 200');
 }
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-// const restoreOptions = () => {
 function restoreOptions() {
   chrome.storage.sync.get(
     { favoriteColor: 'red', likesColor: true },
