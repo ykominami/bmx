@@ -1,7 +1,7 @@
 {
   "name": "Bmx72MV3C",
   "description": "Powered-Bookmark7MV3C",
-  "version": "2.3.2",
+  "version": "2.4.1",
   "manifest_version": 3,
   "permissions": [
     "bookmarks",
