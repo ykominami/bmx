@@ -12,7 +12,6 @@ import {
   setItemByHier,
   setItem,
 } from './data.js';
-import { debugPrint2, debugPrint } from './debug.js';
 
 /* folder追加処理 */
 function getYearAndNextMonthAsString() {
