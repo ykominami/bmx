@@ -32,13 +32,9 @@ export class Movergroup {
   }
   move(bookmarkItem) {
     let ret = false;
-    // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
-    // console.log(`Movergroup.move keys=${ Object.keys(this.group) }`)
     if (bookmarkItem.url) {
       let hostname = parseURLX(bookmarkItem.url).then((hostname) => {
-        // console.log(`Movergroup.move || hostname=${hostname}`)
         if (this.keys.includes(hostname)) {
-          // console.log(`Movergroup.move IN hostname=${hostname} T`)
           ret = this.group[hostname].move(bookmarkItem).then((result) => {
             ret = result;
           });

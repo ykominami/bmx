@@ -12,3 +12,6 @@ jquery-*/
 smoothness/
 *.code-workspace
 ?.js
+#
+.idea
+
