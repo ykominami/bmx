@@ -486,7 +486,7 @@ function addSelectWaitingFolders(select, subselect) {
 function dumpBookmarksFromSubTree(parentId, query) {
   chrome.bookmarks.getSubTree(parentId, (bookmarkTreeNodes) => {
     let item = getItem(parentId);
-    item.children = dumpTreeNodes(bookmarkTreeNodes, {});
+    item.children = dumpTreeNodes(bookmarkTreeNodes);
     addSelectWaitingItemsX($('#yinp'), parentId);
   });
 }
@@ -515,6 +515,7 @@ function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
   let i;
   for (i = 0; i < bookmarkTreeNodes.length; i++) {
     const element = bookmarkTreeNodes[i];
+
     if (!ignore_head) {
       if (!element.url) {
         ary.push(
@@ -831,9 +832,7 @@ async function get_bookmarks() {
   });
 }
 async function dumpTreeNodesAsync(bookmarkTreeNodes) {
-  dumpTreeNodes(bookmarkTreeNodes, {
-    root: true,
-  });
+  dumpTreeNodes(bookmarkTreeNodes);
   const hierKeys = getItemHashByHierKeys();
   // console.log(`hierKeys=${hierKeys}`);
   setStorageHiers(hierKeys);
