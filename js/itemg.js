@@ -9,18 +9,17 @@ let RootItems = [];
 let TopItems = [];
 
 // TODO: 引数elementには、chrome.bookmark.getTree()の返値が渡されると想定している
-
-function create_item(element) {
-    let idnum = Number.parseInt(element.id, 10);
+function determine_id(id){
+    let idnum = Number.parseInt(id, 10);
     let idnumx = idnum;
     if (Number.isNaN(idnum)) {
         idnumx = -1;
     }
-    let parentIdnum = Number.parseInt(element.parentId, 10);
-    let parentIdnumx = parentIdnum;
-    if (Number.isNaN(parentIdnum)) {
-        parentIdnumx = -1;
-    }
+    return idnumx;
+}
+function create_item(element) {
+    let idnumx = determine_id(element.id);
+    let parentIdnumx = determine_id(element.parentId);
 
     let item = {
         id: element.id,
@@ -48,7 +47,7 @@ function create_item(element) {
         item.kind = 'ROOT';
         RootItems.push(item);
     } else {
-        if (parentIdnum == 0) {
+        if (parentIdnumx == 0) {
             item.top = true;
             item.kind = 'TOP';
             TopItems.push(item);
@@ -86,8 +85,7 @@ function add_to_itemgroup(element) {
             // console.log(`In C add_to_itemgroup item.kind=${item.kind}`);
             if (element.children.length > 0) {
                 // console.log(`In D add_to_itemgroup item.kind=${item.kind}`);
-                let ignore_head = false;
-                item.children = dumpTreeNodes(element.children, ignore_head);
+                item.children = dumpTreeNodes(element.children);
             }
         }
         return item;
