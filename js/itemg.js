@@ -64,12 +64,6 @@ function create_item(element) {
             }
         }
     }
-    if( item.kind == 'TOP'){
-        console.log(`2 item.kind=${item.kind}`)
-    }
-    else{
-        console.log(`3 item.kind=${item.kind}`)
-    }
     return item;
 }
 
