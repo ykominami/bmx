@@ -3,7 +3,6 @@ import {
     getItem,
 } from './data.js';
 import {dumpTreeNodes} from './treenode.js';
-import {parseURLX, parseURLX2} from './util.js';
 
 let RootItems = [];
 let TopItems = [];
@@ -52,7 +51,6 @@ function create_item(element) {
             item.kind = 'TOP';
             TopItems.push(item);
         } else {
-            true,
             item.kind = 'FOLDER';
             /* 親フォルダが通常のフォルダであれば、自身の階層名をつくる */
             let parent_item = getItem(item.parentId);
@@ -88,7 +86,7 @@ function add_to_itemgroup(element) {
 
 function getItemFromRoot(key) {
     let ret = RootItems.find((element) => {
-        element.title == key;
+        element.title = key;
     });
     if (ret === undefined) {
         ret = null;
@@ -125,19 +123,6 @@ function logItems(bookmarkItem, indent) {
     indent--;
 }
 
-function onRejected(error) {
-    console.log(`An error: ${error}`);
-}
-
-function logTree(bookmarkItems) {
-    logItems(bookmarkItems[0], 0);
-}
-
-function logTree2(bookmarkItems) {
-    // logItems2(bookmarkItems[0], 0);
-    logItems2(bookmarkItems[0], 0);
-}
-
 function logItems2(bookmarkItem, indent) {
     if (indent > 1) {
         return;
@@ -163,21 +148,6 @@ function logItems2(bookmarkItem, indent) {
     indent--;
 }
 
-async function call_mover_group_move(mover_group, bookmarkItem) {
-    mover_group.move(bookmarkItem);
-}
-
-async function moveBMXFolderBase(mover_group, src_folder_id) {
-    let bookmarkItems = [];
-    await chrome.bookmarks
-        .getChildren(`${src_folder_id}`)
-        .then((bms) => (bookmarkItems = bms));
-    bookmarkItems.map((bookmarkItem) => {
-        //console.log(`bookmarkItem.title = ${bookmarkItem.title}`);
-        mover_group.move(bookmarkItem);
-    });
-}
-
 function parse_b(parser) {
     let searchParams = parser.searchParams;
     let origin = parser.origin;
@@ -199,20 +169,6 @@ function parse_b(parser) {
     });
     console.log(`hash[s]=${hash['s']}`);
     console.log(`hash[sr]=${hash['sr']}`);
-}
-
-async function moveBMXFolderCheck(mover_group, src_folder_id) {
-    let bookmarkItems = [];
-    await chrome.bookmarks.getChildren(`${src_folder_id}`).then((bms) => {
-        bms.map((bm) => {
-            if (bm.url != undefined) {
-                parseURLX2(bm.url).then((parser) => {
-                    console.log(`bm.title=${bm.title}`);
-                    parse_b(parser);
-                });
-            }
-        });
-    });
 }
 
 export {getItemFromRoot, add_to_itemgroup};
