@@ -69,6 +69,7 @@ export const items1 = [
   ['KU', '/0/KU'],
   ['book', '/0/book'],
   ['本', '/0/本'],
+  ['Note.com', '/0/Note.com'],
   ['Packt', '/0/Packt'],
   ['kurayama', '/Y2/X/S/kurayama'],
   ['jounen', '/Y2/X/S/jounen'],
@@ -203,6 +204,13 @@ export const items1 = [
   ['Op5', '/Y0/0-Archive/Op5'],
   ['F-EBook-3', '/0/F-EBook-3'],
   ['Gs', '/Gs'],
+  /* 18 */
+  ['v-ai', '/Video/v-ai'],
+  ['v-ai-New-or-Intro', '/Video/v-ai-New-or-Intro'],
+  ['国際', '/Video/国際'],
+  ['科学', '/Video/科学'],
+  ['開発', '/Video/開発'],
+  ['エンタメ', '/Video/エンタメ'],
 ];
 export const keys = ['/0/0-etc/1'];
 export const keys0 = [
@@ -236,7 +244,7 @@ function getNumOfRows() {
 }
 
 function getMax() {
-  return 174;
+  return 190;
 }
 
 function getPrefix(key) {
