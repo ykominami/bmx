@@ -24,23 +24,10 @@ function adjustValue(val) {
   let val2 = [];
 
   let val3 = null;
-  // if (val == null || val === undefined) {
   if (val != null) {
-    if (val !== undefined) {
-      if (val !== 'undefined') {
-        val2 = val;
-        val3 = 0;
-      } else {
-        val2 = [];
-        val3 = 10;
-      }
-    } else {
-      val2 = [];
-      val3 = 20;
-    }
+    val2 = val;
   } else {
     val2 = [];
-    val3 = 30;
   }
   return val2;
 }
@@ -91,7 +78,8 @@ function replace_in_Settings(asoc) {
 }
 
 function getStorageSelected() {
-  let selected = adjustValue(Settings[StorageSelected]);
+  let value = getSettingsByKey(Settings, StorageHiers)
+  let selected = adjustValue(value);
   // (`getStorageSelected ${selected}`);
   return selected;
 }

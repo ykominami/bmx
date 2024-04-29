@@ -8,11 +8,8 @@ import { add_to_itemgroup } from './itemg.js';
 function dumpTreeNodes(bookmarkTreeNodes) {
   /* bookmarkTreeNodes - フォルダと項目が混在している */
   return bookmarkTreeNodes.reduce((accumulator, element) => {
-    let ret = null;
     let reg = new RegExp('\/Y\/DashBoard', '');
-    if (element != undefined) {
-      ret = add_to_itemgroup(element);
-    }
+    let ret = add_to_itemgroup(element);
     if (ret != null) {
       if (reg.exec(ret.hier)){
         console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  reg.title=${ret.title}`)
