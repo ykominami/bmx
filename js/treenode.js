@@ -1,5 +1,4 @@
-import { add_to_itemgroup } from './itemg.js';
-
+import { add_to_itemgroup, moveBMXFolderBase } from './itemg.js';
 /* ===== bookmarkの情報を取得 ===== */
 /* 指定フォルダ以下の対象フォルダの一覧取得(配列として) */
 /* この関数は再帰的に呼び出されるが、内部処理は必ず最初はchromeのbookmarksのトップに対
@@ -23,15 +22,6 @@ function dumpTreeNodes(bookmarkTreeNodes) {
   }, []);
 }
 
-function moveBMX3() {
-  let hier = '/Amazon/Amazon';
-  let group = Movergroup.get_mover_group();
-  let obj = getItemByHier(hier);
-  if (obj.id != null) {
-    console.log(`obj.id=${obj.id}`);
-    moveBMXFolderCheck(group, obj.id);
-  }
-}
 /*
         1 ブックマークツールバー
         2 その他のブックマーク
@@ -55,4 +45,4 @@ function moveBMX() {
   moveBMXFolderBase(group, '1');
 }
 
-export { dumpTreeNodes, moveBMX, moveBMX2, moveBMX3 };
+export { dumpTreeNodes, moveBMX, moveBMX2 };

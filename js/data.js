@@ -10,13 +10,6 @@ function makeItemHashX(key) {
   return hash;
 }
 
-function getItemHash() {
-  return ItemHash;
-}
-function getItemHashByHier() {
-  return ItemHashByHier;
-}
-
 function dumpTreeItemsX(bookmarkTreeNodes) {
   let ary = [];
   let i;
@@ -55,9 +48,8 @@ function setItemByHier(key, value) {
   return (ItemHashByHier[key] = value);
 }
 
-function getKeysOfItemByHier(key, value) {
-  let keys = Object.keys(ItemHashByHier);
-  // console.log(`keys.length=${keys.length}`);
+function getKeysOfItemByHier() {
+  return Object.keys(ItemHashByHier);
 }
 
 function getItemHashByHierKeys() {
@@ -76,38 +68,13 @@ function setItem(key, value) {
   return (ItemHash[key] = value);
 }
 
-function getItemHashKeys() {
-  return Object.keys(ItemHash);
-}
-
-function getKeysOfItem() {
-  return Object.keys(ItemHash);
-}
-
 function addItem(item) {
   // console.log(`addItem item=${JSON.stringify(item)}`);
   setItem(item.id, item);
   setItemByHier(item.hier, item);
 }
-
-function initItems() {
-  ItemHashByHier = {};
-  ItemHash = [];
-}
-
-function printItemHashByHier() {
-  debubPrint2('=ItemHashByHier');
-  debubPrint2(ItemHashByHier);
-}
-
-function printItemHash() {
-  debubPrint2('=ItemHash');
-  debubPrint2(ItemHas);
-}
 export {
   makeItemHashX,
-  getItemHash,
-  getItemHashByHier,
   dumpTreeItemsX,
   dumpTreeItemsXTop,
   getItemByHier,
@@ -116,9 +83,5 @@ export {
   getItemHashByHierKeys,
   getItem,
   setItem,
-  getItemHashKeys,
   addItem,
-  initItems,
-  printItemHashByHier,
-  printItemHash,
 };

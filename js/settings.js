@@ -213,20 +213,6 @@ export const items1 = [
   ['エンタメ', '/Video/エンタメ'],
 ];
 export const keys = ['/0/0-etc/1'];
-export const keys0 = [
-  '/0/0-etc/1',
-  '/0/0-etc/2',
-  '/0/action',
-  '/0/AdventCalendar',
-  '/XX/Day-Arc/2023/202308',
-  '/XX/Day-Arc/2023/202309',
-  '/XX/Day-Arc/2023/202310',
-  '/XX/Day-Arc/2023/202311',
-  '/XX/Day-Arc/2023/202312',
-  '/XX/Day-Arc/2024/202401',
-  '/XX/Day-Arc/2024/202402',
-  '/XX/Day-Arc/2024/202403',
-];
 
 export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
 export let folderDayPrefixes = { '/Y/Day': 'Day' };
