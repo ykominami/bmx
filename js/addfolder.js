@@ -22,9 +22,7 @@ function getYearAndNextMonthAsString() {
   let year = current.getFullYear();
   let next_month = getMonthx(current);
   let monthstr = adjustAsStr(next_month);
-  let str = `${year}${monthstr}`;
-
-  return str;
+  return `${year}${monthstr}`;
 }
 /* folder追加処理 */
 function getYearAndMonthAndDayAsString() {
@@ -55,17 +53,16 @@ function registerx(key, value) {
   setItem(value.id, value);
 }
 function makeElement(idx, parentidx, indexx, urlx, titlex) {
-  let element = {
+  return {
     id: idx,
     parentId: parentidx,
     index: indexx,
     url: urlx,
     title: titlex,
   };
-  return element;
 }
 function makeItem(element) {
-  const item = {
+  return {
     id: element.id,
     folder: true,
     root: false,
@@ -77,7 +74,6 @@ function makeItem(element) {
     hier: '' /* hier */,
     children: [],
   };
-  return item;
 }
 
 function makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
@@ -121,8 +117,6 @@ function addFolderx() {
 function addDayFolderx() {
   let folders = getFoldersFromDayPrefixes();
   let [y_str, ym_str, ymd_str] = getYearAndMonthAndDayAsString();
-  let y_m_str = `${y_str}${ym_str}`;
-  let y_m_d_str = `${y_str}${ym_str}${ymd_str}`;
 
   // "Y/Day"
   folders.map((parent) => {
@@ -139,7 +133,7 @@ function addDayFolderx() {
       ymd_str = '';
     }
     const arrayx = [parent, y_str, ym_str, ymd_str];
-    arrayx.reduce((accumulator, currentValue, currentIndex, array) => {
+    arrayx.reduce((accumulator, currentValue) => {
       const parent_item = getItemByHier(accumulator);
       const hier = [accumulator, currentValue].join('/');
       let item = getItemByHier(hier);
