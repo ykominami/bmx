@@ -73,12 +73,9 @@ function add_to_itemgroup(element) {
     } else {
         // console.log(`In B add_to_itemgroup item.kind=${item.kind}`);
         addItem(item);
-        if (element.children != undefined) {
-            // console.log(`In C add_to_itemgroup item.kind=${item.kind}`);
-            if (element.children.length > 0) {
-                // console.log(`In D add_to_itemgroup item.kind=${item.kind}`);
-                item.children = dumpTreeNodes(element.children);
-            }
+        if (element.children.length > 0) {
+            // console.log(`In D add_to_itemgroup item.kind=${item.kind}`);
+            item.children = dumpTreeNodes(element.children);
         }
         return item;
     }
