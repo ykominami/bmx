@@ -1,4 +1,4 @@
-import { makeItemHashX } from './data.js';
+import {makeItemHashX} from './data.js';
 
 let Settings = {};
 
@@ -14,20 +14,12 @@ const Keyvalues = [
   [StorageMisc, {}],
 ];
 
-function getKeysOfStorageHiers(key, value) {
-  let keys = Object.keys(StorageHiers);
-  return keys;
-}
-
 function adjustValue(val) {
   // console.log(`adjustValue 0 val=${val}`);
   let val2 = [];
 
-  let val3 = null;
   if (val != null) {
     val2 = val;
-  } else {
-    val2 = [];
   }
   return val2;
 }
@@ -69,17 +61,12 @@ function setSettingsByKey(assoc, key, value) {
 }
 
 function replace_in_Settings(asoc) {
-  Keyvalues.map(([key, value]) => {
+  Keyvalues.map(([key, _]) => {
     // console.log(`replace_in_settings `);
     if (asoc[key]) {
       setSettingsByKey(Settings, key, asoc[key]);
     }
   });
-}
-
-function getStorageSelected() {
-  let value = getSettingsByKey(Settings, StorageHiers)
-  return adjustValue(value);
 }
 
 function addStorageSelected(key, value) {
@@ -92,19 +79,11 @@ function setStorageOptions(value) {
 
 function getStorageOptions() {
   let options = getSettingsByKey(Settings, StorageOptions);
-  if (Array.isArray(options) == false) {
+  if (Array.isArray(options) === false) {
     options = [];
     setSettingsByKey(Settings, StorageOptions, options);
   }
   return options;
-}
-
-function getStorageHiers() {
-  if (Settings[StorageHiers]) {
-    return Settings[StorageHiers];
-  } else {
-    return [];
-  }
 }
 
 async function setStorageHiers(value) {
@@ -113,46 +92,17 @@ async function setStorageHiers(value) {
   Settings[StorageHiers] = value;
 }
 
-async function setStorageMisc(value) {
-  Settings[StorageMisc] = value;
-  await chrome.storage.local.set({ all: Settings });
-}
-
 async function storageOptionsUnshift(obj) {
   Settings[StorageOptions].unshift(obj);
   await chrome.storage.local.set({ all: Settings });
-  let objx = Settings[StorageOptions];
-}
-
-async function saveSettings() {
-  await chrome.storage.local.set({ all: Settings }).then(() => {
-    // console.log(`Settings saved!`);
-  });
+  // let objx = Settings[StorageOptions];
 }
 
 async function removeSettings() {
   await chrome.storage.local.remove(
     [StorageOptions, StorageSelected, StorageHiers],
-    (result) => {}
+    (_) => {}
   );
-}
-
-function printBase(va, mes = '') {
-  console.log(`||| ${mes} |${va}`);
-  Object.entries(va).map(([key, value]) => {
-    console.log(`${key} | ${JSON.stringify(value)}`);
-  });
-  console.log(`|||====`);
-}
-
-function printSettingsBase(var_name, va, mes = '') {
-  console.log(`||| ${mes} loadSettings ${var_name}`);
-  Object.entries(va).map(([key, value]) => {
-    console.log(`${key} | ${JSON.stringify(value)}`);
-  });
-}
-function printSettings(mes = '') {
-  printSettingsBase('Settings', Settings, (mes = ''));
 }
 
 // const sOptions = getStorageOptions();
@@ -170,8 +120,8 @@ function addRecentlyItemX(select, sOptions) {
 
 function adjustRecentrlyFolder(value, text) {
   const sOptions = getStorageOptions();
-  const ind = sOptions.findIndex((element, index, array) => {
-    return element.value == value;
+  const ind = sOptions.findIndex((element) => {
+    return element.value === value;
   });
   if (ind >= 0) {
     sOptions.splice(ind, 1);
@@ -183,7 +133,7 @@ function adjustRecentrlyFolder(value, text) {
 }
 function makeSelectOptionsData(options) {
   const opts1 = [];
-  options.map((element, index, array) => {
+  options.map((element) => {
     opts1.push(
       $('<option>', {
         value: element.value,
@@ -235,16 +185,10 @@ export {
   addStorageSelected,
   getStorageOptions,
   setStorageOptions,
-  getKeysOfStorageHiers,
-  getStorageHiers,
   setStorageHiers,
-  setStorageMisc,
   storageOptionsUnshift,
-  saveSettings,
   loadSettings,
   removeSettings,
-  printBase,
-  printSettings,
   addRecentlyItem,
   addRecentlyItemX,
 };

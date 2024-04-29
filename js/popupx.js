@@ -1,4 +1,4 @@
-import { dumpTreeNodes, moveBMX, moveBMX2, moveBMX3 } from './treenode.js';
+import { dumpTreeNodes, moveBMX, moveBMX2 } from './treenode.js';
 import { updateSelectRecently } from './async.js';
 import { getItems1, getKeys, getNumOfRows, getMax } from './settings.js';
 import { addFolderx, addDayFolderx, lstree } from './addfolder.js';
@@ -57,10 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ===== popup window 下部 下位関数 ==== */
 function makeMenuRecentlyAndCategorySelectBtn(category_max, items) {
   const ary = [makeMenuXrecently()];
-
-  const ary2 = ary.concat(makeMenuXcategory(category_max, items));
-
-  return ary2;
+  return ary.concat(makeMenuXcategory(category_max, items));
 }
 
 /* 対象フォルダ選択メニュー作成 */
@@ -144,7 +141,7 @@ function addSelect(select, keytop) {
           text: element.text,
         });
       });
-      if (opts1.length == 0) {
+      if (opts1.length === 0) {
         let item2 = getItemByHier(keytop);
         opts1.push(
           $('<option>', {
@@ -182,17 +179,16 @@ function getSelectOption(item, ignore_head) {
       return getSelectOption(element, false);
     });
   }
-  const aryx = ary.flat();
-  return aryx;
+  return ary.flat();
 }
 
 /* ===== */
 
 /* ===== popup window 上部 下位関数 ===== */
 function setTargetArea(val) {
-  if (Target != val) {
+  if (Target !== val) {
     Target = val;
-    if (Target == '#add-mode') {
+    if (Target === '#add-mode') {
       $('#move-mode').attr({
         class: 'not-selected',
       });
@@ -304,7 +300,7 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
   // let id, text;
 
   addStorageSelected(keytop, selected.val());
-  if (Target == '#add-mode') {
+  if (Target === '#add-mode') {
     tab_query_async(
       {
         active: true,
@@ -318,11 +314,12 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
     const url = $('#ourl').val();
     const id = $('#oid').val();
     //  console.log(`createOrMoveBKItem move-mode 1 id=${id}`)
-    if (text != '' && url != '' && id != '') {
+    if (text !== '' && url !== '' && id !== '') {
       // console.log(`createOrMoveBKItem move-mode 2`)
       chrome.bookmarks.get(id, (result) => {
         // console.log(`createOrMoveBKItem move-mode 3`)
         let ret = moveBKItem(id, result[0].parentId, parent_id);
+        console.log(`createOrMoveBKItem ret=${ret}`)
         addSelectWaitingItemsX($('#yinp'), $('#zinp').val());
       });
     } else {
@@ -367,7 +364,7 @@ function closeTabs() {
         }
       });
     },
-    (value) => {}
+    (_) => {}
   );
 }
 function addSelectWaitingFolders(select, subselect) {
@@ -378,7 +375,6 @@ function addSelectWaitingFolders(select, subselect) {
       const item = getItemByHier(currentValue);
       // console.log(`item=${item}`);
       if (item != null) {
-        let item_title = item.title;
         let obj = {
           value: item.id,
           text: item.title,
@@ -392,7 +388,6 @@ function addSelectWaitingFolders(select, subselect) {
   ); // => 6
 
   let opts1 = array[0];
-  let objs = array[1];
 
   opts1.push(
     $('<option>', {
@@ -409,25 +404,17 @@ function addSelectWaitingFolders(select, subselect) {
   }
 }
 
-function dumpBookmarksFromSubTree(parentId) {
-  chrome.bookmarks.getSubTree(parentId, (bookmarkTreeNodes) => {
-    let item = getItem(parentId);
-    item.children = dumpTreeNodes(bookmarkTreeNodes);
-    addSelectWaitingItemsX($('#yinp'), parentId);
-  });
-}
-
 function moveBKItem(id, src_parent_id, dest_parent_id) {
   let ret = false;
-  if (id != '') {
+  if (id !== '') {
     chrome.bookmarks
       .move(id, {
         parentId: dest_parent_id,
       })
       .then
       ()
-      .then(addSelectWaitingItemsX($('#yinp'), src_parent_id))
-      .then((ret = true));
+      .then( () => {addSelectWaitingItemsX($('#yinp'), src_parent_id)})
+      .then(() => {ret = true});
   } else {
     alert("Can't move bookmark");
   }
@@ -477,10 +464,10 @@ function makeMenuOnBottomArea() {
   /* 一つの対象フォルダの指定は、一組のbuttonとselectで実現するため、配置の指定には要素数を2倍にする */
   const aryx = new Array(els.length * 2);
 
-  els.forEach(function (element, index, array) {
+  els.forEach(function (element, index, _) {
     ind = index % w;
-    if (ind == 0) {
-      if (index == 0) {
+    if (ind === 0) {
+      if (index === 0) {
         b_r = 1;
         next_start = 2;
       } else {
@@ -523,10 +510,10 @@ function makeMenuOnBottomArea() {
   rinp.append(ary);
   let last_index = ary.length - 1;
   if (last_index >= 0) {
-    $('#rinp').val(ary[last_index].value);
+    rinp.val(ary[last_index].value);
   }
   if (ary.length > 0) {
-    updateSelectRecently(ary, $('#rinp'));
+    updateSelectRecently(ary, rinp);
   }
 }
 
@@ -559,16 +546,17 @@ function selectWaitingItemsBtnHdr(option_value) {
         parseURLAsync(url)
           .then((parser) => {
             let href = parser.href;
-            let host = parser.host;
+            // let host = parser.host;
             let hostname = parser.hostname;
-            let pathname = parser.pathname;
-            let protocol = parser.protocol;
+            // let pathname = parser.pathname;
+            // let protocol = parser.protocol;
             // $('#ox') = href;
             $('#ox').val(hostname);
             console.log(`href=${href}`);
             return hostname;
           })
           .catch((error) => {
+            console.log(`selectWaitingItemsBtnHdr error=${error}`)
           });
       }
     });
@@ -587,27 +575,29 @@ function makeMenuOnUpperArea(title, url) {
   /* 表示されたときに、選択状態にしたいならば、別途初期化を行う関数を定義して、呼び出さなければならない */
 
   /* move-mode領域のフォルダ名選択時の動作 */
-  $('#yinp').click(() => {
+  let yinp = $('#yinp');
+  yinp.click(() => {
     setTargetArea('#move-mode');
-    let value = $('#yinp').val();
+    let value = yinp.val();
     selectWaitingItemsBtnHdr(value);
   });
   /* move-mode時の移動対象アイテム選択時の動作 */
   /*** ★chrome bookmarks APIにはidが必要。これは隠れフィールドoidに設定しておく***/
-  $('#zinp').click(() => {
+  let zinp = $('#zinp')
+  zinp.click(() => {
     /* move-mode領域を選択状態にする */
     setTargetArea('#move-mode');
-    let value = $('#zinp').val();
+    let value = zinp.val();
     if (value != null) {
       /* 対象フォルダに含まれるアイテム一覧作成 */
-      addSelectWaitingItemsX($('#yinp'), value);
+      addSelectWaitingItemsX(yinp, value);
     }
   });
 
   /* add-mode領域を選択状態にする(デフォルトにする) */
   setTargetArea('#add-mode');
 
-  addSelectWaitingFolders($('#zinp'), $('#yinp'));
+  addSelectWaitingFolders(zinp, yinp);
 
   $('#add-mode').click(() => {
     setTargetArea('#add-mode');
@@ -625,7 +615,7 @@ function makeMenuOnUpperArea(title, url) {
       {
         url: ourl,
       },
-      (tab) => {
+      (_) => {
         // console.log(["sid=", sid, "ourl=", ourl]);
       }
     );
@@ -664,10 +654,6 @@ function makeMenuOnUpperArea(title, url) {
     moveBMX2();
     //    console.log("moveBMX2");
   });
-  $('#moveBMX3').click(() => {
-    moveBMX3();
-    //    console.log("moveBMX2");
-  });
   $('#addFcbtn').click(() => {
     console.log('addFcbtn');
   });
@@ -695,8 +681,7 @@ async function setupPopupWindowAsync() {
 }
 
 async function dumpBookmarksAsync() {
-  const bookmarkTreeNodes = chrome.bookmarks.getTree();
-  return bookmarkTreeNodes;
+  return chrome.bookmarks.getTree();
 }
 
 document.querySelector('#go-to-options').addEventListener('click', () => {
