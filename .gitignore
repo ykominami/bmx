@@ -8,11 +8,12 @@ memo.txt
 *.js-0
 *.html
 base/
-jquery-*/
-smoothness/
 *.code-workspace
 ?.js
 #
+smoothness/?.js
 .idea
-outerjs
-jquery*.js
+outerjs/
+# Exclude jQuery files specifically
+jquery.js
+jquery-ui.js
