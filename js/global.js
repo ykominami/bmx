@@ -79,9 +79,7 @@ function replace_in_Settings(asoc) {
 
 function getStorageSelected() {
   let value = getSettingsByKey(Settings, StorageHiers)
-  let selected = adjustValue(value);
-  // (`getStorageSelected ${selected}`);
-  return selected;
+  return adjustValue(value);
 }
 
 function addStorageSelected(key, value) {
@@ -232,6 +230,7 @@ export {
   initSettings_a,
   initSettings_all,
   //
+  getSettingsByKey,
   replace_in_Settings,
   addStorageSelected,
   getStorageOptions,
