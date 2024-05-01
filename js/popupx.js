@@ -684,14 +684,6 @@ async function dumpBookmarksAsync() {
   return chrome.bookmarks.getTree();
 }
 
-document.querySelector('#go-to-options').addEventListener('click', () => {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL('options.html'));
-  }
-});
-
 async function make_popup_ui() {
   // (`### make_popup_ui`);
   await setupPopupWindowAsync();
