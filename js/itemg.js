@@ -82,9 +82,6 @@ function add_to_itemgroup(element) {
 }
 
 /*
-function makeIndent(indentLength) {
-    return '.'.repeat(indentLength);
-}
 function logItems(bookmarkItem, indent) {
     if (indent > 1) {
         return;
