@@ -1,6 +1,6 @@
+import { getItems1, getKeys, getNumOfRows, getMax } from '../config/settings.js';
 import { dumpTreeNodes, moveBMX, moveBMX2 } from './treenode.js';
 import { updateSelectRecently } from './async.js';
-import { getItems1, getKeys, getNumOfRows, getMax } from './settings.js';
 import { addFolderx, addDayFolderx, lstree } from './addfolder.js';
 import {
   makeBtnA,

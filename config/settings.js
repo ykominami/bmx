@@ -83,6 +83,7 @@ export const items1 = [
   ['CI', '/XD/CI'],
   ['1-DEV', '/XD/1-DEV'],
   ['test', '/XD/test'],
+  ['en-Notion', '/XD/en-Notion'],
   ['0-WORK', '/XD/0-WORK'],
   ['Skill', '/XD/0-WORK-SKILL'],
 
