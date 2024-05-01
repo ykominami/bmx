@@ -4,7 +4,7 @@ import {
   getPrefix,
   getFoldersFromPrefixes,
   getFoldersFromDayPrefixes,
-} from './settings.js';
+} from '../config/settings.js';
 
 import {
   dumpTreeItemsXTop,
