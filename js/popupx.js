@@ -76,7 +76,6 @@ function makeDistinationMenu(items) {
       items[i][1]
     );
   }
-  37;
 }
 
 function makeMenuXcategory(max, items) {
@@ -109,8 +108,8 @@ function makeMenuXcategory(max, items) {
 
 /**
  * 指定selectにkeytopで指定されたブックマークのサブツリー以下の項目をoption
- * @param {number} btn_jquery_id selectに対応するbtnを表すjqueryのid
- * @param {number} select_jquery_id optionを追加するselectを表すjqueryのid
+ * @param {string} btn_jquery_id selectに対応するbtnを表すjqueryのid
+ * @param {string} select_jquery_id optionを追加するselectを表すjqueryのid
  * @param {string} keytop bookmarkのサブツリーを指定する文字列(サブツリーまで
  */
 function makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
@@ -118,7 +117,7 @@ function makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
   addSelect($(select_jquery_id), keytop);
   /* ボタンハンドラ作成 */
   $(btn_jquery_id).click(() => {
-    createOrMoveBKItem(select_jquery_id, keytop);
+    createOrMoveBKItem(select_jquery_id, keytop).then(()=>{});
   });
 }
 
@@ -224,42 +223,47 @@ function addSelectWaitingItemsX(select, folder_id) {
 }
 
 async function tab_query_async(query, parent_id, parent_text) {
-  let ret_tab;
-  await chrome.tabs.query(query).then((tab) => {
-    ret_tab = tab;
+  let ret_tabs;
+  await chrome.tabs.query(query).then((tabs) => {
+    ret_tabs = tabs;
   });
-  return [ret_tab, parent_id, parent_text];
+  return [ret_tabs, parent_id, parent_text];
 }
 /* 非同期タブ問い合わせ */
 async function add_mode_x([tabs, parent_id, parent_text]) {
-  const current_tab = tabs[0];
   let i;
+  let active_tab = tabs.find((tab) => tab.active)
   let move_need = true;
+  console.log(`popupx.js add_mode_x 0`)
   const radioval = $("input[name='add-mode']:checked").val();
   switch (radioval) {
     case 's':
       chrome.bookmarks.create({
         parentId: parent_id,
-        title: current_tab.title,
-        url: current_tab.url,
+        title: active_tab.title,
+        url: active_tab.url,
       });
       break;
     case 'm-r':
-      for (i = tabs.index /* + 1*/; i < tabs.length; i++) {
+      console.log(`popupx.js add_mode_x m-r 1 active_tab.index=${active_tab.index} tabs.length=${tabs.length}`)
+      for (i = active_tab.index + 1; i < tabs.length; i++) {
+        console.log(`popupx.js add_mode_x m-r create i=${i} title=#{tabs[i].title}`)
         chrome.bookmarks.create({
           parentId: parent_id,
           title: tabs[i].title,
           url: tabs[i].url,
         });
       }
+      console.log(`popupx.js add_mode_x m-r 2`)
       /* 要検討 tabs.removeの引数をidではなくindexを指定できると勘違いしていたため、逆順に呼び出している */
       /* 引数はidなので、正順に呼び出しても構わないと思われる */
-      for (i = tabs.length - 1; i >= current_tab.index; i--) {
+      for (i = tabs.length - 1; i > active_tab.index; i--) {
+          console.log(`popupx.js add_mode_x m-r remove i=${i}`)
         chrome.tabs.remove(tabs[i].id);
       }
       break;
     case 'm-l':
-      for (i = 0; i /*<*/ <= current_tab.index; i++) {
+      for (i = 0; i /*<*/ < active_tab.index; i++) {
         chrome.bookmarks.create({
           parentId: parent_id,
           title: tabs[i].text,
@@ -268,7 +272,7 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       }
       /* 要検討 tabs.removeの引数をidではなくindexを指定できると勘違いしていたため、逆順に呼び出している */
       /* 引数はidなので、正順に呼び出しても構わないと思われる */
-      for (i = current_tab.index /* - 1 */; i > -1; i--) {
+      for (i = active_tab.index - 1; i >= 0; i--) {
         chrome.bookmarks.remove(tabs[i].id);
       }
       break;
@@ -277,11 +281,13 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       move_need = false;
       break;
     default:
+      /*
       chrome.bookmarks.create({
         parentId: parent_id,
-        title: current_tab.title,
-        url: current_tab.url,
+        title: active_tab.title,
+        url: active_tab.url,
       });
+      */
       break;
   }
   if (move_need) {
@@ -293,6 +299,20 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
 /* ボタンクリックハンドラの実体 */
 /* 対象フォルダにbookmarkアイテムを作成または移動 */
 async function createOrMoveBKItem(select_jquery_id, keytop) {
+  let query;
+  const radioval = $("input[name='add-mode']:checked").val();
+  if( radioval === 'm-r' || radioval === 'm-l'){
+    query = {
+      currentWindow: true,
+    }
+  }
+  else{
+    // "s" or "x"
+    query = {
+      active: true,
+      currentWindow: true,
+    }
+  }
   const parent_id = $(select_jquery_id).val();
   const selected_jquery_id = select_jquery_id + ' option:selected';
   const selected = $(selected_jquery_id);
@@ -302,12 +322,9 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
   addStorageSelected(keytop, selected.val());
   if (Target === '#add-mode') {
     tab_query_async(
-      {
-        active: true,
-        currentWindow: true,
-      },
-      parent_id,
-      parent_text
+        query,
+        parent_id,
+        parent_text
     ).then(add_mode_x);
   } else {
     const text = $('#oname').val();
@@ -337,7 +354,6 @@ function closeTabs() {
     currentWindow: true,
   }).then(
     (tabs) => {
-      const current_tab = tabs[0];
       tab_query_async({
         currentWindow: true,
       }).then((tabs) => {
