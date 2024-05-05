@@ -1,8 +1,9 @@
+
 /* デバッグ用関数 */
 function debugPrint2(obj) {
   console.log(obj);
 }
-
+let debugOption = {count:0 , count_win:0, count_max:0}
 function debugPrint(obj) {
   if (
     debugOption.count_min <= debugOption.count &&
