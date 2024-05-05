@@ -10,9 +10,11 @@ function dumpTreeNodes(bookmarkTreeNodes) {
     let reg = new RegExp('\/Y\/DashBoard', '');
     let ret = add_to_itemgroup(element);
     if (ret != null) {
+      /*
       if (reg.exec(ret.hier)){
         console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  reg.title=${ret.title}`)
       }
+     */
       accumulator.push(ret);
     }
     else{
@@ -34,7 +36,7 @@ function moveBMX2() {
   let obj = getItemByHier(hier);
   console.log(`obj.id=${obj.id}`);
   if (obj.id != null) {
-    moveBMXFolderBase(group, obj.id);
+    moveBMXFolderBase(group, obj.id).then(()=>{});
   } else {
     console.log(`obj=${obj}`);
   }
@@ -42,7 +44,7 @@ function moveBMX2() {
 
 function moveBMX() {
   let group = Movergroup.get_mover_group();
-  moveBMXFolderBase(group, '1');
+  moveBMXFolderBase(group, '1').then(()=>{});
 }
 
 export { dumpTreeNodes, moveBMX, moveBMX2 };
