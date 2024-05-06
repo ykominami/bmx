@@ -347,36 +347,30 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
 /* ボタンクリックハンドラの実体 */
 /* Tabをclose */
 function closeTabs() {
-  tab_query_async({
-    active: true,
-    currentWindow: true,
-  }).then(
-    (tabs) => {
-      tab_query_async({
-        currentWindow: true,
-      }).then((tabs) => {
-        let i;
-        const radioval = $("input[name='add-mode']:checked").val();
-        switch (radioval) {
-          case 's':
-            /* chrome.tabs.remove(current_tab.id) */
-            break;
-          case 'm-r':
-            /* 引数はidなので、正順に呼び出しても構わないと思われる */
-            for (i = tabs.length - 1; i > current_tab.index; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          case 'm-l':
-            /* 引数はidなので、正順に呼び出しても構わないと思われる */
-            for (i = current_tab.index - 1; i > -1; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          default:
-            break;
-        }
-      });
+    tab_query_async({
+      currentWindow: true,
+    }).then((tabs) => {
+      let i;
+      const radioval = $("input[name='add-mode']:checked").val();
+      switch (radioval) {
+        case 's':
+          /* chrome.tabs.remove(current_tab.id) */
+          break;
+        case 'm-r':
+          /* 引数はidなので、正順に呼び出しても構わないと思われる */
+          for (i = tabs.length - 1; i > current_tab.index; i--) {
+            chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        case 'm-l':
+          /* 引数はidなので、正順に呼び出しても構わないと思われる */
+          for (i = current_tab.index - 1; i > -1; i--) {
+            chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        default:
+          break;
+      }
     },
     (_) => {}
   );
