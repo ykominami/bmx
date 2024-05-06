@@ -266,7 +266,7 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       for (i = 0; i /*<*/ < active_tab.index; i++) {
         chrome.bookmarks.create({
           parentId: parent_id,
-          title: tabs[i].text,
+          title: tabs[i].title,
           url: tabs[i].url,
         });
       }
@@ -277,17 +277,15 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       }
       break;
     case 'x':
-      // TODO　要実装
+      // TODO:　要実装
       move_need = false;
       break;
     default:
-      /*
       chrome.bookmarks.create({
         parentId: parent_id,
         title: active_tab.title,
         url: active_tab.url,
       });
-      */
       break;
   }
   if (move_need) {
