@@ -1,4 +1,6 @@
 import { add_to_itemgroup, moveBMXFolderBase } from './itemg.js';
+
+let Reg = new RegExp('\/Y\/DashBoard', '');
 /* ===== bookmarkの情報を取得 ===== */
 /* 指定フォルダ以下の対象フォルダの一覧取得(配列として) */
 /* この関数は再帰的に呼び出されるが、内部処理は必ず最初はchromeのbookmarksのトップに対
@@ -7,14 +9,13 @@ import { add_to_itemgroup, moveBMXFolderBase } from './itemg.js';
 function dumpTreeNodes(bookmarkTreeNodes) {
   /* bookmarkTreeNodes - フォルダと項目が混在している */
   return bookmarkTreeNodes.reduce((accumulator, element) => {
-    let reg = new RegExp('\/Y\/DashBoard', '');
     let ret = add_to_itemgroup(element);
     if (ret != null) {
-      /*
-      if (reg.exec(ret.hier)){
-        console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  reg.title=${ret.title}`)
+      if (Reg.exec(ret.hier)){
+        /*
+          console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`)
+       */
       }
-     */
       accumulator.push(ret);
     }
     else{
