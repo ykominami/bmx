@@ -443,7 +443,6 @@ function dumpTreeNodesSub(element, count, parent_id) {
 /***** bookmark 関連 下位関数 *****/
 function dumpTreeItems(bookmarkTreeNodes, count, parent_id) {
   let i;
-  let buffer = [];
   let obj;
   let ret = {buffer: [], count: count}
 
