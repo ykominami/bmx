@@ -1,37 +1,22 @@
-import { getItems1, getKeys, getNumOfRows, getMax } from '../config/settings.js';
-import { dumpTreeNodes, moveBMX, moveBMX2 } from './treenode.js';
-import { updateSelectRecently } from './async.js';
-import { addFolderx, addDayFolderx, lstree } from './addfolder.js';
-import {
-  makeBtnA,
-  makeSelectA,
-  getCategoryName,
-  getSelectId,
-  getBtnId,
-  getJqueryId,
-  parseURLAsync,
-} from './util.js';
-import {
-  getItemByHier,
-  getKeysOfItemByHier,
-  getItemHashByHierKeys,
-  getItem,
-} from './data.js';
+import {getItems1, getKeys, getMax, getNumOfRows} from '../config/settings2.js';
+import {dumpTreeNodes, moveBMX, moveBMX2} from './treenode.js';
+import {restoreSelectRecently, updateSelectRecently} from './async.js';
+import {addDayFolderx, addFolderx, lstree} from './addfolder.js';
+import {getBtnId, getCategoryName, getJqueryId, getSelectId, makeBtnA, makeSelectA, parseURLAsync,} from './util.js';
+import {getItem, getItemByHier, getItemHashByHierKeys, getKeysOfItemByHier,} from './data.js';
 
 import {
-  ANOTHER_FOLER,
-  initSettings_all,
-  initSettings_a,
+  addRecentlyItem,
   addStorageSelected,
+  adjustValue,
+  ANOTHER_FOLER,
+  getStorageOptions,
+  initSettings_a,
+  initSettings_all,
+  removeSettings,
   setStorageHiers,
   setStorageOptions,
-  getStorageOptions,
-  removeSettings,
-  addRecentlyItem,
-  adjustValue,
 } from './global.js';
-
-import { restoreSelectRecently } from './async.js';
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
@@ -115,6 +100,7 @@ function makeMenuXcategory(max, items) {
 function makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
   /* select作成 */
   addSelect($(select_jquery_id), keytop);
+  // console.log(`addSelect keytop=${keytop}`)
   /* ボタンハンドラ作成 */
   $(btn_jquery_id).click(() => {
     createOrMoveBKItem(select_jquery_id, keytop).then(()=>{});
@@ -133,52 +119,53 @@ function addSelect(select, keytop) {
   if (keytop != null) {
     item = getItemByHier(keytop);
     if (item != null) {
-      const xary = getSelectOption(item, false);
-      let opts1 = xary.map((element) => {
-        return $('<option>', {
-          value: element.value,
-          text: element.text,
-        });
-      });
-      if (opts1.length === 0) {
-        let item2 = getItemByHier(keytop);
+      getSelectOption(item, true).then((xary) => {
+        // console.log(`### popupx.js addSelect xary.length=${xary.length}`);
+        let opts1 = xary.map((ele) => $('<option>', {
+          value: ele.value,
+          text: ele.text,
+        }))
+        if (opts1.length === 0) {
+          opts1.push(
+              $('<option>', {value: item.id, text: item.title})
+          );
+        }
         opts1.push(
-          $('<option>', {
-            value: item2.id,
-            text: item2.title,
-          })
+            $('<option>', {
+              value: ANOTHER_FOLER,
+              text: '#別のフォルダ#',
+            })
         );
-      }
-      opts1.push(
-        $('<option>', {
-          value: ANOTHER_FOLER,
-          text: '#別のフォルダ#',
-        })
-      );
-      select.empty();
-      select.append(opts1);
-      if (opts1.length > 0) {
-        select.val(xary[0].value);
-      } else {
-        //		do nothing
-      }
+        select.empty();
+        select.append(opts1);
+        // console.log(`opts1=${JSON.stringify(opts1)}`)
+        if (opts1.length > 0) {
+          select.val(opts1[0].value);
+        } else {
+          //		do nothing
+        }
+      })
     }
   }
 }
-function getSelectOption(item, ignore_head) {
-  let ary = [];
+
+async function getSelectOption(item, ignore_head) {
+  let obj;
+  let buffer = [];
   if (!ignore_head) {
-    ary.push({
-      value: item.id,
-      text: item.title,
-    });
+    buffer.push({value: item.id, text: item.title});
   }
-  if (item.children.length > 0) {
-    ary = item.children.map((element) => {
-      return getSelectOption(element, false);
-    });
-  }
-  return ary.flat();
+  console.log(`popupx.js getSelection  XA item.id|${item.id}`)
+  await chrome.bookmarks.getSubTree(item.id).then((bookmarkTreeNodes) => {
+    let count = 100;
+    obj = dumpTreeItems(bookmarkTreeNodes, count, item.id)
+    if(obj.buffer.length > 0){
+      buffer.push(...obj.buffer)
+    }
+    console.log(`popupx.js getSelection count=${obj.count} 2 XB JSON buffer.length|${buffer.length}`)
+  });
+  // console.log(`popux.js getSelectOption ZZ ary.length=${ary.length}`)
+  return buffer;
 }
 
 /* ===== */
@@ -212,10 +199,12 @@ function addSelectWaitingItemsX(select, folder_id) {
   }
 
   chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
-    select.empty();
-    const zary = dumpTreeItems(bookmarkTreeNodes, true);
-    select.append(zary);
-    const folder_id = select.val();
+    let count = 1;
+    let obj = dumpTreeItems(bookmarkTreeNodes, count, item.id)
+    let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
+    select.append(buffer2);
+    select.val(buffer2[0].value);
+    const folder_id= select.val();
     if (folder_id) {
       selectWaitingItemsBtnHdr(folder_id);
     }
@@ -234,7 +223,7 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
   let i;
   let active_tab = tabs.find((tab) => tab.active)
   let move_need = true;
-  console.log(`popupx.js add_mode_x 0`)
+  // console.log(`popupx.js add_mode_x 0`)
   const radioval = $("input[name='add-mode']:checked").val();
   switch (radioval) {
     case 's':
@@ -245,20 +234,20 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       });
       break;
     case 'm-r':
-      console.log(`popupx.js add_mode_x m-r 1 active_tab.index=${active_tab.index} tabs.length=${tabs.length}`)
+      // console.log(`popupx.js add_mode_x m-r 1 active_tab.index=${active_tab.index} tabs.length=${tabs.length}`)
       for (i = active_tab.index + 1; i < tabs.length; i++) {
-        console.log(`popupx.js add_mode_x m-r create i=${i} title=#{tabs[i].title}`)
+        // console.log(`popupx.js add_mode_x m-r create i=${i} title=#{tabs[i].title}`)
         chrome.bookmarks.create({
           parentId: parent_id,
           title: tabs[i].title,
           url: tabs[i].url,
         });
       }
-      console.log(`popupx.js add_mode_x m-r 2`)
+      // console.log(`popupx.js add_mode_x m-r 2`)
       /* 要検討 tabs.removeの引数をidではなくindexを指定できると勘違いしていたため、逆順に呼び出している */
       /* 引数はidなので、正順に呼び出しても構わないと思われる */
       for (i = tabs.length - 1; i > active_tab.index; i--) {
-          console.log(`popupx.js add_mode_x m-r remove i=${i}`)
+        // console.log(`popupx.js add_mode_x m-r remove i=${i}`)
         chrome.tabs.remove(tabs[i].id);
       }
       break;
@@ -266,7 +255,7 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       for (i = 0; i /*<*/ < active_tab.index; i++) {
         chrome.bookmarks.create({
           parentId: parent_id,
-          title: tabs[i].text,
+          title: tabs[i].title,
           url: tabs[i].url,
         });
       }
@@ -277,17 +266,15 @@ async function add_mode_x([tabs, parent_id, parent_text]) {
       }
       break;
     case 'x':
-      // TODO　要実装
+      // TODO:　要実装
       move_need = false;
       break;
     default:
-      /*
       chrome.bookmarks.create({
         parentId: parent_id,
         title: active_tab.title,
         url: active_tab.url,
       });
-      */
       break;
   }
   if (move_need) {
@@ -336,7 +323,7 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
       chrome.bookmarks.get(id, (result) => {
         // console.log(`createOrMoveBKItem move-mode 3`)
         let ret = moveBKItem(id, result[0].parentId, parent_id);
-        console.log(`createOrMoveBKItem ret=${ret}`)
+        // console.log(`createOrMoveBKItem ret=${ret}`)
         addSelectWaitingItemsX($('#yinp'), $('#zinp').val());
       });
     } else {
@@ -349,36 +336,30 @@ async function createOrMoveBKItem(select_jquery_id, keytop) {
 /* ボタンクリックハンドラの実体 */
 /* Tabをclose */
 function closeTabs() {
-  tab_query_async({
-    active: true,
-    currentWindow: true,
-  }).then(
-    (tabs) => {
-      tab_query_async({
-        currentWindow: true,
-      }).then((tabs) => {
-        let i;
-        const radioval = $("input[name='add-mode']:checked").val();
-        switch (radioval) {
-          case 's':
-            /* chrome.tabs.remove(current_tab.id) */
-            break;
-          case 'm-r':
-            /* 引数はidなので、正順に呼び出しても構わないと思われる */
-            for (i = tabs.length - 1; i > current_tab.index; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          case 'm-l':
-            /* 引数はidなので、正順に呼び出しても構わないと思われる */
-            for (i = current_tab.index - 1; i > -1; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          default:
-            break;
-        }
-      });
+    tab_query_async({
+      currentWindow: true,
+    }).then((tabs) => {
+      let i;
+      const radioval = $("input[name='add-mode']:checked").val();
+      switch (radioval) {
+        case 's':
+          /* chrome.tabs.remove(current_tab.id) */
+          break;
+        case 'm-r':
+          /* 引数はidなので、正順に呼び出しても構わないと思われる */
+          for (i = tabs.length - 1; i > current_tab.index; i--) {
+            chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        case 'm-l':
+          /* 引数はidなので、正順に呼び出しても構わないと思われる */
+          for (i = current_tab.index - 1; i > -1; i--) {
+            chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        default:
+          break;
+      }
     },
     (_) => {}
   );
@@ -404,16 +385,16 @@ function addSelectWaitingFolders(select, subselect) {
   ); // => 6
 
   let opts1 = array[0];
-
   opts1.push(
-    $('<option>', {
-      value: ANOTHER_FOLER,
-      text: '#別のフォルダ#',
-    })
+      {
+        value: ANOTHER_FOLER,
+        text: '#別のフォルダ#',
+      }
   );
   if (opts1.length > 1) {
+    let opts2 = opts1.map((obj) => $('<option>', {value: obj[0], text: obj[1]}));
     select.empty();
-    select.append(opts1);
+    select.append(opts2);
     select.prop('selectedIndex', 0);
     // console.log(`addSelectWaitingFolders A select.val=${objs[0].value}`);
     addSelectWaitingItemsX(subselect, select.val());
@@ -437,34 +418,47 @@ function moveBKItem(id, src_parent_id, dest_parent_id) {
   return ret;
 }
 
+function dumpTreeNodesSub(element, count, parent_id) {
+  let ret = {buffer: [], count: 0}
+
+  if (element.url) {
+    return ret;
+  }
+  let objx = {value:element.id, text: element.title};
+  ret.buffer.push(objx);
+  ret.count = count;
+  console.log(`<<<<<<<<<< popupx.js dumpTreeItemsSub (HEAD) count|${count} O JSON parent_id=${parent_id} element.id=${element.id} element.title=${element.title} buffuer=${JSON.stringify(ret.buffer)}`)
+
+  if (element.children) {
+    element.children.map((child) => {
+      let obj = dumpTreeNodesSub(child, count + 1, parent_id)
+      ret.buffer.push(...obj.buffer)
+    })
+  }
+  console.log(`popupx.js dumpTreeItemsSub count|${count} Q before return parent_id=${parent_id} JSON ret.buffuer=${JSON.stringify(ret.buffer)}`)
+  return ret
+}
+
 /* ===== ----- ==== */
 /***** bookmark 関連 下位関数 *****/
-function dumpTreeItems(bookmarkTreeNodes, ignore_head = false) {
-  let ary = [];
+function dumpTreeItems(bookmarkTreeNodes, count, parent_id) {
   let i;
-  for (i = 0; i < bookmarkTreeNodes.length; i++) {
-    const element = bookmarkTreeNodes[i];
+  let obj;
+  let ret = {buffer: [], count: count}
 
-    if (!ignore_head) {
-      if (!element.url) {
-        ary.push(
-          $('<option>', {
-            value: element.id,
-            text: element.title,
-          })
-        );
-        // console.log(`in popupx.js call dumpTreeItems 1 ary=${ary}`);
-      }
+  console.log(`########## 1 popupx.js dumpTreeItem ount|${count} parent_id=${parent_id} W length=${bookmarkTreeNodes.length}`)
+  for (i = 0; i < bookmarkTreeNodes.length; i++) {
+    let element = bookmarkTreeNodes[i]
+    obj = dumpTreeNodesSub(element, parent_id, count);
+    if( obj.buffer.length > 0){
+      ret.buffer.push(...obj.buffer)
     }
-    if (element.children) {
-      ary = ary.concat(dumpTreeItems(element.children, false));
-    }
+    console.log(`########## popupx.js dumpTreeItemSub count|${count} After reduce W parent_id=${parent_id} JSON buffer.length=${ret.buffer.length}`)
   }
-  return ary;
+  return ret
 }
 
 /*********************/
-
 /* ====== popup window 下部 ===== */
 function makeMenuOnBottomArea() {
   // console.log('makeMenuOnBottomArea 1');
@@ -512,7 +506,8 @@ function makeMenuOnBottomArea() {
   makeDistinationMenu(getItems1());
   /* recently ボタンクリック処理の設定 */
   $('#rbtn').click(() => {
-    createOrMoveBKItem('#rinp', 'recently');
+    createOrMoveBKItem('#rinp', 'recently').then(() => {
+    });
   });
 
   /* recently selectの選択肢の更新 */
@@ -568,7 +563,7 @@ function selectWaitingItemsBtnHdr(option_value) {
             // let protocol = parser.protocol;
             // $('#ox') = href;
             $('#ox').val(hostname);
-            console.log(`href=${href}`);
+            // console.log(`href=${href}`);
             return hostname;
           })
           .catch((error) => {
