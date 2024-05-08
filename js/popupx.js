@@ -140,7 +140,9 @@ function addSelect(select, keytop) {
         select.append(opts1);
         // console.log(`opts1=${JSON.stringify(opts1)}`)
         if (opts1.length > 0) {
-          select.val(opts1[0].value);
+          select.prop('selectedIndex', 0);
+          console.log(`popupx.js addSelect opts1[0].value=${opts1[0].value}`)
+          console.log(`popupx.js addSelect opts1=${ JSON.stringify(opts1) }`)
         } else {
           //		do nothing
         }
@@ -155,14 +157,14 @@ async function getSelectOption(item, ignore_head) {
   if (!ignore_head) {
     buffer.push({value: item.id, text: item.title});
   }
-  console.log(`popupx.js getSelection  XA item.id|${item.id}`)
+  // console.log(`popupx.js getSelection  XA item.id|${item.id}`)
   await chrome.bookmarks.getSubTree(item.id).then((bookmarkTreeNodes) => {
     let count = 100;
     obj = dumpTreeItems(bookmarkTreeNodes, count, item.id)
     if(obj.buffer.length > 0){
       buffer.push(...obj.buffer)
     }
-    console.log(`popupx.js getSelection count=${obj.count} 2 XB JSON buffer.length|${buffer.length}`)
+    // console.log(`popupx.js getSelection count=${obj.count} 2 XB JSON buffer.length|${buffer.length}`)
   });
   // console.log(`popux.js getSelectOption ZZ ary.length=${ary.length}`)
   return buffer;
@@ -203,7 +205,7 @@ function addSelectWaitingItemsX(select, folder_id) {
     let obj = dumpTreeItems(bookmarkTreeNodes, count, item.id)
     let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
     select.append(buffer2);
-    select.val(buffer2[0].value);
+    select.prop('selectedIndex', 0);
     const folder_id= select.val();
     if (folder_id) {
       selectWaitingItemsBtnHdr(folder_id);
@@ -418,24 +420,25 @@ function moveBKItem(id, src_parent_id, dest_parent_id) {
   return ret;
 }
 
-function dumpTreeNodesSub(element, count, parent_id) {
-  let ret = {buffer: [], count: 0}
+function dumpTreeNodesSub(element, count, parent_id, head_ignore = false) {
+  let ret = {buffer: [], count: count}
 
   if (element.url) {
     return ret;
   }
-  let objx = {value:element.id, text: element.title};
-  ret.buffer.push(objx);
-  ret.count = count;
-  console.log(`<<<<<<<<<< popupx.js dumpTreeItemsSub (HEAD) count|${count} O JSON parent_id=${parent_id} element.id=${element.id} element.title=${element.title} buffuer=${JSON.stringify(ret.buffer)}`)
+  if(!head_ignore){
+    let objx = {value:element.id, text: element.title};
+    ret.buffer.push(objx);
+  }
+  // console.log(`<<<<<<<<<< popupx.js dumpTreeItemsSub (HEAD) count|${count} O JSON parent_id=${parent_id} element.id=${element.id} element.title=${element.title} buffuer=${JSON.stringify(ret.buffer)}`)
 
   if (element.children) {
     element.children.map((child) => {
-      let obj = dumpTreeNodesSub(child, count + 1, parent_id)
-      ret.buffer.push(...obj.buffer)
+      let obj = dumpTreeNodesSub(child, count + 1, parent_id, false)
+        ret.buffer.push(...obj.buffer)
     })
   }
-  console.log(`popupx.js dumpTreeItemsSub count|${count} Q before return parent_id=${parent_id} JSON ret.buffuer=${JSON.stringify(ret.buffer)}`)
+  // console.log(`popupx.js dumpTreeItemsSub count|${count} Q before return parent_id=${parent_id} JSON ret.buffuer=${JSON.stringify(ret.buffer)}`)
   return ret
 }
 
@@ -446,14 +449,15 @@ function dumpTreeItems(bookmarkTreeNodes, count, parent_id) {
   let obj;
   let ret = {buffer: [], count: count}
 
-  console.log(`########## 1 popupx.js dumpTreeItem ount|${count} parent_id=${parent_id} W length=${bookmarkTreeNodes.length}`)
+  // console.log(`########## 1 popupx.js dumpTreeItem ount|${count} parent_id=${parent_id} W length=${bookmarkTreeNodes.length}`)
   for (i = 0; i < bookmarkTreeNodes.length; i++) {
     let element = bookmarkTreeNodes[i]
-    obj = dumpTreeNodesSub(element, parent_id, count);
+    let head_ignore = true
+    obj = dumpTreeNodesSub(element, parent_id, count, head_ignore);
     if( obj.buffer.length > 0){
       ret.buffer.push(...obj.buffer)
     }
-    console.log(`########## popupx.js dumpTreeItemSub count|${count} After reduce W parent_id=${parent_id} JSON buffer.length=${ret.buffer.length}`)
+    // console.log(`########## popupx.js dumpTreeItemSub count|${count} After reduce W parent_id=${parent_id} JSON buffer.length=${ret.buffer.length}`)
   }
   return ret
 }
