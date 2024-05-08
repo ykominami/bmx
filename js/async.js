@@ -16,7 +16,7 @@ function updateSelectRecently(ary, select) {
     select.empty();
     select.append(opts1);
     if (opts1.size > 0) {
-        select.val(ary[0].value);
+        select.prop('selectedIndex', 0);
     }
 }
 
