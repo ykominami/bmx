@@ -46,6 +46,7 @@ export const items1 = [
   ['1-DEV-RB-2', '/Y1/1-DEV-RB-2'],
   ['1-DEV-RB-3', '/Y1/1-DEV-RB-3'],
   ['Y', '/Y'],
+  ['DashBoard', '/DashBoard'],
   ['Y0', '/Y0'],
   ['YY', '/YY'],
   ['XX', '/XX'],
