@@ -1,14 +1,11 @@
-import {
-    addItem,
-    getItem,
-} from './data.js';
+import {addItem, getItem,} from './data.js';
 import {dumpTreeNodes} from './treenode.js';
 
 let RootItems = [];
 let TopItems = [];
 
 // TODO: 引数elementには、chrome.bookmark.getTree()の返値が渡されると想定している
-function determine_id(id){
+function determine_id(id) {
     let idnum = Number.parseInt(id, 10);
     let idnumx = idnum;
     if (Number.isNaN(idnum)) {
@@ -16,6 +13,7 @@ function determine_id(id){
     }
     return idnumx;
 }
+
 function create_item(element) {
     let idnumx = determine_id(element.id);
     let parentIdnumx = determine_id(element.parentId);
@@ -68,7 +66,7 @@ function create_item(element) {
 function add_to_itemgroup(element) {
     let item = create_item(element);
     // console.log(`In A add_to_itemgroup item.kind=${item.kind}`);
-    if (item.kind ==='ITEM') {
+    if (item.kind === 'ITEM') {
         return null;
     } else {
         // console.log(`In B add_to_itemgroup item.kind=${item.kind}`);
@@ -81,32 +79,6 @@ function add_to_itemgroup(element) {
     }
 }
 
-/*
-function logItems(bookmarkItem, indent) {
-    if (indent > 1) {
-        return;
-    }
-    if (bookmarkItem.url) {
-        console.log(makeIndent(indent) + bookmarkItem.url);
-    } else {
-        console.log(`${makeIndent(indent)}Folder`);
-        console.log(
-            `${makeIndent(indent)}bookmarkItem.parentId=${bookmarkItem.parentId}`
-        );
-        console.log(
-            `${makeIndent(indent)}bookmarkItem.title=${bookmarkItem.title}`
-        );
-        console.log(`${makeIndent(indent)}bookmarkItem.id=${bookmarkItem.id}`);
-        indent++;
-    }
-    if (bookmarkItem.children) {
-        for (const child of bookmarkItem.children) {
-            logItems(child, indent);
-        }
-    }
-    indent--;
-}
-*/
 async function moveBMXFolderBase(mover_group, src_folder_id) {
     let bookmarkItems = [];
     await chrome.bookmarks
