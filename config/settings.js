@@ -213,6 +213,11 @@ export const items1 = [
   ["科学", "/Video/科学"],
   ["開発", "/Video/開発"],
   ["エンタメ", "/Video/エンタメ"],
+  ["社会", "/Video/社会"],
+  ["外国語", "/Video/外国語"],
+  ["知的生産", "/Video/知的生産"],
+  ["歴史", "/Video/歴史"],
+  ["人文", "/Video/人文"],
 ];
 export const keys = ["/0/0-etc/1"];
 
@@ -232,7 +237,7 @@ function getNumOfRows() {
 }
 
 function getMax() {
-  return 190;
+  return 200;
 }
 
 function getPrefix(key) {
