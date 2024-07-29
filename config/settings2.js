@@ -70,7 +70,7 @@ export const items1 = [
   ['KU', '/0/KU'],
   ['book', '/0/book'],
   ['本', '/0/本'],
-  ['Note.com', '/0/Note.com'],
+  ['book', '/0/book'],
   ['Packt', '/0/Packt'],
   ['kurayama', '/Y2/X/S/kurayama'],
   ['jounen', '/Y2/X/S/jounen'],
@@ -213,6 +213,11 @@ export const items1 = [
   ['科学', '/Video/科学'],
   ['開発', '/Video/開発'],
   ['エンタメ', '/Video/エンタメ'],
+  ["社会", "/Video/社会"],
+  ["外国語", "/Video/外国語"],
+  ["知的生産", "/Video/知的生産"],
+  ["歴史", "/Video/歴史"],
+  ["人文", "/Video/人文"],
 ];
 export const keys = ['/0/0-etc/1'];
 
