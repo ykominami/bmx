@@ -2700,3 +2700,73 @@
 	grid-column-end: 6;
 }
 
+.g-78-1 {
+	grid-row-start: 78;
+	grid-row-end: 79;
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
+.g-78-2 {
+	grid-row-start: 78;
+	grid-row-end: 79;
+	grid-column-start: 2;
+	grid-column-end: 3;
+}
+
+.g-78-3 {
+	grid-row-start: 78;
+	grid-row-end: 79;
+	grid-column-start: 3;
+	grid-column-end: 4;
+}
+
+.g-78-4 {
+	grid-row-start: 78;
+	grid-row-end: 79;
+	grid-column-start: 4;
+	grid-column-end: 5;
+}
+
+.g-78-5 {
+	grid-row-start: 78;
+	grid-row-end: 79;
+	grid-column-start: 5;
+	grid-column-end: 6;
+}
+
+
+.g-79-1 {
+	grid-row-start: 79;
+	grid-row-end: 80;
+	grid-column-start: 1;
+	grid-column-end: 2;
+}
+
+.g-79-2 {
+	grid-row-start: 79;
+	grid-row-end: 80;
+	grid-column-start: 2;
+	grid-column-end: 3;
+}
+
+.g-79-3 {
+	grid-row-start: 79;
+	grid-row-end: 80;
+	grid-column-start: 3;
+	grid-column-end: 4;
+}
+
+.g-79-4 {
+	grid-row-start: 79;
+	grid-row-end: 80;
+	grid-column-start: 4;
+	grid-column-end: 5;
+}
+
+.g-79-5 {
+	grid-row-start: 79;
+	grid-row-end: 80;
+	grid-column-start: 5;
+	grid-column-end: 6;
+}
