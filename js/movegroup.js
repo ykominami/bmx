@@ -1,8 +1,14 @@
-import { Mover } from './mover.js';
-import { parseURLX } from './util.js';
+import {Mover} from './mover.js';
+import {parseURLX} from './util.js';
 
 export class Movergroup {
     static mover_group = null;
+
+    constructor() {
+        this.group = {};
+        this.keys = [];
+    }
+
     static get_mover_group() {
         if (this.mover_group == null) {
             this.mover_group = new Movergroup();
@@ -15,20 +21,18 @@ export class Movergroup {
         return this.mover_group;
     }
 
-    constructor() {
-        this.group = {};
-        this.keys = [];
-    }
     add(hostname, hier) {
         let mover = new Mover(hostname, hier);
         if (mover.dest_parent_item == null) {
-            console.log(
+            /* console.log(
                 `Movergroup.add hier=${hier} hostname=${hostname} mover.dest_parent_item=${mover.dest_parent_item}`
             );
+            */
         }
         this.group[hostname] = mover;
         this.keys = Object.keys(this.group);
     }
+
     move(bookmarkItem) {
         let ret = false;
         // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
@@ -45,7 +49,7 @@ export class Movergroup {
                     // console.log(`Movergroup.move IN keys=${this.keys} hostname=${hostname} F`)
                 }
             });
-            console.log(`hostname=${hostname}`);
+            // console.log(`hostname=${hostname}`);
         } else {
             // console.log(`Movergroup.move not undefined`)
         }
