@@ -1,6 +1,6 @@
 {
-  "name": "Bmx72MV3C",
-  "description": "Powered-Bookmark7MV3C",
+  "name": "Bmx72MV3D",
+  "description": "Powered-Bookmark7MV3D",
   "version": "2.4.1",
   "manifest_version": 3,
   "permissions": [
@@ -12,7 +12,7 @@
   ],
   "host_permissions": [],
   "action": {
-    "default_title": "Bmx7MV30C",
+    "default_title": "Bmx7MV30D",
     "default_icon": "images/19x19.png",
     "default_popup": "popup.html"
   },
