@@ -148,7 +148,6 @@ export const items1 = [
   ['LANG-etc', '/XD/DEV-LANG-etc'],
   ['LANG-etc-2', '/XD/DEV-LANG-etc-2'],
   ['LANG-etc-3', '/XD/DEV-LANG-etc-3'],
-  ['LANG-etc-4', '/XD/DEV-LANG-etc-4'],
   /* 10 */
   ['LANG', '/XD/LANG/1'],
   ['LANG2', '/XD/LANG/2'],
