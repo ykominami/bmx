@@ -1,11 +1,19 @@
 export const items1 = [
   /* 1 */
   ['GD-0-inbox', '/0X/GD-0-inbox'],
+  ['0/0', '/0/0'],
+  ['0/connpass', '/0/connpass'],
+  ['0/ETC', '/0/ETC'],
   ['0X', '/0X'],
   ['Y2', '/Y2'],
+  ['ChatGPT0', '/Y1/ChatGPT/0'],
   ['ChatGPT1', '/Y1/ChatGPT/1'],
+  ['ChatGPT-Paper', '/Y1/ChatGPT/ChatGPT-Paper'],
+  ['ChatGPT-Paper-Matuo-LAB', '/Y1/ChatGPT/ChatGPT-Papar-Matuo-LAB'],
   ['ChatGPT2', '/Y1/ChatGPT/2'],
+  ['ChatGPT-info-etc', '/Y1/ChatGPT/ChatGPT-info-etc'],
   ['ChatGPT3', '/Y1/ChatGPT/3'],
+  ['LangChain', '/Y1/ChatGPT/LangChain'],
   ['ChatGPT4', '/Y1/ChatGPT/4'],
   ['ChatGPT42', '/Y1/ChatGPT/42'],
   ['ChatGPT5', '/Y1/ChatGPT/5'],
@@ -46,10 +54,16 @@ export const items1 = [
   ['1-DEV-RB-2', '/Y1/1-DEV-RB-2'],
   ['1-DEV-RB-3', '/Y1/1-DEV-RB-3'],
   ['Y', '/Y'],
+  ['Y-DAY', '/0/Y-DAY'],
+  ['YY', '/YY'],
+  ['YY-GAS1', '/YY-GAS/YY-GAS1'],
+  ['YY-GAS2', '/YY-GAS/YY-GAS2'],
+  ['YY-GAS3', '/YY-GAS/YY-GAS3'],
+  ['YY-GAS4', '/YY-GAS/YY-GAS4'],
+  ['GAS-clasp', '/YY-GAS/GAS-clasp'],
   ['DashBoard', '/DashBoard'],
   ['Y0', '/Y0'],
-  ['YY', '/YY'],
-  ['XX', '/XX'],
+  ['XX', '/0/XX'],
   ['1/A0', '/1/A0'],
   ['1/A', '/1/A'],
   /* 2 */
@@ -61,17 +75,13 @@ export const items1 = [
   ['1/1', '/1/1'],
   ['1/0', '/1/0'],
   /* 3 */
-  ['doc', '/0/doc'],
-  ['F-EBook', '/0/F-EBook'],
-  ['F-EBook-2', '/0/F-EBook-2'],
-  ['F-EBook-3', '/0/F-EBook-3'],
   ['Kindle', '/0/Kindle'],
   /* 4 */
   ['KU', '/0/KU'],
   ['book', '/0/book'],
-  ['本', '/0/本'],
-  ['book', '/0/book'],
   ['Packt', '/0/Packt'],
+  ['Manning', '/0/Manning'],
+  ['本', '/0/本'],
   ['kurayama', '/Y2/X/S/kurayama'],
   ['jounen', '/Y2/X/S/jounen'],
   /* 5 */
@@ -96,7 +106,10 @@ export const items1 = [
   ['vis3', '/XD/vis/vis3'],
   /* 5 */
   ['DOCU', '/XD/DOCU'],
+  ['DOCU1', '/XD/DOCU1'],
   ['DOCU2', '/XD/DOCU2'],
+  ['DOCU3', '/XD/DOCU3'],
+
   ['1-SECURITY', '/XD/1-SECURITY'],
   ['aws', '/XD/aws'],
   ['azure', '/XD/azure'],
@@ -108,19 +121,39 @@ export const items1 = [
 
   /* 7 */
   ['WEB-DESIGN', '/XD/WEB-DESIGN'],
-  ['WEB0', '/XD/WEB/WEB0'],
-  ['WEB1', '/XD/WEB/WEB1'],
+  ['WEB-DESIGN-2', '/XD/WEB-DESIGN-2'],
+  ['seo', '/XD/seo'],
+  ['css', '/XD/css'],
+  ['css2', '/XD/css2'],
+  ['css-framework', '/XD/css-framework'],
+  ['WEB3', '/XD/WEB/WEB3'],
+  ['Graph', '/XD/WEB/Graph'],
+  ['WEB-FE', '/XD/WEB/WEB-FE'],
+  ['browser-addon', '/XD/WEB/browser-addon'],
+  ['WEB-addon-dev', '/XD/WEB/WEB-addon-dev'],
+  ['Chrome-EXT-dev-1', '/XD/WEB/Chrome-EXT-dev-1'],
+  ['Chrome-EXT-dev-2', '/XD/WEB/Chrome-EXT-dev-2'],
+  ['Chrome-EXT-dev-3', '/XD/WEB/Chrome-EXT-dev-3'],
+  
+  ['hosting', '/XD/WEB/hosting'],
+  ['NETWORK-1', '/XD/WEB/NETWORK-1'],
+  ['NETWORK-2', '/XD/WEB/NETWORK-2'],
+  ['WebServer', '/XD/WEB/WebServer'],
+
+  ['WebSocket', '/XD/WEB/WebSocket'],
+  ['WEB-MISC', '/XD/WEB/WEB-MISC'],
   ['rea-1', '/XD/WEB-2/rea-1'],
   ['rea-2', '/XD/WEB-2/rea-2'],
   ['rea-3', '/XD/WEB-2/rea-3'],
   ['rea-x', '/XD/WEB-2/rea-x'],
+  ['reactive', '/XD/WEB-2/reactive'],
   ['rea-y', '/XD/WEB-2/rea-y'],
   ['rea-z', '/XD/WEB-2/rea-z'],
+  ['rea-native', '/XD/WEB-2/rea-native'],
   ['Next-1', '/XD/WEB-2/Next-1'],
   ['Next-2', '/XD/WEB-2/Next-2'],
   ['Vue.js', '/XD/WEB-2/Vue.js'],
   ['js-fw', '/XD/WEB-2/js-fw'],
-  ['Vue.js', '/XD/WEB-2/Vue.js'],
   ['JAMStack', '/XD/WEB-2/JAMStack'],
   ['EMB', '/XD/EMB'],
   ['EMB2', '/XD/EMB2'],
@@ -144,6 +177,7 @@ export const items1 = [
   ['JS-nodejs', '/XD/JS-nodejs/Node.js'],
   ['JS', '/XD/JS'],
   ['JS2', '/XD/JS2'],
+  ['TypeScript', '/XD/TypeScript'],
   ['LLVM', '/XD/LLVM'],
   ['LANG-etc', '/XD/DEV-LANG-etc'],
   ['LANG-etc-2', '/XD/DEV-LANG-etc-2'],
@@ -177,16 +211,13 @@ export const items1 = [
   ['WEB-API', '/XD/WEB-API'],
   ['WEB-API2', '/XD/WEB-API2'],
   /* 15 */
-  ['WEB-API3', '/XD/WEB-API3'],
+  ['WEB-API-Google', '/XD/WEB-API-Google'],
   ['WEB-API4', '/XD/WEB-API4'],
   ['WEB-API5', '/XD/WEB-API5'],
   ['8-SCI', '/XD/8-SCI'],
   ['Math-Software', '/XD/Math-Software'],
   /* 14 */
-  ['8-math', '/XD/8-SCI-math'],
-  ['V', '/0/V'],
-  ['Youtube', '/0/動画/Youtube'],
-  ['動画', '/0/動画'],
+  ['8-SCI-math', '/XD/8-SCI-math'],
   ['T', '/T'],
   /* 15 */
   ['HUMAN', '/0/0-HUMAN'],
@@ -203,18 +234,19 @@ export const items1 = [
   ['Op3', '/Y0/0-Archive/Op3'],
   ['Op4', '/Y0/0-Archive/Op4'],
   ['Op5', '/Y0/0-Archive/Op5'],
-  ['F-EBook-3', '/0/F-EBook-3'],
   ['Gs', '/Gs'],
   /* 18 */
   ['v-ai', '/Video/v-ai'],
   ['v-ai-New-or-Intro', '/Video/v-ai-New-or-Intro'],
   ['国際', '/Video/国際'],
   ['科学', '/Video/科学'],
+
   ['開発', '/Video/開発'],
   ['エンタメ', '/Video/エンタメ'],
   ["社会", "/Video/社会"],
   ["外国語", "/Video/外国語"],
   ["知的生産", "/Video/知的生産"],
+
   ["歴史", "/Video/歴史"],
   ["人文", "/Video/人文"],
 ];
@@ -236,7 +268,7 @@ function getNumOfRows() {
 }
 
 function getMax() {
-  return 190;
+  return 400;
 }
 
 function getPrefix(key) {

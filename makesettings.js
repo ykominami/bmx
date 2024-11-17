@@ -13,7 +13,7 @@ function make_content(num, count) {
 }
 
 const writable = fs.createWriteStream(ofile, { flags: 'w' });
-const max_num = 76;
+const max_num = 140;
 const max_count = 5;
 for (let i = 1; i <= max_num; i++) {
   for (let j = 1; j <= max_count; j++) {
