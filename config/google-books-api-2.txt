@@ -1,0 +1,28 @@
+function setBookInfo(){
+
+  sheet = SpreadsheetApp.getActiveSheet(); // 開いているシートのオブジェクトを取得
+  insertRow = sheet.getActiveCell().getRow(); // 選択している行のオブジェクトを取得
+  isbn = sheet.getActiveCell().getValue(); // 選択しているセルの値を取得し、変数isbnに代入
+  Logger.log(isbn); // isbnをログ出力
+
+  // Google Books APIを叩いてレスポンスを取得  
+  response = UrlFetchApp.fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn + '&country=JP');
+
+  data = JSON.parse(response.getContentText()); //JSON形式のレスポンスをオブジェクトとしてパース
+  bookInfo = data.items[0].volumeInfo; //本の情報を取得
+
+ sheet.getRange(insertRow,2).setValue('=IMAGE("'+bookInfo.imageLinks.thumbnail+'")'); // 2列目にサムネイルを挿入
+  sheet.getRange(insertRow,3).setValue(bookInfo.title); // 3列目にタイトルを挿入
+  sheet.getRange(insertRow,4).setValue(bookInfo.canonicalVolumeLink); // 4列目にリンクを挿入
+  sheet.getRange(insertRow,5).setValue(bookInfo.authors.join()); // 5列目に著者を挿入
+  sheet.getRange(insertRow,6).setValue(bookInfo.publishedDate); //6列目に発行日を挿入
+  sheet.getRange(insertRow,7).setValue(bookInfo.categories.join()); //7列目にカテゴリを挿入
+
+}
+
+function onEdit(e){
+  // 編集カラムが1列目であればsetBookInfo関数を呼び出す
+  if(e.range.getColumn() == 1) {
+      setBookInfo();
+  }
+}
