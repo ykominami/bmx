@@ -1,7 +1,10 @@
 export const items1 = [
   /* 1 */
   ['GD-0-inbox', '/0X/GD-0-inbox'],
+  ['TODO', '/0/TODO'],
+  ['TODO-2', '/0/TODO-2'],
   ['0/0', '/0/0'],
+  ['Advent-Calendar', '/1/Advent-Calndar'],
   ['0/connpass', '/0/connpass'],
   ['0/ETC', '/0/ETC'],
   ['0X', '/0X'],
@@ -115,7 +118,13 @@ export const items1 = [
   ['azure', '/XD/azure'],
   /* 6 */
   ['gcp', '/XD/gcp'],
-  ['docker', '/XD/docker'],
+  ['docker/d-info', '/XD/docker/d-info'],
+  ['docker/d-info-2', '/XD/docker/d-info-2'],
+  ['docker/d-tut', '/XD/docker/d-tut'],
+  ['docker/d-tut-2', '/XD/docker/d-tut-2'],
+  ['docker/d-tut-3', '/XD/docker/d-tut-3'],
+  ['docker/3', '/XD/docker/3'],
+  ['docker/4', '/XD/docker/4'],
   ['CLOUD', '/XD/CLOUD'],
   ['Rust', '/XD/Rust'],
 
