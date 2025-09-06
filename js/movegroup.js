@@ -1,5 +1,5 @@
-import {Mover} from './mover.js';
-import {parseURLX} from './util.js';
+import { Mover } from './mover.js';
+import { Util } from './util.js';
 
 export class Movergroup {
     static mover_group = null;
@@ -38,7 +38,7 @@ export class Movergroup {
         // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
         // console.log(`Movergroup.move keys=${ Object.keys(this.group) }`)
         if (bookmarkItem.url) {
-            let hostname = parseURLX(bookmarkItem.url).then((hostname) => {
+            let hostname = Util.parseURLX(bookmarkItem.url).then((hostname) => {
                 // console.log(`Movergroup.move || hostname=${hostname}`)
                 if (this.keys.includes(hostname)) {
                     // console.log(`Movergroup.move IN hostname=${hostname} T`)
