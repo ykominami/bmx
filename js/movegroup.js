@@ -1,5 +1,5 @@
-import {Mover} from './mover.js';
-import {parseURLX} from './util.js';
+import { Mover } from './mover.js';
+import { Util } from './util.js';
 
 export class Movergroup {
     static mover_group = null;
@@ -12,17 +12,17 @@ export class Movergroup {
     static get_mover_group() {
         if (this.mover_group == null) {
             this.mover_group = new Movergroup();
-            this.mover_group.add('www.youtube.com', '/Video');
-            this.mover_group.add('www.nicovideo.jp', '/Video-nico');
-            this.mover_group.add('www.bilibili.com', '/Video-bili');
-            this.mover_group.add('www.amazon.co.jp', '/Amazon');
-            this.mover_group.add('note.com', '/Note.com');
+            this.mover_group.add('/Video', 'www.youtube.com');
+            this.mover_group.add('/Video-nico', 'www.nicovideo.jp');
+            this.mover_group.add('/Video-bili', 'www.bilibili.com');
+            this.mover_group.add('/Amazon', 'www.amazon.co.jp');
+            this.mover_group.add('/Note.com', 'note.com');
         }
         return this.mover_group;
     }
 
-    add(hostname, hier) {
-        let mover = new Mover(hostname, hier);
+    add(hier, hostname) {
+        let mover = new Mover(hier, hostname);
         if (mover.dest_parent_item == null) {
             /* console.log(
                 `Movergroup.add hier=${hier} hostname=${hostname} mover.dest_parent_item=${mover.dest_parent_item}`
@@ -38,7 +38,7 @@ export class Movergroup {
         // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
         // console.log(`Movergroup.move keys=${ Object.keys(this.group) }`)
         if (bookmarkItem.url) {
-            let hostname = parseURLX(bookmarkItem.url).then((hostname) => {
+            let hostname = Util.parseURLX(bookmarkItem.url).then((hostname) => {
                 // console.log(`Movergroup.move || hostname=${hostname}`)
                 if (this.keys.includes(hostname)) {
                     // console.log(`Movergroup.move IN hostname=${hostname} T`)
