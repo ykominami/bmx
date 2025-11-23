@@ -1,6 +1,6 @@
 import { data } from './data.js';
 
-class Globalx {
+export class Globalx {
     static Settings = {};
 
     static StorageOptions = 'Options';
@@ -26,15 +26,15 @@ class Globalx {
     }
 
     static async loadSettings() {
+        // Manifest V3: chrome.storage.local.get() returns a Promise
+        const result = await chrome.storage.local.get(null);
         let value = null;
-        return chrome.storage.local.get(null).then((result) => {
-            if (result['all']) {
-                value = result['all'];
-            } else {
-                value = {};
-            }
-            return value;
-        });
+        if (result['all']) {
+            value = result['all'];
+        } else {
+            value = {};
+        }
+        return value;
     }
 
     static initSettings_a() {
@@ -90,21 +90,22 @@ class Globalx {
 
     static async setStorageHiers(value) {
         Globalx.Settings[Globalx.StorageHiers] = {};
+        // Manifest V3: chrome.storage.local.set() returns a Promise
         await chrome.storage.local.set({all: Globalx.Settings});
         Globalx.Settings[Globalx.StorageHiers] = value;
     }
 
     static async storageOptionsUnshift(obj) {
         Globalx.Settings[Globalx.StorageOptions].unshift(obj);
+        // Manifest V3: chrome.storage.local.set() returns a Promise
         await chrome.storage.local.set({all: Globalx.Settings});
         // let objx = Globalx.Settings[Globalx.StorageOptions];
     }
 
     static async removeSettings() {
+        // Manifest V3: chrome.storage.local.remove() returns a Promise
         await chrome.storage.local.remove(
-            [Globalx.StorageOptions, Globalx.StorageSelected, Globalx.StorageHiers],
-            (_) => {
-            }
+            [Globalx.StorageOptions, Globalx.StorageSelected, Globalx.StorageHiers]
         );
     }
 
@@ -176,7 +177,3 @@ class Globalx {
         Globalx.replace_in_Settings(sOptions);
     }
 }
-
-export {
-    Globalx,
-};
