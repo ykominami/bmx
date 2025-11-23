@@ -2,7 +2,9 @@ export const items1 = [
   /* 1 */
   ['GD-0-inbox', '/0X/GD-0-inbox'],
   ['TODO', '/0/TODO'],
+  ['TODO-1', '/0/TODO-1'],
   ['TODO-2', '/0/TODO-2'],
+  ['TODO-V', '/0/TODO-V'],
   ['0/0', '/0/0'],
   ['Advent-Calendar', '/1/Advent-Calndar'],
   ['0/connpass', '/0/connpass'],
@@ -10,14 +12,27 @@ export const items1 = [
   ['0X', '/0X'],
   ['Y2', '/Y2'],
   ['ChatGPT0', '/Y1/ChatGPT/0'],
-  ['ChatGPT1', '/Y1/ChatGPT/1'],
   ['ChatGPT-Paper', '/Y1/ChatGPT/ChatGPT-Paper'],
   ['ChatGPT-Paper-Matuo-LAB', '/Y1/ChatGPT/ChatGPT-Papar-Matuo-LAB'],
-  ['ChatGPT2', '/Y1/ChatGPT/2'],
+  ['Cursor', '/Y1/ChatGPT/Cursor'],
+  ['Claude-Coder', '/Y1/ChatGPT/Claude-Code'],
+  ['Codex-CLI', '/Y1/ChatGPT/Codex-CLI'],
+  ['AI-Editor', '/Y1/ChatGPT/AI-Editor'],
+  ['AI-Editor-2', '/Y1/ChatGPT/AI-Editor-2'],
+  ['AI-Editor-3', '/Y1/ChatGPT/AI-Editor-3'],
+  ['AI-Editor-4', '/Y1/ChatGPT/AI-Editor-4'],
+  ['AI-Editor-5', '/Y1/ChatGPT/AI-Editor-5'],
+  ['AI-MCP', '/Y1/ChatGPT/AI-MCP'],
+  ['ChatGPT1', '/Y1/ChatGPT/1'],
   ['ChatGPT-info-etc', '/Y1/ChatGPT/ChatGPT-info-etc'],
-  ['ChatGPT3', '/Y1/ChatGPT/3'],
+  ['ChatGPT2', '/Y1/ChatGPT/2'],
+  ['Agent-1', '/Y1/ChatGPT/3/Agent-1'],
+  ['Agent-2', '/Y1/ChatGPT/3/Agent-2'],
+  ['Agent-3', '/Y1/ChatGPT/3/Agent-3'],
+  ['ChatGPT-Pr-1', '/Y1/ChatGPT/3/ChatGPT-Pr-1'],
   ['LangChain', '/Y1/ChatGPT/LangChain'],
   ['ChatGPT4', '/Y1/ChatGPT/4'],
+  ['ChatGPT41', '/Y1/ChatGPT/41'],
   ['ChatGPT42', '/Y1/ChatGPT/42'],
   ['ChatGPT5', '/Y1/ChatGPT/5'],
   ['Y1/HotWire-0-IDEA/1', '/Y1/HotWire-0-IDEA/1'],
@@ -64,8 +79,19 @@ export const items1 = [
   ['YY-GAS3', '/YY-GAS/YY-GAS3'],
   ['YY-GAS4', '/YY-GAS/YY-GAS4'],
   ['GAS-clasp', '/YY-GAS/GAS-clasp'],
-  ['DashBoard/1', '/DashBoard/1'],
-  ['DashBoard/2', '/DashBoard/2'],
+  ['DaBo/AI-1', '/DaBo/AI-1'],
+  ['DaBo/AI-2', '/DaBo/AI-2'],
+  ['DaBo/SHIFT-AI', '/DaBo/SHIFT-AI'],
+  ['DaBo-1/etc-GOTO', '/DaBo/DaBo-1/DaBo-1-1/etc-GOTO'],
+  ['Learning#', '/DaBo/DaBo-1/DaBo-1-1/Learning#'],
+  ['Udemy-AI-ML', '/DaBo/DaBo-1/DaBo-1-2/Udemy-AI-ML'],
+  ['Udemy-2', '/DaBo/DaBo-1/DaBo-1-3/Udemy-2'],
+  ['Udemy-3', '/DaBo/DaBo-1/DaBo-1-4/Udemy-3'],
+  ['Udemy-x', '/DaBo/DaBo-1/DaBo-1-4/Udemy-x'],
+  ['DaBo-企業研修', '/DaBo/DaBo-1/DaBo-企業研修'],
+  ['DaBo-2', '/DaBo/DaBo-1/DaBo-2'],
+  ['DaBo-1', '/DaBo/DaBo-1'],
+  ['DaBo-1', '/DaBo/DaBo-1'],
   ['Y0', '/Y0'],
   ['XX', '/0/XX'],
   ['1/A0', '/1/A0'],
@@ -263,7 +289,8 @@ export const items1 = [
 export const keys = ['/0/0-etc/1'];
 
 export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
-export let folderDayPrefixes = { '/Y/Day': 'Day' };
+// export let folderDayPrefixes = [ '0','Y-DAY','Day' ];
+export let folderDayPrefixes = [ '/0/Y-DAY/Day' ];
 
 function getItems1() {
   return items1;
@@ -290,7 +317,8 @@ function getFoldersFromPrefixes() {
 }
 
 function getFoldersFromDayPrefixes() {
-  return Object.keys(folderDayPrefixes);
+  // return Object.keys(folderDayPrefixes);
+  return folderDayPrefixes;
 }
 export {
   getItems1,

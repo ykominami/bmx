@@ -1,69 +1,58 @@
-function getMonthx(datex) {
-    return datex.getMonth() + 1;
-}
-
-function adjustAsStr(num) {
-    let str = `${num}`;
-    if (num < 10) {
-        str = `0${num}`;
+export class Util {
+    static getMonthx(datex) {
+        return datex.getMonth() + 1;
     }
-    return str;
-}
 
-/* buttonのjqueryオブジェクト */
-function makeBtnA(name, class_name, id) {
-    return $("<button>", {
-        type: "button",
-        name: name,
-        class: class_name,
-        id: id,
-        text: name,
-    });
-}
+    static adjustAsStr(num) {
+        let str = `${num}`;
+        if (num < 10) {
+            str = `0${num}`;
+        }
+        return str;
+    }
 
-/* selectのjqueryオブジェクト */
-function makeSelectA(class_name, id) {
-    return $("<select>", {
-        class: class_name,
-        id: id,
-    });
-}
+    /* buttonのjqueryオブジェクト */
+    static makeBtnA(name, class_name, id) {
+        return $("<button>", {
+            type: "button",
+            name: name,
+            class: class_name,
+            id: id,
+            text: name,
+        });
+    }
 
-function getCategoryName(i) {
-    return "c" + i;
-}
+    /* selectのjqueryオブジェクト */
+    static makeSelectA(class_name, id) {
+        return $("<select>", {
+            class: class_name,
+            id: id,
+        });
+    }
 
-function getSelectId(name) {
-    return name + "inp";
-}
+    static getCategoryName(i) {
+        return "c" + i;
+    }
 
-function getBtnId(name) {
-    return name + "btn";
-}
+    static getSelectId(name) {
+        return name + "inp";
+    }
 
-function getJqueryId(id) {
-    return "#" + id;
-}
+    static getBtnId(name) {
+        return name + "btn";
+    }
 
-async function parseURLAsync(url) {
-    return new URL(url);
-}
+    static getJqueryId(id) {
+        return "#" + id;
+    }
 
-function parseURLX(url) {
-    return parseURLAsync(url).then((parser) => {
-        return parser.hostname;
-    });
-}
+    static async parseURLAsync(url) {
+        return new URL(url);
+    }
 
-export {
-    getMonthx,
-    adjustAsStr,
-    makeBtnA,
-    makeSelectA,
-    getCategoryName,
-    getSelectId,
-    getBtnId,
-    getJqueryId,
-    parseURLAsync,
-    parseURLX,
-};
+    static parseURLX(url) {
+        return Util.parseURLAsync(url).then((parser) => {
+            return parser.hostname;
+        });
+    }
+}
