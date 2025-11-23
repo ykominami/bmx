@@ -76,10 +76,8 @@ export class ItemGroup {
     }
 
     async moveBMXFolderBase(mover_group, src_folder_id) {
-        let bookmarkItems = [];
-        await chrome.bookmarks
-            .getChildren(`${src_folder_id}`)
-            .then((bms) => (bookmarkItems = bms));
+        // Manifest V3: chrome.bookmarks.getChildren() returns a Promise
+        const bookmarkItems = await chrome.bookmarks.getChildren(`${src_folder_id}`);
         bookmarkItems.map((bookmarkItem) => {
             mover_group.move(bookmarkItem);
         });

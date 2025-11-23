@@ -1,10 +1,10 @@
 import { Util } from './util.js'; // Updated import
 
-import {getFoldersFromDayPrefixes, getFoldersFromPrefixes, getPrefix,} from '../config/settings.js';
+import {getFoldersFromDayPrefixes, getFoldersFromPrefixes, getPrefix,} from '../config/settings2.js';
 
 import { data } from './data.js';
 
-class AddFolder {
+export class AddFolder {
     constructor() {
         // No specific state to initialize for now, but constructor is good practice.
     }
@@ -74,52 +74,54 @@ class AddFolder {
             children: [],
         };
     }
-
-    makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
-        let newFolderId = 0;
-        let parentidstr = `${parentidx}`;
-        // console.log(`makeAndRegisterBookmarkFolder parentidstr=${parentidstr}`);
-        chrome.bookmarks.create(
-            {
-                parentId: parentidstr,
-                index: indexx,
-                title: titlex,
-            },
-            function (newFolder) {
-                newFolderId = newFolder.id;
-            }
-        );
-        let element = this.makeElement(newFolderId, parentidx, indexx, null, titlex); // Call instance method
+    async makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex) {
+        let parentidstr = '';
+        if( parentidx != null ) {
+            parentidstr = `${parentidx}`;
+        }
+        console.log(`makeAndRegisterBookmarkFolder parentidstr=${parentidstr}`);
+        
+        // Manifest V3: chrome.bookmarks.create() returns a Promise
+        const newFolder = await chrome.bookmarks.create({
+            parentId: parentidstr,
+            index: indexx,
+            title: titlex,
+        });
+        
+        let element = this.makeElement(newFolder.id, parentidx, indexx, null, titlex); // Call instance method
 
         let item = this.makeItem(element); // Call instance method
         item.hier = keytop;
         this.registerx(keytop, item); // Call instance method
+
+        return item;
     }
 
-    addFolderx() {
+    async addFolderx() {
         let folders = getFoldersFromPrefixes();
         let year_month = this.getYearAndNextMonthAsString(); // Call instance method
 
-        folders.map((parent) => {
+        for (const parent of folders) {
             const parent_item = data.getItemByHier(parent);
-            if (parent_item !== null) {
+            if (parent_item != null && parent_item.id != null) {
                 let prefix = getPrefix(parent);
                 let title = `${prefix}-${year_month}`;
                 let new_keytop = `${parent}/${title}`;
                 let new_item = data.getItemByHier(new_keytop);
                 if (new_item === null) {
-                    this.makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title); // Call instance method
+                    new_item = await this.makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title); // Call instance method
                 }
             }
-        });
+        }
     }
 
-    addDayFolderx() {
+    async addDayFolderx() {
         let folders = getFoldersFromDayPrefixes();
+        console.log(`addDayFolderx folders=${JSON.stringify(folders)}`);
         let [y_str, ym_str, ymd_str] = this.getYearAndMonthAndDayAsString(); // Call instance method
 
         // "Y/Day"
-        folders.map((parent) => {
+        for (let parent of folders) {
             if (parent == null) {
                 parent = '';
             }
@@ -133,38 +135,54 @@ class AddFolder {
                 ymd_str = '';
             }
             const arrayx = [parent, y_str, ym_str, ymd_str];
-            arrayx.reduce((accumulator, currentValue) => {
+            console.log(`arrayx=${JSON.stringify(arrayx)}`);
+            let accumulator = '';
+            for (const currentValue of arrayx) {
                 const parent_item = data.getItemByHier(accumulator);
                 const hier = [accumulator, currentValue].join('/');
                 let item = data.getItemByHier(hier);
                 if (item === null) {
-                    this.makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier); // Call instance method
-                    item = data.getItemByHier(hier);
-                    // console.log(`item=${JSON.stringify(item)}`);
+                    if( parent_item != null) {
+                        let new_item = await this.makeAndRegisterBokkmarkFolderx(parent_item, currentValue, hier); // Call instance method
+                        item = new_item
+                    }
+                    console.log(`[new] item=${JSON.stringify(item)}`);
+                    let new_item = data.getItemByHier(hier);
+                    console.log(`new_item=${JSON.stringify(new_item)}`);
+                    item = new_item;
                 }
-                // console.log(`parent=${parent} hier=${hier} item=${item}`);
-
-                return hier;
-            });
-        });
+                console.log(`parent=${parent} hier=${hier} item=${item}`);
+                console.log(`parent_item=${JSON.stringify(parent_item)}`);
+                
+                accumulator = hier; // Update accumulator for next iteration (like reduce)
+            }
+        }
     }
 
-    makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
+    async makeAndRegisterBokkmarkFolderx(parent_item, title, new_keytop) {
         let new_item = data.getItemByHier(new_keytop);
         if (new_item === null) {
-            this.makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title); // Call instance method
-            new_item = data.getItemByHier(new_keytop);
+            if( parent_item != null && parent_item.id != null) {
+                let new_item_0 = await this.makeAndRegisterBookmarkFolder(new_keytop, parent_item.id, 0, title); // Call instance method
+                new_item = data.getItemByHier(new_keytop);
+            }
         }
         return new_item;
     }
 
-    lstree() {
-        const hier = '/Y/Day/2023/202311';
+    async lstree() {
+        // const hier = '/Y/Day/2023/202311';
+        // const hier = '/0/Day-Arc/2023/202311';
+        // let keys = data.getKeysOfItemByHier();
+        // keys.map((key) => console.log(key));
+
+        // const hier = '/0/Day-Arc/2023/202311';
+        const hier = '/0/Y-DAY/Day/2025/202504/20250407';
         let item = data.getItemByHier(hier);
-        // console.log(item);
-        let ary = data.dumpTreeItemsXTop(item.id);
-        ary.map((item_id) => console.log(item_id));
+        console.log(item);
+        if( item != null && item.id != null) {
+            let ary = await data.dumpTreeItemsXTop(item.id);
+            ary.map((item_id) => console.log(item_id));
+        }
     }
 }
-
-export { AddFolder };
