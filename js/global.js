@@ -25,15 +25,15 @@ function adjustValue(val) {
 }
 
 async function loadSettings() {
+    // Manifest V3: chrome.storage.local.get() returns a Promise
+    const result = await chrome.storage.local.get(null);
     let value = null;
-    return chrome.storage.local.get(null).then((result) => {
-        if (result['all']) {
-            value = result['all'];
-        } else {
-            value = {};
-        }
-        return value;
-    });
+    if (result['all']) {
+        value = result['all'];
+    } else {
+        value = {};
+    }
+    return value;
 }
 
 function initSettings_a() {
@@ -89,21 +89,22 @@ function getStorageOptions() {
 
 async function setStorageHiers(value) {
     Settings[StorageHiers] = {};
+    // Manifest V3: chrome.storage.local.set() returns a Promise
     await chrome.storage.local.set({all: Settings});
     Settings[StorageHiers] = value;
 }
 
 async function storageOptionsUnshift(obj) {
     Settings[StorageOptions].unshift(obj);
+    // Manifest V3: chrome.storage.local.set() returns a Promise
     await chrome.storage.local.set({all: Settings});
     // let objx = Settings[StorageOptions];
 }
 
 async function removeSettings() {
+    // Manifest V3: chrome.storage.local.remove() returns a Promise
     await chrome.storage.local.remove(
-        [StorageOptions, StorageSelected, StorageHiers],
-        (_) => {
-        }
+        [StorageOptions, StorageSelected, StorageHiers]
     );
 }
 
