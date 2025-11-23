@@ -6,9 +6,10 @@ export class Mover {
         this.url = url
         this.dest_parent_item = data.getItemByHier(this.hier)
     }
-    move(bookmarkItem){
+    async move(bookmarkItem){
         if( this.dest_parent_item != null ){
-            return chrome.bookmarks.move(bookmarkItem.id, {parentId: this.dest_parent_item.id});
+            // Manifest V3: chrome.bookmarks.move() returns a Promise
+            return await chrome.bookmarks.move(bookmarkItem.id, {parentId: this.dest_parent_item.id});
         } else {
             return Promise.reject(new Error("Destination parent item not found."));
         }

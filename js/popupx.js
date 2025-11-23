@@ -1,5 +1,4 @@
 import {getItems1, getKeys, getMax, getNumOfRows} from '../config/settings2.js';
-import {createDumpTreeNodes} from './treenode.js';
 import {ItemGroup} from './itemgroup.js';
 import {Movergroup} from './movegroup.js';
 // Removed: import {restoreSelectRecently, updateSelectRecently} from './async.js';
@@ -19,7 +18,8 @@ class PopupManager {
     this.Target = null;
     this.addFolder = new AddFolder();
     this.itemGroup = new ItemGroup();
-    this.dumpTreeNodes = createDumpTreeNodes(this.itemGroup);
+    this.reg = new RegExp('/Y/DashBoard', '');
+    this.dumpTreeNodes = this.createDumpTreeNodes();
     this.init();
   }
 
@@ -131,13 +131,13 @@ class PopupManager {
     if (!ignore_head) {
       buffer.push({value: item.id, text: item.title});
     }
-    await chrome.bookmarks.getSubTree(item.id).then((bookmarkTreeNodes) => {
-      let count = 100;
-      obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
-      if(obj.buffer.length > 0){
-        buffer.push(...obj.buffer)
-      }
-    });
+    // Manifest V3: chrome.bookmarks.getSubTree() returns a Promise
+    const bookmarkTreeNodes = await chrome.bookmarks.getSubTree(item.id);
+    let count = 100;
+    obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
+    if(obj.buffer.length > 0){
+      buffer.push(...obj.buffer)
+    }
     return buffer;
   }
 
@@ -165,30 +165,28 @@ class PopupManager {
     }
   }
 
-  addSelectWaitingItemsX(select, folder_id) {
+  async addSelectWaitingItemsX(select, folder_id) {
     const item = data.getItem(folder_id);
     if (item == null) {
       return;
     }
 
-    chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
-      let count = 1;
-      let obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
-      let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
-      select.append(buffer2);
-      select.prop('selectedIndex', 0);
-      const folder_id= select.val();
-      if (folder_id) {
-        this.selectWaitingItemsBtnHdr(folder_id);
-      }
-    });
+    // Manifest V3: chrome.bookmarks.getSubTree() returns a Promise
+    const bookmarkTreeNodes = await chrome.bookmarks.getSubTree(item.id);
+    let count = 1;
+    let obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
+    let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
+    select.append(buffer2);
+    select.prop('selectedIndex', 0);
+    const folder_id= select.val();
+    if (folder_id) {
+      this.selectWaitingItemsBtnHdr(folder_id);
+    }
   }
 
   async tab_query_async(query, parent_id, parent_text) {
-    let ret_tabs;
-    await chrome.tabs.query(query).then((tabs) => {
-      ret_tabs = tabs;
-    });
+    // Manifest V3: chrome.tabs.query() returns a Promise
+    const ret_tabs = await chrome.tabs.query(query);
     return [ret_tabs, parent_id, parent_text];
   }
 
@@ -200,7 +198,8 @@ class PopupManager {
     const radioval = $("input[name='add-mode']:checked").val();
     switch (radioval) {
       case 's':
-        chrome.bookmarks.create({
+        // Manifest V3: chrome.bookmarks.create() returns a Promise
+        await chrome.bookmarks.create({
           parentId: parent_id,
           title: active_tab.title,
           url: active_tab.url,
@@ -208,19 +207,22 @@ class PopupManager {
         break;
       case 'm-r':
         for (i = active_tab.index + 1; i < tabs.length; i++) {
-          chrome.bookmarks.create({
+          // Manifest V3: chrome.bookmarks.create() returns a Promise
+          await chrome.bookmarks.create({
             parentId: parent_id,
             title: tabs[i].title,
             url: tabs[i].url,
           });
         }
         for (i = tabs.length - 1; i > active_tab.index; i--) {
-          chrome.tabs.remove(tabs[i].id);
+          // Manifest V3: chrome.tabs.remove() returns a Promise
+          await chrome.tabs.remove(tabs[i].id);
         }
         break;
       case 'm-l':
         for (i = 0; i /*<*/ < active_tab.index; i++) {
-          chrome.bookmarks.create({
+          // Manifest V3: chrome.bookmarks.create() returns a Promise
+          await chrome.bookmarks.create({
             parentId: parent_id,
             title: tabs[i].title,
             url: tabs[i].url,
@@ -234,7 +236,8 @@ class PopupManager {
         move_need = false;
         break;
       default:
-        chrome.bookmarks.create({
+        // Manifest V3: chrome.bookmarks.create() returns a Promise
+        await chrome.bookmarks.create({
           parentId: parent_id,
           title: active_tab.title,
           url: active_tab.url,
@@ -271,16 +274,16 @@ class PopupManager {
           query,
           parent_id,
           parent_text
-      ).then(this.add_mode_x);
+      ).then((result) => this.add_mode_x(result));
     } else {
       const text = $('#oname').val();
       const url = $('#ourl').val();
       const id = $('#oid').val();
       if (text !== '' && url !== '' && id !== '') {
-        chrome.bookmarks.get(id, (result) => {
-          let ret = this.moveBKItem(id, result[0].parentId, parent_id);
-          this.addSelectWaitingItemsX($('#yinp'), $('#zinp').val());
-        });
+        // Manifest V3: chrome.bookmarks.get() returns a Promise
+        const result = await chrome.bookmarks.get(id);
+        let ret = await this.moveBKItem(id, result[0].parentId, parent_id);
+        this.addSelectWaitingItemsX($('#yinp'), $('#zinp').val());
       } else {
         alert("Can't move bookmark");
       }
@@ -288,31 +291,34 @@ class PopupManager {
     Globalx.addRecentlyItem($('#rinp'), parent_id, parent_text);
   }
 
-  closeTabs() {
-      this.tab_query_async({
+  async closeTabs() {
+      const [tabs] = await this.tab_query_async({
         currentWindow: true,
-      }).then((tabs) => {
-        let i;
-        const radioval = $("input[name='add-mode']:checked").val();
-        switch (radioval) {
-          case 's':
-            break;
-          case 'm-r':
-            for (i = tabs.length - 1; i > current_tab.index; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          case 'm-l':
-            for (i = current_tab.index - 1; i > -1; i--) {
-              chrome.tabs.remove(tabs[i].id);
-            }
-            break;
-          default:
-            break;
-        }
-      },
-      (_) => {}
-    );
+      }, null, null);
+      let i;
+      const active_tab = tabs.find((tab) => tab.active);
+      if (!active_tab) {
+        return;
+      }
+      const radioval = $("input[name='add-mode']:checked").val();
+      switch (radioval) {
+        case 's':
+          break;
+        case 'm-r':
+          for (i = tabs.length - 1; i > active_tab.index; i--) {
+            // Manifest V3: chrome.tabs.remove() returns a Promise
+            await chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        case 'm-l':
+          for (i = active_tab.index - 1; i > -1; i--) {
+            // Manifest V3: chrome.tabs.remove() returns a Promise
+            await chrome.tabs.remove(tabs[i].id);
+          }
+          break;
+        default:
+          break;
+      }
   }
 
   addSelectWaitingFolders(select, subselect) {
@@ -342,7 +348,21 @@ class PopupManager {
         }
     );
     if (opts1.length > 1) {
-      let opts2 = opts1.map((obj) => $('<option>', {value: obj[0], text: obj[1]}));
+      let opts2 = opts1.map((obj) => {
+        if (obj && typeof obj.jquery !== 'undefined') {
+          // obj is a jQuery element, extract value and text
+          return $('<option>', {
+            value: obj.attr('value') || obj.val(),
+            text: obj.text(),
+          });
+        } else {
+          // obj is a plain object
+          return $('<option>', {
+            value: obj.value,
+            text: obj.text,
+          });
+        }
+      });
       select.empty();
       select.append(opts2);
       select.prop('selectedIndex', 0);
@@ -350,17 +370,15 @@ class PopupManager {
     }
   }
 
-  moveBKItem(id, src_parent_id, dest_parent_id) {
+  async moveBKItem(id, src_parent_id, dest_parent_id) {
     let ret = false;
     if (id !== '') {
-      chrome.bookmarks
-        .move(id, {
-          parentId: dest_parent_id,
-        })
-        .then
-        ()
-        .then( () => {this.addSelectWaitingItemsX($('#yinp'), src_parent_id)})
-        .then(() => {ret = true});
+      // Manifest V3: chrome.bookmarks.move() returns a Promise
+      await chrome.bookmarks.move(id, {
+        parentId: dest_parent_id,
+      });
+      await this.addSelectWaitingItemsX($('#yinp'), src_parent_id);
+      ret = true;
     } else {
       alert("Can't move bookmark");
     }
@@ -477,32 +495,32 @@ class PopupManager {
     $('#oid').val('');
   }
 
-  selectWaitingItemsBtnHdr(option_value) {
+  async selectWaitingItemsBtnHdr(option_value) {
     if (option_value != null) {
-      chrome.bookmarks.get(option_value, (BookmarkTreeNodes) => {
-        let len = BookmarkTreeNodes.length;
-        if (len > 0) {
-          let bt = BookmarkTreeNodes[0];
-          let title = bt.title;
-          let url = bt.url;
-          let id = bt.id;
+      // Manifest V3: chrome.bookmarks.get() returns a Promise
+      const BookmarkTreeNodes = await chrome.bookmarks.get(option_value);
+      let len = BookmarkTreeNodes.length;
+      if (len > 0) {
+        let bt = BookmarkTreeNodes[0];
+        let title = bt.title;
+        let url = bt.url;
+        let id = bt.id;
 
-          $('#oname').val(`${len} ${title}`);
-          $('#ourl').val(`${url}`);
-          $('#oid').val(`${id}`);
-          $('#ox').val(`abc`);
-          Util.parseURLAsync(url)
-            .then((parser) => {
-              let href = parser.href;
-              let hostname = parser.hostname;
-              $('#ox').val(hostname);
-              return hostname;
-            })
-            .catch((error) => {
-              console.log(`selectWaitingItemsBtnHdr error=${error}`)
-            });
-        }
-      });
+        $('#oname').val(`${len} ${title}`);
+        $('#ourl').val(`${url}`);
+        $('#oid').val(`${id}`);
+        $('#ox').val(`abc`);
+        Util.parseURLAsync(url)
+          .then((parser) => {
+            let href = parser.href;
+            let hostname = parser.hostname;
+            $('#ox').val(hostname);
+            return hostname;
+          })
+          .catch((error) => {
+            console.log(`selectWaitingItemsBtnHdr error=${error}`)
+          });
+      }
     }
   }
 
@@ -536,31 +554,27 @@ class PopupManager {
       this.setTargetArea('#move-mode');
     });
 
-    $('#gotobtn').click(() => {
+    $('#gotobtn').click(async () => {
       const sid = parseInt($('#sid').val(), 10);
       const ourl = $('#ourl').val();
-      chrome.tabs.update(
-        sid,
-        {
-          url: ourl,
-        },
-        (_) => {
-          // console.log(["sid=", sid, "ourl=", ourl]);
-        }
-      );
+      // Manifest V3: chrome.tabs.update() returns a Promise
+      await chrome.tabs.update(sid, {
+        url: ourl,
+      });
+      // console.log(["sid=", sid, "ourl=", ourl]);
     });
     $('#importbtn').click(() => {
       console.log('not implemented a handler of importbtn')
     });
-    $('#removeitembtn').click(() => {
+    $('#removeitembtn').click(async () => {
       let valx = $('#oid').val();
-      chrome.bookmarks.remove(valx, () => {
-        const parent_id = $('#zinp').val();
-        this.clear_in_move_mode_area();
-        let yinp = $('#yinp');
-        yinp.empty();
-        this.addSelectWaitingItemsX(yinp, parent_id);
-      });
+      // Manifest V3: chrome.bookmarks.remove() returns a Promise
+      await chrome.bookmarks.remove(valx);
+      const parent_id = $('#zinp').val();
+      this.clear_in_move_mode_area();
+      let yinp = $('#yinp');
+      yinp.empty();
+      await this.addSelectWaitingItemsX(yinp, parent_id);
     });
     $('#removebtn').click(() => {
       Globalx.removeSettings();
@@ -569,9 +583,11 @@ class PopupManager {
       this.closeTabs();
     });
     $('#addFolderbtn').click(() => {
+      console.log('addFolderbtn');
       this.addFolder.addFolderx();
     });
     $('#addDbtn').click(() => {
+      console.log('addDbtn');
       this.addFolder.addDayFolderx();
     });
     $('#moveBMX').click(() => {
@@ -593,6 +609,7 @@ class PopupManager {
   }
 
   async setupPopupWindowAsync() {
+    // Manifest V3: chrome.tabs.query() returns a Promise
     const tabs = await chrome.tabs.query({
       active: true,
       currentWindow: true,
@@ -606,7 +623,8 @@ class PopupManager {
   }
 
   async dumpBookmarksAsync() {
-    return chrome.bookmarks.getTree();
+    // Manifest V3: chrome.bookmarks.getTree() returns a Promise
+    return await chrome.bookmarks.getTree();
   }
 
   async make_popup_ui() {
@@ -676,6 +694,29 @@ class PopupManager {
       let group = Movergroup.get_mover_group();
       this.itemGroup.moveBMXFolderBase(group, '1').then(() => {
       });
+  }
+
+  print_with_cond_ret(ret) {
+    if (this.reg.exec(ret.hier)) {
+        /*
+          console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`)
+       */
+    }
+  }
+
+  createDumpTreeNodes() {
+      const self = this;
+      function dumpTreeNodes(bookmarkTreeNodes) {
+          return bookmarkTreeNodes.reduce((accumulator, element) => {
+              let ret = self.itemGroup.add_to_itemgroup(element, dumpTreeNodes);
+              if (ret != null) {
+                  self.print_with_cond_ret(ret);
+                  accumulator.push(ret);
+              }
+              return accumulator;
+          }, []);
+      }
+      return dumpTreeNodes;
   }
 }
 

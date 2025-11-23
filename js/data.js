@@ -1,15 +1,14 @@
 class Data {
-    #ItemHashByHier = {};
-    #ItemHash = {};
-
     constructor() {
+		this.ItemHashByHier = {};
+		this.ItemHash = {};
     }
 
     makeItemHashX(key) {
         let hash = {};
         hash[key] = {
-            ItemHashByHier: this.#ItemHashByHier,
-            ItemHash: this.#ItemHash,
+            ItemHashByHier: this.ItemHashByHier,
+            ItemHash: this.ItemHash,
         };
         return hash;
     }
@@ -30,46 +29,45 @@ class Data {
         return ary;
     }
 
-    dumpTreeItemsXTop(folder_id) {
-        let zary = [];
+    async dumpTreeItemsXTop(folder_id) {
         const item = this.getItem(folder_id);
 
-        chrome.bookmarks.getSubTree(item.id, (bookmarkTreeNodes) => {
-            zary = this.dumpTreeItemsX(bookmarkTreeNodes);
-        });
+        // Manifest V3: chrome.bookmarks.getSubTree() returns a Promise
+        const bookmarkTreeNodes = await chrome.bookmarks.getSubTree(item.id);
+        const zary = this.dumpTreeItemsX(bookmarkTreeNodes);
         return zary;
     }
 
     getItemByHier(key) {
-        if (this.#ItemHashByHier[key]) {
-            return this.#ItemHashByHier[key];
-        } else {
-            return null;
+        let result = null
+        if (this.ItemHashByHier[key] != null) {
+            result = this.ItemHashByHier[key];
         }
+        return result;
     }
 
     setItemByHier(key, value) {
-        return (this.#ItemHashByHier[key] = value);
+        return (this.ItemHashByHier[key] = value);
     }
 
     getKeysOfItemByHier() {
-        return Object.keys(this.#ItemHashByHier);
+        return Object.keys(this.ItemHashByHier);
     }
 
     getItemHashByHierKeys() {
-        return Object.keys(this.#ItemHashByHier);
+        return Object.keys(this.ItemHashByHier);
     }
 
     getItem(key) {
-        if (this.#ItemHash[key]) {
-            return this.#ItemHash[key];
+        if (this.ItemHash[key]) {
+            return this.ItemHash[key];
         } else {
             return null;
         }
     }
 
     setItem(key, value) {
-        return (this.#ItemHash[key] = value);
+        return (this.ItemHash[key] = value);
     }
 
     addItem(item) {
