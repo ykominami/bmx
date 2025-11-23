@@ -1,4 +1,5 @@
-class Util {
+
+export class Util {
     static getMonthx(datex) {
         return datex.getMonth() + 1;
     }
@@ -56,5 +57,3 @@ class Util {
         });
     }
 }
-
-export { Util };
