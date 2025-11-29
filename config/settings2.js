@@ -289,8 +289,8 @@ export const items1 = [
 export const keys = ['/0/0-etc/1'];
 
 export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
-// export let folderDayPrefixes = [ '0','Y-DAY','Day' ];
 export let folderDayPrefixes = [ '/0/Y-DAY/Day' ];
+// export let folderDayPrefixes = [ '/2/Y-DAY/DAY' ];
 
 function getItems1() {
   return items1;
