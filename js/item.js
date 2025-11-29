@@ -1,6 +1,20 @@
 import { data } from './data.js';
 
+/**
+ * ブックマークアイテムを表現するクラス
+ * @class Item
+ */
 export class Item {
+    /**
+     * Itemクラスのコンストラクタ
+     * @param {Object} element - ブックマーク要素オブジェクト
+     * @param {string} element.id - アイテムID
+     * @param {string} element.parentId - 親アイテムID
+     * @param {number} element.index - インデックス
+     * @param {string} [element.url] - URL（アイテムの場合）
+     * @param {string} element.title - タイトル
+     * @param {ItemGroup} itemGroup - アイテムグループのインスタンス
+     */
     constructor(element, itemGroup) {
         const idnumx = itemGroup.determine_id(element.id);
         const parentIdnumx = itemGroup.determine_id(element.parentId);
