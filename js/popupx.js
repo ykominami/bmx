@@ -13,7 +13,14 @@ import { Globalx } from './globalx.js';
  * ついての情報。
  */
 
+/**
+ * ポップアップウィンドウを管理するクラス
+ * @class PopupManager
+ */
 class PopupManager {
+  /**
+   * PopupManagerクラスのコンストラクタ
+   */
   constructor() {
     this.Target = null;
     this.addFolder = new AddFolder();
@@ -23,24 +30,38 @@ class PopupManager {
     this.init();
   }
 
+  /**
+   * 初期化処理
+   */
   init() {
     document.addEventListener('DOMContentLoaded', () => this.onDOMContentLoaded());
     this.start();
   }
 
+  /**
+   * DOMContentLoadedイベントのハンドラ
+   */
   onDOMContentLoaded() {
     document.getElementById('popupBtn').addEventListener('click', () => {
       // Original logic inside DOMContentLoaded
     });
   }
 
-  /* ===== popup window 下部 下位関数 ==== */
+  /**
+   * 最近使用したメニューとカテゴリ選択ボタンを作成する
+   * @param {number} category_max - カテゴリの最大数
+   * @param {Array} items - アイテム配列
+   * @returns {Array} メニュー要素の配列
+   */
   makeMenuRecentlyAndCategorySelectBtn(category_max, items) {
     const ary = [this.makeMenuXrecently()];
     return ary.concat(this.makeMenuXcategory(category_max, items));
   }
 
-  /* 対象フォルダ選択メニュー作成 */
+  /**
+   * 対象フォルダ選択メニューを作成する
+   * @param {Array} items - アイテム配列
+   */
   makeDistinationMenu(items) {
     let i, name;
     for (i = 0; i < items.length; i++) {
@@ -53,6 +74,12 @@ class PopupManager {
     }
   }
 
+  /**
+   * カテゴリメニューを作成する
+   * @param {number} max - 最大数
+   * @param {Array} items - アイテム配列
+   * @returns {Array} メニュー要素の配列
+   */
   makeMenuXcategory(max, items) {
     const ary = [];
     let i, name, text;
@@ -76,6 +103,12 @@ class PopupManager {
     return ary;
   }
 
+  /**
+   * ボタンとセレクト要素を設定する
+   * @param {string} btn_jquery_id - ボタンのjQueryセレクタID
+   * @param {string} select_jquery_id - セレクトのjQueryセレクタID
+   * @param {string} keytop - キートップ
+   */
   makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
     this.addSelect($(select_jquery_id), keytop);
     $(btn_jquery_id).click(() => {
@@ -83,6 +116,10 @@ class PopupManager {
     });
   }
 
+  /**
+   * 最近使用したメニューを作成する
+   * @returns {Object} メニュー要素オブジェクト
+   */
   makeMenuXrecently() {
     return {
       first: Util.makeBtnA('recently', 'button a', 'rbtn'),
@@ -90,6 +127,11 @@ class PopupManager {
     };
   }
 
+  /**
+   * セレクト要素にオプションを追加する
+   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+   * @param {string} keytop - キートップ
+   */
   addSelect(select, keytop) {
     let item;
     if (keytop != null) {
@@ -125,6 +167,12 @@ class PopupManager {
     }
   }
 
+  /**
+   * セレクトオプションを取得する
+   * @param {Object} item - アイテムオブジェクト
+   * @param {boolean} ignore_head - ヘッドを無視するか
+   * @returns {Promise<Array>} オプション配列
+   */
   async getSelectOption(item, ignore_head) {
     let obj;
     let buffer = [];
@@ -141,9 +189,10 @@ class PopupManager {
     return buffer;
   }
 
-  /* ===== */
-
-  /* ===== popup window 上部 下位関数 ===== */
+  /**
+   * ターゲットエリアを設定する
+   * @param {string} val - ターゲットエリアの値（'#add-mode' または '#move-mode'）
+   */
   setTargetArea(val) {
     if (this.Target !== val) {
       this.Target = val;
@@ -165,6 +214,12 @@ class PopupManager {
     }
   }
 
+  /**
+   * 待機中のアイテムをセレクトに追加する
+   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+   * @param {string} folder_id - フォルダID
+   * @returns {Promise<void>}
+   */
   async addSelectWaitingItemsX(select, folder_id) {
     const item = data.getItem(folder_id);
     if (item == null) {
@@ -184,13 +239,24 @@ class PopupManager {
     }
   }
 
+  /**
+   * タブを非同期で問い合わせる
+   * @param {Object} query - クエリオブジェクト
+   * @param {string} parent_id - 親ID
+   * @param {string} parent_text - 親テキスト
+   * @returns {Promise<Array>} [タブ配列, 親ID, 親テキスト]
+   */
   async tab_query_async(query, parent_id, parent_text) {
     // Manifest V3: chrome.tabs.query() returns a Promise
     const ret_tabs = await chrome.tabs.query(query);
     return [ret_tabs, parent_id, parent_text];
   }
 
-  /* 非同期タブ問い合わせ */
+  /**
+   * 追加モードでタブを処理する
+   * @param {Array} [tabs, parent_id, parent_text] - タブ配列、親ID、親テキスト
+   * @returns {Promise<void>}
+   */
   async add_mode_x([tabs, parent_id, parent_text]) {
     let i;
     let active_tab = tabs.find((tab) => tab.active)
@@ -249,6 +315,12 @@ class PopupManager {
     }
   }
 
+  /**
+   * ブックマークアイテムを作成または移動する
+   * @param {string} select_jquery_id - セレクトのjQueryセレクタID
+   * @param {string} keytop - キートップ
+   * @returns {Promise<void>}
+   */
   async createOrMoveBKItem(select_jquery_id, keytop) {
     let query;
     const radioval = $("input[name='add-mode']:checked").val();
@@ -291,6 +363,10 @@ class PopupManager {
     Globalx.addRecentlyItem($('#rinp'), parent_id, parent_text);
   }
 
+  /**
+   * タブを閉じる（モードに応じて）
+   * @returns {Promise<void>}
+   */
   async closeTabs() {
       const [tabs] = await this.tab_query_async({
         currentWindow: true,
@@ -321,6 +397,11 @@ class PopupManager {
       }
   }
 
+  /**
+   * 待機中のフォルダをセレクトに追加する
+   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+   * @param {jQuery} subselect - サブセレクト要素のjQueryオブジェクト
+   */
   addSelectWaitingFolders(select, subselect) {
     const key_array = getKeys();
 
@@ -370,6 +451,13 @@ class PopupManager {
     }
   }
 
+  /**
+   * ブックマークアイテムを移動する
+   * @param {string} id - アイテムID
+   * @param {string} src_parent_id - 移動元の親ID
+   * @param {string} dest_parent_id - 移動先の親ID
+   * @returns {Promise<boolean>} 移動成功時はtrue
+   */
   async moveBKItem(id, src_parent_id, dest_parent_id) {
     let ret = false;
     if (id !== '') {
@@ -385,6 +473,14 @@ class PopupManager {
     return ret;
   }
 
+  /**
+   * ツリーノードのサブ要素をダンプする
+   * @param {Object} element - 要素オブジェクト
+   * @param {number} count - カウント
+   * @param {string} parent_id - 親ID
+   * @param {boolean} [head_ignore=false] - ヘッドを無視するか
+   * @returns {Object} {buffer: Array, count: number}
+   */
   dumpTreeNodesSub(element, count, parent_id, head_ignore = false) {
     let ret = {buffer: [], count: count}
 
@@ -404,8 +500,13 @@ class PopupManager {
     return ret
   }
 
-  /* ===== ----- ==== */
-  /***** bookmark 関連 下位関数 *****/
+  /**
+   * ブックマークツリーアイテムをダンプする
+   * @param {Array} bookmarkTreeNodes - ブックマークツリーノードの配列
+   * @param {number} count - カウント
+   * @param {string} parent_id - 親ID
+   * @returns {Object} {buffer: Array, count: number}
+   */
   dumpTreeItems(bookmarkTreeNodes, count, parent_id) {
     let i;
     let obj;
@@ -422,8 +523,9 @@ class PopupManager {
     return ret
   }
 
-  /*********************/
-  /* ====== popup window 下部 ===== */
+  /**
+   * ポップアップウィンドウの下部エリアにメニューを作成する
+   */
   makeMenuOnBottomArea() {
     const w = getNumOfRows();
     const count = getMax();
@@ -484,17 +586,29 @@ class PopupManager {
     }
   }
 
+  /**
+   * ポップアップウィンドウの下部エリアにメニューを非同期で作成する
+   * @returns {Promise<string>}
+   */
   async makeMenuOnBottomAreaAsync() {
     this.makeMenuOnBottomArea();
     return 'makeMunuOnBotttomAreaAsync';
   }
 
+  /**
+   * 移動モードエリアをクリアする
+   */
   clear_in_move_mode_area() {
     $('#oname').val('');
     $('#ourl').val('');
     $('#oid').val('');
   }
 
+  /**
+   * 待機中のアイテムボタンヘッダーを選択する
+   * @param {string} option_value - オプション値
+   * @returns {Promise<void>}
+   */
   async selectWaitingItemsBtnHdr(option_value) {
     if (option_value != null) {
       // Manifest V3: chrome.bookmarks.get() returns a Promise
@@ -524,6 +638,11 @@ class PopupManager {
     }
   }
 
+  /**
+   * ポップアップウィンドウの上部エリアにメニューを作成する
+   * @param {string} title - タイトル
+   * @param {string} url - URL
+   */
   makeMenuOnUpperArea(title, url) {
     $('#name').val(title);
     $('#url').val(url);
@@ -609,6 +728,10 @@ class PopupManager {
     });
   }
 
+  /**
+   * ポップアップウィンドウを非同期でセットアップする
+   * @returns {Promise<void>}
+   */
   async setupPopupWindowAsync() {
     // Manifest V3: chrome.tabs.query() returns a Promise
     const tabs = await chrome.tabs.query({
@@ -623,20 +746,37 @@ class PopupManager {
     this.makeMenuOnUpperArea(title, url);
   }
 
+  /**
+   * ブックマークを非同期でダンプする
+   * @returns {Promise<Array>} ブックマークツリーノードの配列
+   */
   async dumpBookmarksAsync() {
     // Manifest V3: chrome.bookmarks.getTree() returns a Promise
     return await chrome.bookmarks.getTree();
   }
 
+  /**
+   * ポップアップUIを非同期で作成する
+   * @returns {Promise<void>}
+   */
   async make_popup_ui() {
     await this.setupPopupWindowAsync();
     await this.makeMenuOnBottomAreaAsync();
   }
+  /**
+   * ブックマークを非同期で取得する
+   * @returns {Promise<void>}
+   */
   async get_bookmarks() {
     this.dumpBookmarksAsync().then((bookmarkTreeNodes) => {
       this.dumpTreeNodesAsync(bookmarkTreeNodes);
     });
   }
+  /**
+   * ツリーノードを非同期でダンプする
+   * @param {Array} bookmarkTreeNodes - ブックマークツリーノードの配列
+   * @returns {Promise<Array>} ブックマークツリーノードの配列
+   */
   async dumpTreeNodesAsync(bookmarkTreeNodes) {
     this.dumpTreeNodes_func(bookmarkTreeNodes);
     const hierKeys = data.getItemHashByHierKeys();
@@ -644,6 +784,10 @@ class PopupManager {
     return bookmarkTreeNodes;
   }
 
+  /**
+   * 初期化処理を開始する
+   * @returns {Promise<void>}
+   */
   async start() {
     Globalx.initSettings_a();
     await Globalx.initSettings_all();
@@ -652,12 +796,20 @@ class PopupManager {
     this.restoreSelectRecently($('#rinp'));
   }
 
-  // Methods moved from async.js
+  /**
+   * 最近使用したセレクトを復元する
+   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+   */
   restoreSelectRecently(select) {
     let sOptions = Globalx.getStorageOptions();
     Globalx.addRecentlyItemX(select, sOptions);
   }
 
+  /**
+   * 最近使用したセレクトを更新する
+   * @param {Array} ary - オプション配列
+   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+   */
   updateSelectRecently(ary, select) {
     const opts1 = ary.map((element) => {
         return $('<option>', {
@@ -672,11 +824,9 @@ class PopupManager {
     }
   }
 
-  /*
-        1 ブックマークツールバー
-        2 その他のブックマーク
-        3 モバイルのブックマーク
-        */
+  /**
+   * BMXフォルダを移動する（特定の階層パス）
+   */
   moveBMX2() {
       let hier = '/0/0-etc/0';
       let group = Movergroup.get_mover_group();
@@ -691,18 +841,30 @@ class PopupManager {
       }
   }
 
+  /**
+   * BMXフォルダを移動する（ブックマークバー）
+   */
   moveBMX() {
       let group = Movergroup.get_mover_group();
       this.itemGroup.moveBMXFolderBase(group, '1').then(() => {
       });
   }
 
+  /**
+   * 条件に応じて結果を出力する
+   * @param {Object} ret - 結果オブジェクト
+   * @param {string} ret.hier - 階層パス
+   * @param {string} ret.title - タイトル
+   */
   print_with_cond_ret(ret) {
     if (this.reg.exec(ret.hier)) {
           console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`)
     }
   }
   
+  /**
+   * フォルダを追加する（テスト用）
+   */
   addFc() {
 	  /*
     const root = data.getItemByHier('/');
@@ -716,6 +878,10 @@ class PopupManager {
     }});
   }
 
+  /**
+   * ツリーノードをダンプする関数を作成する
+   * @returns {Function} ダンプ関数
+   */
   createDumpTreeNodes() {
       const self = this;
       function dumpTreeNodes_func(bookmarkTreeNodes) {
