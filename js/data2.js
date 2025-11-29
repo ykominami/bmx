@@ -1,3 +1,5 @@
+import { ItemGroup } from "./itemgroup";
+
 class Data {
     constructor() {
 		this.ItemHashByHier = {};
@@ -50,9 +52,6 @@ class Data {
         if(key == null || key.length == 0 || key.trim() == '') {
             return null;
         }
-        if( this.ItemHashByHier[key] != null) {
-            return null;
-        }
         return (this.ItemHashByHier[key] = value);
     }
 
@@ -73,12 +72,6 @@ class Data {
     }
 
     setItem(key, value) {
-        if(key == null || key.length == 0 || key.trim() == '') {
-            return null;
-        }
-        if(this.ItemHash[key] != null) {
-            return null;
-        }
         return (this.ItemHash[key] = value);
     }
 
