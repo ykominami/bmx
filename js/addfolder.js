@@ -4,12 +4,22 @@ import {getFoldersFromDayPrefixes, getFoldersFromPrefixes, getPrefix,} from '../
 
 import { data } from './data.js';
 
+/**
+ * フォルダを追加・管理するクラス
+ * @class AddFolder
+ */
 export class AddFolder {
+    /**
+     * AddFolderクラスのコンストラクタ
+     */
     constructor() {
         // No specific state to initialize for now, but constructor is good practice.
     }
 
-    /* folder追加処理 */
+    /**
+     * 現在の年と次の月を文字列として取得する（YYYYMM形式）
+     * @returns {string} 年と次の月の文字列（例: "202501"）
+     */
     getYearAndNextMonthAsString() {
         let current = new Date();
         let month = current.getMonth();
@@ -21,7 +31,10 @@ export class AddFolder {
         return `${year}${monthstr}`;
     }
 
-    /* folder追加処理 */
+    /**
+     * 現在の年、月、日を文字列として取得する
+     * @returns {Array<string>} [年, 年月, 年月日]の配列（例: ["2025", "202501", "20250107"]）
+     */
     getYearAndMonthAndDayAsString() {
         let current = new Date();
         let month = current.getMonth();
@@ -45,11 +58,25 @@ export class AddFolder {
         return [y_str, ym_str, ymd_str];
     }
 
+    /**
+     * アイテムを登録する（階層パスとIDの両方に設定）
+     * @param {string} key - 階層パス
+     * @param {Object} value - アイテムオブジェクト
+     */
     registerx(key, value) {
         data.setItemByHier(key, value);
         data.setItem(value.id, value);
     }
 
+    /**
+     * ブックマーク要素オブジェクトを作成する
+     * @param {string} idx - ID
+     * @param {string} parentidx - 親ID
+     * @param {number} indexx - インデックス
+     * @param {string|null} urlx - URL
+     * @param {string} titlex - タイトル
+     * @returns {Object} ブックマーク要素オブジェクト
+     */
     makeElement(idx, parentidx, indexx, urlx, titlex) {
         return {
             id: idx,
@@ -60,6 +87,11 @@ export class AddFolder {
         };
     }
 
+    /**
+     * アイテムオブジェクトを作成する
+     * @param {Object} element - ブックマーク要素オブジェクト
+     * @returns {Object} アイテムオブジェクト
+     */
     makeItem(element) {
         return {
             id: element.id,
@@ -74,6 +106,15 @@ export class AddFolder {
             children: [],
         };
     }
+    /**
+     * ブックマークフォルダを作成して登録する
+     * @param {string} keytop - 階層パス
+     * @param {string|null} parentidx - 親ID
+     * @param {number} indexx - インデックス
+     * @param {string} titlex - タイトル
+     * @param {number} from - 呼び出し元の識別子
+     * @returns {Promise<Object>} 作成されたアイテムオブジェクト
+     */
     async makeAndRegisterBookmarkFolder(keytop, parentidx, indexx, titlex, from) {
         let parentidstr = '';
         if( parentidx != null ) {
@@ -98,6 +139,10 @@ export class AddFolder {
         return item;
     }
 
+    /**
+     * フォルダを追加する（次の月のフォルダを作成）
+     * @returns {Promise<void>}
+     */
     async addFolderx() {
         let folders = getFoldersFromPrefixes();
         let year_month = this.getYearAndNextMonthAsString(); // Call instance method
@@ -114,6 +159,11 @@ export class AddFolder {
             }
         }
     }
+    /**
+     * 配列から階層パスを構築してフォルダを取得または作成する
+     * @param {Array<string>} ary - 階層パスのセグメント配列
+     * @returns {Promise<Object>} フォルダアイテムオブジェクト
+     */
     async getOrCreateFolderWithArray(ary) {
         console.log(`getOrCreateFolderWithArray ary=${JSON.stringify(ary)}`);
 
@@ -142,6 +192,12 @@ export class AddFolder {
         let new_item = await this.makeAndRegisterBookmarkFolder(hier, parent_item.id, 0, title, 1);    
         return new_item;
     }
+    /**
+     * 階層パスからフォルダを取得または作成する
+     * @param {string} hier - 階層パス
+     * @returns {Promise<Object>} フォルダアイテムオブジェクト
+     * @throws {Error} hierが空文字列の場合
+     */
     async getOrCreateFolder(hier) {
         console.log(`getOrCreateFolder D1 hier=${hier}`);
         if (typeof hier !== 'string' || hier.length === 0) {
@@ -168,6 +224,10 @@ export class AddFolder {
         return new_item;
     }
 
+    /**
+     * 日付フォルダを追加する（年、年月、年月日のフォルダを作成）
+     * @returns {Promise<void>}
+     */
     async addDayFolderx() {
         let folders = getFoldersFromDayPrefixes();
         console.log(`addDayFolderx folders=${JSON.stringify(folders)}`);
@@ -242,6 +302,10 @@ export class AddFolder {
         });
     }
     
+    /**
+     * ブックマークツリーをリスト表示する（テスト用）
+     * @returns {Promise<void>}
+     */
     async lstree() {
         this.getBookmarkTitle('0').then((title) => {
             console.log(`title=${title}`);
@@ -256,6 +320,10 @@ export class AddFolder {
             console.log(`title=${title}`);
         });
     }
+    /**
+     * ブックマークツリーをリスト表示する（テスト用、特定の階層パス）
+     * @returns {Promise<void>}
+     */
     async lstree_0() {
         // const hier = '/Y/Day/2023/202311';
         // const hier = '/0/Day-Arc/2023/202311';
