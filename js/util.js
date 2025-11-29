@@ -1,9 +1,23 @@
 
+/**
+ * ユーティリティ関数を提供するクラス
+ * @class Util
+ */
 export class Util {
+    /**
+     * 日付から月を取得する（1-12）
+     * @param {Date} datex - 日付オブジェクト
+     * @returns {number} 月（1-12）
+     */
     static getMonthx(datex) {
         return datex.getMonth() + 1;
     }
 
+    /**
+     * 数値を2桁の文字列に変換する（10未満の場合は0埋め）
+     * @param {number} num - 数値
+     * @returns {string} 2桁の文字列
+     */
     static adjustAsStr(num) {
         let str = `${num}`;
         if (num < 10) {
@@ -12,7 +26,13 @@ export class Util {
         return str;
     }
 
-    /* buttonのjqueryオブジェクト */
+    /**
+     * ボタンのjQueryオブジェクトを作成する
+     * @param {string} name - ボタン名
+     * @param {string} class_name - クラス名
+     * @param {string} id - ID
+     * @returns {jQuery} ボタンのjQueryオブジェクト
+     */
     static makeBtnA(name, class_name, id) {
         return $("<button>", {
             type: "button",
@@ -23,7 +43,12 @@ export class Util {
         });
     }
 
-    /* selectのjqueryオブジェクト */
+    /**
+     * selectのjQueryオブジェクトを作成する
+     * @param {string} class_name - クラス名
+     * @param {string} id - ID
+     * @returns {jQuery} selectのjQueryオブジェクト
+     */
     static makeSelectA(class_name, id) {
         return $("<select>", {
             class: class_name,
@@ -31,26 +56,56 @@ export class Util {
         });
     }
 
+    /**
+     * カテゴリ名を取得する
+     * @param {number} i - カテゴリインデックス
+     * @returns {string} カテゴリ名（"c" + i）
+     */
     static getCategoryName(i) {
         return "c" + i;
     }
 
+    /**
+     * selectのIDを取得する
+     * @param {string} name - 名前
+     * @returns {string} selectのID（name + "inp"）
+     */
     static getSelectId(name) {
         return name + "inp";
     }
 
+    /**
+     * ボタンのIDを取得する
+     * @param {string} name - 名前
+     * @returns {string} ボタンのID（name + "btn"）
+     */
     static getBtnId(name) {
         return name + "btn";
     }
 
+    /**
+     * jQueryセレクタIDを取得する
+     * @param {string} id - ID
+     * @returns {string} jQueryセレクタ（"#" + id）
+     */
     static getJqueryId(id) {
         return "#" + id;
     }
 
+    /**
+     * URLを非同期でパースする
+     * @param {string} url - URL文字列
+     * @returns {Promise<URL>} URLオブジェクト
+     */
     static async parseURLAsync(url) {
         return new URL(url);
     }
 
+    /**
+     * URLからホスト名を取得する
+     * @param {string} url - URL文字列
+     * @returns {Promise<string>} ホスト名
+     */
     static parseURLX(url) {
         return Util.parseURLAsync(url).then((parser) => {
             return parser.hostname;
