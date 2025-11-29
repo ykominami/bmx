@@ -1,4 +1,5 @@
 import { data } from './data.js';
+import { Item } from './item.js';
 
 export class ItemGroup {
     constructor() {
@@ -15,55 +16,8 @@ export class ItemGroup {
         return idnumx;
     }
 
-    create_item(element) {
-        let idnumx = this.determine_id(element.id);
-        let parentIdnumx = this.determine_id(element.parentId);
-
-        let item = {
-            id: element.id,
-            idnum: idnumx,
-            folder: true,
-            root: false,
-            top: false,
-            kind: '',
-            parentId: element.parentId,
-            parentIdnum: parentIdnumx,
-            posindex: element.index,
-            url: element.url,
-            title: element.title,
-            hier: '' /* hier */,
-            children: [],
-        };
-        if (item.url) {
-            item.folder = false;
-            item.kind = 'ITEM';
-            return item;
-        }
-        if (parentIdnumx === -1) {
-            item.root = true;
-            item.kind = 'ROOT';
-            this.RootItems.push(item);
-        } else {
-            if (parentIdnumx === 0) {
-                item.top = true;
-                item.kind = 'TOP';
-                this.TopItems.push(item);
-            } else {
-                item.kind = 'FOLDER';
-                let parent_item = data.getItem(item.parentId);
-                if (parent_item == null) {
-                    item.hier = '';
-                } else {
-                    let parent_hier = parent_item.hier;
-                    item.hier = parent_hier + '/' + item.title;
-                }
-            }
-        }
-        return item;
-    }
-
     add_to_itemgroup(element, dumpTreeNodes) {
-        let item = this.create_item(element);
+        let item = new Item(element, this);
         if (item.kind === 'ITEM') {
             return null;
         } else {
