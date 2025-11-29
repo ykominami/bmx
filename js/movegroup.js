@@ -1,14 +1,25 @@
 import { Mover } from './mover.js';
 import { Util } from './util.js';
 
+/**
+ * ブックマーク移動グループを管理するクラス
+ * @class Movergroup
+ */
 export class Movergroup {
     static mover_group = null;
 
+    /**
+     * Movergroupクラスのコンストラクタ
+     */
     constructor() {
         this.group = {};
         this.keys = [];
     }
 
+    /**
+     * 移動グループのシングルトンインスタンスを取得する
+     * @returns {Movergroup} 移動グループのインスタンス
+     */
     static get_mover_group() {
         if (this.mover_group == null) {
             this.mover_group = new Movergroup();
@@ -21,6 +32,11 @@ export class Movergroup {
         return this.mover_group;
     }
 
+    /**
+     * 移動グループに移動設定を追加する
+     * @param {string} hier - 階層パス
+     * @param {string} hostname - ホスト名
+     */
     add(hier, hostname) {
         let mover = new Mover(hier, hostname);
         if (mover.dest_parent_item == null) {
@@ -33,6 +49,12 @@ export class Movergroup {
         this.keys = Object.keys(this.group);
     }
 
+    /**
+     * ブックマークアイテムを移動する（ホスト名に基づいて自動的に移動先を決定）
+     * @param {Object} bookmarkItem - 移動するブックマークアイテム
+     * @param {string} [bookmarkItem.url] - ブックマークアイテムのURL
+     * @returns {boolean|Promise} 移動結果（URLがない場合はfalse）
+     */
     move(bookmarkItem) {
         let ret = false;
         // console.log(`Movergroup.move bookmarkItem.url=${bookmarkItem.url}`)
