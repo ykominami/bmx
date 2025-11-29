@@ -29,12 +29,12 @@ export class Globalx {
         // Manifest V3: chrome.storage.local.get() returns a Promise
         const result = await chrome.storage.local.get(null);
         let value = null;
-        if (result['all']) {
-            value = result['all'];
-        } else {
-            value = {};
-        }
-        return value;
+            if (result['all']) {
+                value = result['all'];
+            } else {
+                value = {};
+            }
+            return value;
     }
 
     static initSettings_a() {

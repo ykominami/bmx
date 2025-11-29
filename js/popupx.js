@@ -19,7 +19,7 @@ class PopupManager {
     this.addFolder = new AddFolder();
     this.itemGroup = new ItemGroup();
     this.reg = new RegExp('/Y/DashBoard', '');
-    this.dumpTreeNodes = this.createDumpTreeNodes();
+    this.dumpTreeNodes_func = this.createDumpTreeNodes();
     this.init();
   }
 
@@ -178,7 +178,7 @@ class PopupManager {
     let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
     select.append(buffer2);
     select.prop('selectedIndex', 0);
-    const folder_id= select.val();
+    folder_id = select.val();
     if (folder_id) {
       this.selectWaitingItemsBtnHdr(folder_id);
     }
@@ -597,6 +597,7 @@ class PopupManager {
       this.moveBMX2();
     });
     $('#addFcbtn').click(() => {
+	  this.addFc();
       console.log('addFcbtn');
     });
 
@@ -637,8 +638,8 @@ class PopupManager {
     });
   }
   async dumpTreeNodesAsync(bookmarkTreeNodes) {
-    this.dumpTreeNodes(bookmarkTreeNodes);
-        const hierKeys = data.getItemHashByHierKeys();
+    this.dumpTreeNodes_func(bookmarkTreeNodes);
+    const hierKeys = data.getItemHashByHierKeys();
     Globalx.setStorageHiers(hierKeys);
     return bookmarkTreeNodes;
   }
@@ -698,17 +699,28 @@ class PopupManager {
 
   print_with_cond_ret(ret) {
     if (this.reg.exec(ret.hier)) {
-        /*
           console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`)
-       */
     }
+  }
+  
+  addFc() {
+	  /*
+    const root = data.getItemByHier('/');
+	  console.log(`root=${JSON.stringify(root)}`)
+	  */
+   const root0 = data.getItemByHier('');
+	  console.log(`root0=${JSON.stringify(root0)}`)
+    data.getKeysOfItemByHier().map((key) => {
+      if( key.trim().startsWith('//') ){
+      console.log(key)
+    }});
   }
 
   createDumpTreeNodes() {
       const self = this;
-      function dumpTreeNodes(bookmarkTreeNodes) {
+      function dumpTreeNodes_func(bookmarkTreeNodes) {
           return bookmarkTreeNodes.reduce((accumulator, element) => {
-              let ret = self.itemGroup.add_to_itemgroup(element, dumpTreeNodes);
+              let ret = self.itemGroup.add_to_itemgroup(element, dumpTreeNodes_func);
               if (ret != null) {
                   self.print_with_cond_ret(ret);
                   accumulator.push(ret);
@@ -716,7 +728,7 @@ class PopupManager {
               return accumulator;
           }, []);
       }
-      return dumpTreeNodes;
+      return dumpTreeNodes_func;
   }
 }
 
