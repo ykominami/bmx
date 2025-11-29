@@ -28,12 +28,12 @@ async function loadSettings() {
     // Manifest V3: chrome.storage.local.get() returns a Promise
     const result = await chrome.storage.local.get(null);
     let value = null;
-    if (result['all']) {
-        value = result['all'];
-    } else {
-        value = {};
-    }
-    return value;
+        if (result['all']) {
+            value = result['all'];
+        } else {
+            value = {};
+        }
+        return value;
 }
 
 function initSettings_a() {
