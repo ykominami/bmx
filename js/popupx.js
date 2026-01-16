@@ -1,7 +1,6 @@
 import {getItems1, getKeys, getMax, getNumOfRows} from '../config/settings2.js';
 import {ItemGroup} from './itemgroup.js';
 import {Movergroup} from './movegroup.js';
-// Removed: import {restoreSelectRecently, updateSelectRecently} from './async.js';
 import { AddFolder } from './addfolder.js';
 import { Util } from './util.js';
 import { data } from './data.js';
@@ -575,14 +574,8 @@ class PopupManager {
     Globalx.setStorageOptions(ary);
     Globalx.setStorageHiers(data.getKeysOfItemByHier());
     let rinp = $('#rinp')
-    rinp.empty();
-    rinp.append(ary);
-    let last_index = ary.length - 1;
-    if (last_index >= 0) {
-      rinp.val(ary[last_index].value);
-    }
     if (ary.length > 0) {
-      this.updateSelectRecently(ary, rinp); // Changed to this.updateSelectRecently
+      Util.updateSelectRecently(ary, rinp);
     }
   }
 
@@ -793,35 +786,6 @@ class PopupManager {
     await Globalx.initSettings_all();
     await this.get_bookmarks();
     await this.make_popup_ui();
-    this.restoreSelectRecently($('#rinp'));
-  }
-
-  /**
-   * 最近使用したセレクトを復元する
-   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
-   */
-  restoreSelectRecently(select) {
-    let sOptions = Globalx.getStorageOptions();
-    Globalx.addRecentlyItemX(select, sOptions);
-  }
-
-  /**
-   * 最近使用したセレクトを更新する
-   * @param {Array} ary - オプション配列
-   * @param {jQuery} select - セレクト要素のjQueryオブジェクト
-   */
-  updateSelectRecently(ary, select) {
-    const opts1 = ary.map((element) => {
-        return $('<option>', {
-            value: element.value,
-            text: element.text,
-        });
-    });
-    select.empty();
-    select.append(opts1);
-    if (opts1.size > 0) {
-        select.prop('selectedIndex', 0);
-    }
   }
 
   /**
