@@ -1,4 +1,5 @@
-import {makeItemHashX} from './data.js';
+// import {makeItemHashX} from './data.js';
+import {data} from './data.js';
 
 let Settings = {};
 
@@ -42,7 +43,7 @@ function initSettings_a() {
 
 async function initSettings_all() {
     await loadSettings().then((c) => {
-        const itemhashx = makeItemHashX(StorageHiers);
+        const itemhashx = data.makeItemHashX(StorageHiers);
         replace_in_Settings(c);
         replace_in_Settings(itemhashx);
     });
