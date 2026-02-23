@@ -1,3 +1,4 @@
+import {addRecentlyItemX, getStorageOptions} from './global.js';
 
 /**
  * ユーティリティ関数を提供するクラス
@@ -110,5 +111,34 @@ export class Util {
         return Util.parseURLAsync(url).then((parser) => {
             return parser.hostname;
         });
+    }
+
+    /**
+     * 最近使用したセレクトを復元する
+     * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+     */
+    static restoreSelectRecently(select) {
+        let sOptions = getStorageOptions();
+        addRecentlyItemX(select, sOptions);
+    }
+
+    /**
+     * 最近使用したセレクトを更新する
+     * @param {Array} ary - オプション配列
+     * @param {jQuery} select - セレクト要素のjQueryオブジェクト
+     */
+    static updateSelectRecently(ary, select) {
+        // console.log(`updateSelectRecently ary=${JSON.stringify(ary)}`);
+        const opts1 = ary.map((element) => {
+            return $('<option>', {
+                value: element.value,
+                text: element.text,
+            });
+        });
+        select.empty();
+        select.append(opts1);
+        if (opts1.size > 0) {
+            select.prop('selectedIndex', 0);
+        }
     }
 }
