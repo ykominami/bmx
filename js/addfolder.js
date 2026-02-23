@@ -151,11 +151,13 @@ export class AddFolder {
             const parent_item = await this.getOrCreateFolder(parent_name);
             if (parent_item != null) {
                 let prefix = getPrefix(parent_name);
+                console.log(`addFolderx prefix=${prefix}`);
                 let title = `${prefix}-${year_month}`;
-                let new_keytop = `${parent}/${title}`;
+                let new_keytop = `${parent_item.hier}/${title}`;
                 console.log(`addFolderx new_keytop=${new_keytop}`);
                 console.log(`addFolderx parent_name=${parent_name}`);
-                await this.getOrCreateFolder(new_keytop);
+                let item = await this.getOrCreateFolder(new_keytop);
+                console.log(`addFolderx item=${ JSON.stringify(item)}`);
             }
         }
     }
