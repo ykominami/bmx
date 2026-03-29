@@ -17,3 +17,5 @@ outerjs/
 # Exclude jQuery files specifically
 jquery.js
 jquery-ui.js
+/config/
+/logs/
