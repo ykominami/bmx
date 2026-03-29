@@ -2,6 +2,7 @@ export const items1 = [
   /* 1 */
   ['GD-0-inbox', '/0X/GD-0-inbox'],
   ['TODO', '/0/TODO'],
+  ['TODO-AI', '/0/TODO-AI'],
   ['TODO-1', '/0/TODO-1'],
   ['TODO-2', '/0/TODO-2'],
   ['TODO-V', '/0/TODO-V'],
@@ -14,22 +15,26 @@ export const items1 = [
   ['ChatGPT0', '/Y1/ChatGPT/0'],
   ['ChatGPT-Paper', '/Y1/ChatGPT/ChatGPT-Paper'],
   ['ChatGPT-Paper-Matuo-LAB', '/Y1/ChatGPT/ChatGPT-Papar-Matuo-LAB'],
+  ['AI-WEB-IF', '/Y1/ChatGPT/AI-WEB-IF'],
   ['Cursor', '/Y1/ChatGPT/Cursor'],
+  ['Cursor-2', '/Y1/ChatGPT/Cursor-2'],
   ['Claude-Coder', '/Y1/ChatGPT/Claude-Code'],
-  ['Codex-CLI', '/Y1/ChatGPT/Codex-CLI'],
+  ['VSCode-AI', '/Y1/ChatGPT/VSCode-AI'],
   ['AI-Editor', '/Y1/ChatGPT/AI-Editor'],
-  ['AI-Editor-2', '/Y1/ChatGPT/AI-Editor-2'],
   ['AI-Editor-3', '/Y1/ChatGPT/AI-Editor-3'],
-  ['AI-Editor-4', '/Y1/ChatGPT/AI-Editor-4'],
-  ['AI-Editor-5', '/Y1/ChatGPT/AI-Editor-5'],
+  ['AI-CLI-個人開発-Chrome', '/Y1/ChatGPT/AI-CLI-個人開発-Chrome'],
+  ['AI-Platform', '/Y1/ChatGPT/AI-Platform'],
+  ['Agent-1', '/Y1/ChatGPT/Agent/Agent-1'],
+  ['Agent-2', '/Y1/ChatGPT/Agent/Agent-2'],
+  ['Agent-3', '/Y1/ChatGPT/Agent/Agent-3'],
+  ['AI開発', '/Y1/ChatGPT/AI開発'],
+  ['AI開発2', '/Y1/ChatGPT/AI開発2'],
+  ['AI-仕事', '/Y1/ChatGPT/AI-仕事'],
   ['AI-MCP', '/Y1/ChatGPT/AI-MCP'],
   ['ChatGPT1', '/Y1/ChatGPT/1'],
   ['ChatGPT-info-etc', '/Y1/ChatGPT/ChatGPT-info-etc'],
-  ['ChatGPT2', '/Y1/ChatGPT/2'],
-  ['Agent-1', '/Y1/ChatGPT/3/Agent-1'],
-  ['Agent-2', '/Y1/ChatGPT/3/Agent-2'],
-  ['Agent-3', '/Y1/ChatGPT/3/Agent-3'],
-  ['ChatGPT-Pr-1', '/Y1/ChatGPT/3/ChatGPT-Pr-1'],
+  ['ChatGPTinfo', '/Y1/ChatGPT/info'],
+  ['ChatGPT-Pr-1', '/Y1/ChatGPT/ChatGPT-Pr-1'],
   ['LangChain', '/Y1/ChatGPT/LangChain'],
   ['ChatGPT4', '/Y1/ChatGPT/4'],
   ['ChatGPT41', '/Y1/ChatGPT/41'],
@@ -261,7 +266,7 @@ export const items1 = [
   ['L-daily', '/L/L-daily'],
   ['L-0', '/L/L-0'],
   /* 16 */
-  ['L2', '/L2'],
+  ['L2', '/L/L2'],
   ['L-IDOL2', '/L/L-IDOL2'],
   ['IMX', '/Y2/X/2-IMX'],
   ['Op', '/Op'],
@@ -288,8 +293,11 @@ export const items1 = [
 ];
 export const keys = ['/0/0-etc/1'];
 
-export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
-export let folderDayPrefixes = [ '/0/Y-DAY/Day' ];
+// export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
+// export let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
+// export let folderDayPrefixes = [ '/0/Y-DAY/Day' ];
+let folderPrefixes = { '/0/KU': 'KU', '/0/Kindle': 'K', '/0/本': '本' };
+let folderDayPrefixes = [ '/0/Y-DAY/Day' ];
 // export let folderDayPrefixes = [ '/2/Y-DAY/DAY' ];
 
 function getItems1() {
