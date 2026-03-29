@@ -1,4 +1,4 @@
-import {getItems1, getKeys, getMax, getNumOfRows} from '../config/settings2.js';
+import {getKeys, getMax, getNumOfRows} from '../config/settings2.js';
 import {ItemGroup} from './itemgroup.js';
 import {Movergroup} from './movegroup.js';
 import { AddFolder } from './addfolder.js';
@@ -6,6 +6,19 @@ import { Util } from './util.js';
 import { data } from './data.js';
 
 import { Globalx } from './globalx.js';
+
+async function loadItems1() {
+  const url = chrome.runtime.getURL('config/items1.json');
+  const response = await fetch(url, {cache: 'no-cache'});
+  if (!response.ok) {
+    throw new Error(`Failed to load config/items1.json: ${response.status}`);
+  }
+  const parsed = await response.json();
+  if (!Array.isArray(parsed)) {
+    throw new Error('config/items1.json must be an array');
+  }
+  return parsed;
+}
 
 /**
  * @fileoverview ファイルの説明、使い方や依存関係に
@@ -24,6 +37,7 @@ class PopupManager {
     this.Target = null;
     this.addFolder = new AddFolder();
     this.itemGroup = new ItemGroup();
+    this.items1 = [];
     this.reg = new RegExp('/Y/DashBoard', '');
     this.dumpTreeNodes_func = this.createDumpTreeNodes();
     this.init();
@@ -531,7 +545,7 @@ class PopupManager {
     let ind;
     let next_start;
     let b_c, b_r, s_c, s_r;
-    let items = getItems1();
+    let items = this.items1;
     const els = this.makeMenuRecentlyAndCategorySelectBtn(count, items);
     const aryx = new Array(els.length * 2);
 
@@ -562,7 +576,7 @@ class PopupManager {
     menu.addClass('wrapper');
     menu.append(aryx);
 
-    this.makeDistinationMenu(getItems1());
+    this.makeDistinationMenu(items);
     $('#rbtn').click(() => {
       this.createOrMoveBKItem('#rinp', 'recently').then(() => {
       });
@@ -784,6 +798,7 @@ class PopupManager {
   async start() {
     Globalx.initSettings_a();
     await Globalx.initSettings_all();
+    this.items1 = await loadItems1();
     await this.get_bookmarks();
     await this.make_popup_ui();
   }
