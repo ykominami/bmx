@@ -1,0 +1,117 @@
+digraph ClassDependencies {
+    // Graph settings
+    rankdir=TB;
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style=filled, shape=record];
+    edge [fontname="Helvetica", fontsize=9];
+    label="Bmx72MV3D Class Dependencies";
+    labelloc=t;
+    fontsize=16;
+
+    // Entry Point
+    PopupManager [
+        label="{PopupManager|js/popupx.js|メインコントローラ\nUI構築・BM追加/移動}",
+        fillcolor="#FF9999"
+    ];
+
+    // Data Layer
+    Data [
+        label="{Data (singleton)|js/data.js|ItemHash\nItemHashByHier}",
+        fillcolor="#99CCFF"
+    ];
+
+    // Model Classes
+    Item [
+        label="{Item|js/item.js|id, parentId, title, url\nhier, kind, children}",
+        fillcolor="#FFCC99"
+    ];
+    ItemGroup [
+        label="{ItemGroup|js/itemgroup.js|RootItems[]\nTopItems[]}",
+        fillcolor="#FFCC99"
+    ];
+
+    // Storage
+    Globalx [
+        label="{Globalx (static)|js/globalx.js|Chrome Storage管理\nSettings}",
+        fillcolor="#CC99FF"
+    ];
+    global_js [
+        label="{global.js (legacy)|js/global.js|旧Storage関数\n→ Globalxに移行中}",
+        fillcolor="#CCCCCC",
+        style="filled,dashed"
+    ];
+
+    // Folder Management
+    AddFolder [
+        label="{AddFolder|js/addfolder.js|フォルダ階層作成\ngetOrCreateFolder()}",
+        fillcolor="#99FF99"
+    ];
+
+    // Mover Classes
+    Movergroup [
+        label="{Movergroup (singleton)|js/movegroup.js|移動ルール管理\nhostname→フォルダ}",
+        fillcolor="#FFFF99"
+    ];
+    Mover [
+        label="{Mover|js/mover.js|BM移動実行\nchrome.bookmarks.move()}",
+        fillcolor="#FFFF99"
+    ];
+
+    // Utility
+    Util [
+        label="{Util (static)|js/util.js|UI/日付ヘルパー\nURL解析}",
+        fillcolor="#FFE0B2"
+    ];
+
+    // Configuration
+    settings2 [
+        label="{settings2|config/settings2.js|items1[], keys[]\nfolderPrefixes}",
+        fillcolor="#E0E0E0",
+        shape=component
+    ];
+
+    // === Edges ===
+
+    // PopupManager dependencies
+    PopupManager -> ItemGroup [label="instantiates"];
+    PopupManager -> AddFolder [label="instantiates"];
+    PopupManager -> Movergroup [label="uses"];
+    PopupManager -> Globalx [label="uses"];
+    PopupManager -> Util [label="uses"];
+    PopupManager -> Data [label="uses"];
+    PopupManager -> settings2 [label="imports config"];
+
+    // ItemGroup dependencies
+    ItemGroup -> Item [label="creates"];
+    ItemGroup -> Data [label="uses"];
+
+    // Item dependencies
+    Item -> Data [label="registers self"];
+
+    // AddFolder dependencies
+    AddFolder -> Data [label="uses"];
+    AddFolder -> Util [label="uses"];
+    AddFolder -> settings2 [label="imports config"];
+
+    // Movergroup dependencies
+    Movergroup -> Mover [label="creates"];
+    Movergroup -> Util [label="uses"];
+
+    // Mover dependencies
+    Mover -> Data [label="uses"];
+
+    // Globalx dependencies
+    Globalx -> Data [label="uses"];
+
+    // Util dependencies (legacy)
+    Util -> global_js [label="imports (legacy)", style=dashed];
+
+    // Legacy
+    global_js -> Data [label="uses", style=dashed];
+
+    // === Layout hints ===
+    { rank=same; PopupManager }
+    { rank=same; ItemGroup; AddFolder; Movergroup; Globalx }
+    { rank=same; Item; Mover; Util; settings2 }
+    { rank=same; Data; global_js }
+}
