@@ -7,7 +7,15 @@
       "Bash(git push:*)",
       "Bash(gh pr create:*)",
       "Bash(gh repo view:*)",
-      "Bash(gh pr merge:*)"
+      "Bash(gh pr merge:*)",
+      "Bash(dot:*)",
+      "Bash(pacman:*)",
+      "Bash(choco list:*)",
+      "Bash(pip install:*)",
+      "Bash(where:*)",
+      "Bash(\"/c/Users/ykomi/AppData/Local/Programs/Python/Python313/python.exe\" --version)",
+      "Bash(\"/c/Python3\"*/python.exe)",
+      "Bash(cmd.exe /c \"where python\")"
     ]
   }
 }
