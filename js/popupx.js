@@ -1,4 +1,6 @@
-import {getKeys, getMax, getNumOfRows} from '../config/settings2.js';
+// import {getKeys, getMax, getNumOfRows} from '../config/settings2.js';
+import {items1} from '../config/items1.js';
+import {getKeys, getMax, getNumOfRows} from '../config/settings3.js';
 import {ItemGroup} from './itemgroup.js';
 import {Movergroup} from './movegroup.js';
 import { AddFolder } from './addfolder.js';
