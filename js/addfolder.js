@@ -1,6 +1,6 @@
 import { Util } from './util.js'; // Updated import
 
-import {getFoldersFromDayPrefixes, getFoldersFromPrefixes, getPrefix,} from '../config/settings2.js';
+import {getFoldersFromDayPrefixes, getFoldersFromPrefixes, getPrefix,} from '../config/settings3.js';
 
 import { data } from './data.js';
 
