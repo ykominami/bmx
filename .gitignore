@@ -19,3 +19,6 @@ jquery.js
 jquery-ui.js
 /config/
 /logs/
+#
+/.omc/
+

@@ -6,168 +6,130 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Bmx72MV3D** is a Chrome browser extension (Manifest V3) that provides powerful bookmark management functionality. It allows users to quickly save and organize bookmarks into predefined folders through a popup interface.
 
-## Architecture
+## Development
 
-### Core Data Management
-
-The extension uses a dual-index data structure for bookmarks:
-
-- **`Data` class** (js/data.js): Singleton that maintains two hash maps:
-  - `ItemHash`: Maps bookmark IDs to Item objects
-  - `ItemHashByHier`: Maps hierarchical paths (e.g., `/Y1/ChatGPT/0`) to Item objects
-
-This dual indexing enables fast lookups both by Chrome's bookmark IDs and by human-readable hierarchical paths.
-
-### Class Hierarchy
-
-- **`Item`** (js/item.js): Represents individual bookmarks and folders
-  - Determines item kind: ROOT, TOP, FOLDER, or ITEM (non-folder)
-  - Maintains hierarchical path (`hier`) for folders
-  - Stores metadata: id, parentId, title, url, children
-
-- **`ItemGroup`** (js/itemgroup.js): Manages collections of Items
-  - Tracks RootItems and TopItems
-  - Converts Chrome bookmark tree nodes into Item objects
-  - Provides batch operations for moving bookmarks
-
-- **`Mover`** (js/mover.js): Moves a single bookmark to a target folder by hierarchical path via `chrome.bookmarks.move()`
-
-- **`Movergroup`** (js/movegroup.js): Singleton that maps destination paths to URL patterns (e.g., `www.youtube.com` → `/Video`). Used for auto-routing bookmarks to folders based on their URL domain.
-
-- **`PopupManager`** (js/popupx.js): Main controller for the popup UI
-  - Initializes on DOMContentLoaded
-  - Builds dynamic menu from settings3.js configuration
-  - Handles two modes:
-    - **Add mode** (`#add-mode`): Save current/multiple tabs to folders
-    - **Move mode** (`#move-mode`): Move existing bookmarks between folders
-  - Radio button options in add mode:
-    - `s`: Single tab
-    - `m-r`: Multiple tabs to the right of active tab
-    - `m-l`: Multiple tabs to the left of active tab
-    - `x`: Do nothing (for testing)
-
-### Storage Management
-
-- **`Globalx`** (js/globalx.js): Manages Chrome storage (replaces older global.js)
-  - `StorageOptions`: Recently used folder history
-  - `StorageSelected`: Last selected folder per category
-  - `StorageHiers`: Hierarchical path mappings
-  - `StorageMisc`: Miscellaneous settings
-  - All data stored under `chrome.storage.local.all`
-
-### Configuration
-
-Configuration is split across two files in `config/`:
-
-- **`config/items1.js`**: Contains the bookmark categories array as `['Label', '/hierarchical/path']` pairs. **Loaded at runtime via `fetch()` with `cache: 'no-cache'` and parsed as JSON** (`response.json()`), not as a JS module — the file must contain a plain JSON array. The static `import {items1}` at the top of popupx.js is dead code; the actual data comes from `loadItems1()`.
-- **`config/settings3.js`**: Exports utility functions — `getNumOfRows()` (5 columns), `getMax()` (400 items), `getKeys()`, `getPrefix()`, `getFoldersFromPrefixes()`, `getFoldersFromDayPrefixes()`. Also defines `folderPrefixes` (e.g., Kindle → K) and `folderDayPrefixes` for auto-folder creation. The `keys` array (e.g., `['/0/0-etc/1']`) drives the source folder dropdown (`zinp`) in move mode.
-
-### Folder Management
-
-- **`AddFolder`** (js/addfolder.js): Creates and organizes bookmark folders
-  - `getOrCreateFolder(hier)`: Recursively creates folder hierarchy
-  - `addFolderx()`: Creates monthly folders with prefixes (e.g., "K-202501")
-  - `addDayFolderx()`: Creates date-based folder structure (Year/YYYYMM/YYYYMMDD)
-  - Uses Promise-based Chrome Bookmarks API
-
-### Utility Classes
-
-- **`Util`** (js/util.js): Helper functions for UI and date manipulation
-  - jQuery element creation (buttons, selects)
-  - Date formatting (getMonthx, adjustAsStr)
-  - URL parsing
-  - Recently-used select management
-
-## Migration Status
-
-The codebase is currently migrating from function-based to class-based architecture:
-
-- **Current**: `Globalx` class (js/globalx.js)
-- **Legacy**: Function exports in js/global.js
-- **Migration pattern**: Both files exist; new code should use Globalx
-
-## Manifest V3 Specifics
-
-All Chrome API calls return Promises (not callbacks). Key APIs used:
-- `chrome.bookmarks.*` - Create, move, get bookmarks
-- `chrome.storage.local.*` - Persist settings
-- `chrome.tabs.*` - Query and manipulate tabs
-
-Note: `getBookmarkTitle()` in addfolder.js uses the older callback style — this is inconsistent with the rest of the codebase.
-
-## UI Structure
-
-popup.html provides two-mode interface, styled by `popupy.css` (layout) and `popupx.css` (component styles):
-
-1. **Upper area** (`wrapper2`): Mode selection, current tab info, controls
-   - `#add-mode` / `#move-mode`: clickable mode labels (CSS class toggled between `selected` / `not-selected`)
-   - `#zinp`: source folder select (populated from `getKeys()` paths)
-   - `#yinp`: bookmark-within-folder select (populated from children of `zinp` selection)
-   - `#oname`, `#ourl`, `#oid`: display selected bookmark info for move operations
-   - `#sid`: hidden field storing current tab ID
-
-2. **Lower area** (`#menu`): Dynamically generated grid of category buttons
-   - Grid layout via CSS (5 columns)
-   - Each category: button + dropdown select
-   - Dropdowns populate with folder hierarchy when clicked
-   - `#rinp`: recently-used folder select
-
-## Development Notes
-
-### Code Style
-- ES6 modules with explicit imports/exports
-- JSDoc comments for all classes and methods (written in Japanese)
-- jQuery for DOM manipulation
-- Hierarchical paths use forward slashes (e.g., `/Y1/ChatGPT/Agent/Agent-1`)
-- Prettier config (`js/.prettierrc`): 2-space indent, no tabs, single quotes
-
-### Common Tasks
-
-The extension has no build process. To test changes:
+No build process. To test changes:
 1. Edit JS/HTML/CSS files directly
 2. Go to `chrome://extensions/` in Chrome
 3. Click "Reload" on the extension card
-4. Open the extension popup to test
 
-To add new bookmark categories:
-1. Edit `config/items1.js` — it must be a raw JSON array (not a JS module), e.g. `[["Label", "/path"], ...]`
-2. Reload extension (or just reopen popup — items1.js is fetched with no-cache)
+To generate CSS grid positioning classes (`popupy.css`):
+```
+node makesettings.js <output.css>
+```
+Note: `makesettings.js` is referenced here but not currently present in the repository.
 
-To change folder prefixes for monthly folder creation:
-- Edit `folderPrefixes` in `config/settings3.js`
+There are no automated tests. The `.cursor/rules/test-ts.mdc` file is from an unrelated React/TypeScript project and does not apply here.
 
-To change root path for date-based folder creation:
-- Edit `folderDayPrefixes` in `config/settings3.js`
+## Architecture
 
-### Key Workflows
+### Startup Sequence (`PopupManager.start()`)
 
-**Saving a bookmark:**
-1. User clicks category button (e.g., "ChatGPT0")
-2. PopupManager calls `createOrMoveBKItem()`
-3. Gets selected folder from dropdown
-4. Creates bookmark via `chrome.bookmarks.create()`
-5. Updates recently-used list via `Globalx.addRecentlyItem()`
+Order matters — `data` singleton must be populated before UI renders:
+1. `Globalx.initSettings_a()` — seed Settings from Keyvalues defaults
+2. `Globalx.initSettings_all()` — overwrite from `chrome.storage.local`
+3. `loadItems1()` — fetch `config/items1.json` as JSON
+4. `get_bookmarks()` — walk Chrome bookmark tree, populate `data` singleton
+5. `make_popup_ui()` — render upper and lower UI areas
 
-**Moving a bookmark:**
-1. User selects source folder from `zinp` → bookmarks in that folder appear in `yinp`
-2. User clicks a bookmark in `yinp` → details show in `oname`/`ourl`/`oid`
-3. User clicks a category button → `moveBKItem()` moves the bookmark to that folder
+### Core Data Model
 
-**Folder hierarchy:**
-- Root is Chrome's bookmark bar (id: '1')
-- Hierarchical paths start with `/0/`, `/1/`, `/Y1/`, etc.
-- Parent folders must exist before children (use `getOrCreateFolder()`)
+**`Data`** (js/data.js) is a module-level singleton (`export { data }`) with two hash maps built during startup:
+- `ItemHash`: bookmark ID → `Item`
+- `ItemHashByHier`: hierarchical path string (e.g. `/Y1/ChatGPT/0`) → `Item`
 
-**Startup sequence** (in `PopupManager.start()`):
-1. `Globalx.initSettings_a()` + `initSettings_all()` — load Chrome storage
-2. `loadItems1()` — fetch config/items1.js as JSON
-3. `get_bookmarks()` — build `data` singleton from Chrome bookmark tree
-4. `make_popup_ui()` — render upper and lower UI areas
+**`Item`** (js/item.js) classifies each Chrome bookmark node:
+- `ROOT`: parentId is non-numeric (−1 after parse)
+- `TOP`: parentId === 0 (direct children of Chrome's virtual root; `hier` stays `''`)
+- `FOLDER`: all other folders; `hier` = `parent.hier + '/' + title`
+- `ITEM`: has a `url` — stored in `ItemHash` only, not `ItemHashByHier`
+
+`hier` for TOP-level folders starts with `/` (e.g. `/Y1`, `/0`). Root is Chrome's bookmark bar (`id: '1'`).
+
+**`ItemGroup`** (js/itemgroup.js) walks the Chrome bookmark tree recursively via `add_to_itemgroup()`, calling `data.addItem()` for every non-ITEM node.
+
+### Storage
+
+**`Globalx`** (js/globalx.js) — all Chrome storage is kept under a single `chrome.storage.local` key `all`, containing four sub-keys:
+- `Options` — recently used folder history (array of `{value, text}`)
+- `Selected` — last selected folder per category key
+- `Hiers` — snapshot of `ItemHashByHier` keys
+- `Misc` — miscellaneous settings
+
+`ANOTHER_FOLDER = -1` is a sentinel value used in selects to mean "pick a different folder."
+
+### Configuration Files
+
+**`config/items1.json`** — the bookmark category list, a plain JSON array of `["Label", "/hierarchical/path"]` pairs. Loaded at runtime via `fetch()` with `cache: 'no-cache'` in `loadItems1()`. **Must be a raw JSON array** — not a JS module. The static `import {items1} from '../config/items1.js'` at the top of `popupx.js` is dead code; the actual data comes from `loadItems1()`.
+
+**`config/settings3.js`** — exports `getNumOfRows()` (5 columns), `getMax()` (400 items), `getKeys()`, `getPrefix()`, `getFoldersFromPrefixes()`, `getFoldersFromDayPrefixes()`. Also defines `folderPrefixes` (e.g. `/0/Kindle` → `K`) and `folderDayPrefixes` for auto-folder creation. The `keys` array (e.g. `['/0/0-etc/1']`) drives the `zinp` source folder dropdown in move mode.
+
+> **Note**: the file currently present in the repo is `config/settings2.js` (same content). All JS imports reference `config/settings3.js`. If the extension fails to load, ensure `settings3.js` exists.
+
+### Folder Management
+
+**`AddFolder`** (js/addfolder.js):
+- `getOrCreateFolder(hier)` — recursively creates folder hierarchy by splitting `hier` into segments, then calling `makeAndRegisterBookmarkFolder()` for any missing segment
+- `addFolderx()` — creates next-month folders under each `folderPrefixes` path (e.g. `K-202501`)
+- `addDayFolderx()` — creates `Year/YYYYMM/YYYYMMDD` hierarchy under each `folderDayPrefixes` path
+
+`getBookmarkTitle()` uses the older callback-style Chrome API — inconsistent with the rest of the codebase.
+
+### Auto-Routing (Movergroup)
+
+**`Movergroup`** (js/movegroup.js) is a singleton with hardcoded domain → folder path rules:
+```
+www.youtube.com   → /Video
+www.nicovideo.jp  → /Video-nico
+www.bilibili.com  → /Video-bili
+www.amazon.co.jp  → /Amazon
+note.com          → /Note.com
+```
+Triggered by the `BX` / `BX2` buttons in the popup. `BX` scans from the bookmark bar root (`id: '1'`); `BX2` scans from `/0/0-etc/0`.
+
+### Popup UI
+
+**`PopupManager`** (js/popupx.js) — two modes toggled by clicking `#add-mode` / `#move-mode` labels:
+
+**Add mode**: radio `s` (single tab) | `m-r` (tabs to the right) | `m-l` (tabs to the left) | `x` (no-op). Category buttons call `createOrMoveBKItem()` which calls `chrome.bookmarks.create()`.
+
+**Move mode**: `#zinp` (source folder, populated from `getKeys()`) → `#yinp` (bookmarks in that folder) → `#oname`/`#ourl`/`#oid` (selected bookmark info) → category button calls `moveBKItem()` → `chrome.bookmarks.move()`.
+
+`#rinp` is the recently-used folder select, persisted via `Globalx.StorageOptions`.
+
+CSS layout uses three files: `popupy.css` (grid positioning, auto-generated), `popupx.css` (component styles), `popup.css`. Grid classes follow the pattern `g-<row>-<col>` with 5 columns.
+
+### Migration Status
+
+`Util` (js/util.js) still imports `addRecentlyItemX` and `getStorageOptions` from the legacy `js/global.js`. New code should use `Globalx` (js/globalx.js) instead.
+
+## Code Style
+
+- ES6 modules with explicit imports/exports
+- JSDoc comments for all classes and methods (written in Japanese)
+- jQuery for DOM manipulation; bundled locally in `outerjs/` (jQuery 3.7.1, jQuery UI, day.js)
+- Hierarchical paths use forward slashes (e.g. `/Y1/ChatGPT/Agent/Agent-1`)
+- Prettier config (`js/.prettierrc`): 2-space indent, no tabs, single quotes
 
 ## Important Constraints
 
-- Hierarchical paths in `ItemHashByHier` are strings, not IDs
-- Empty/null keys are rejected in `setItem()` and `setItemByHier()`
-- Duplicate keys are silently ignored (returns null)
-- The `data` singleton must be initialized before popup UI renders
-- `config/items1.js` must be a raw JSON array (not `export const items1 = [...]`) because it is parsed via `response.json()`
+- `config/items1.json` must be a raw JSON array (not `export const items1 = [...]`)
+- Duplicate keys in `ItemHash` / `ItemHashByHier` are silently ignored (`setItem` / `setItemByHier` return null without overwriting)
+- Empty/null/whitespace-only keys are rejected in both setters
+- `data` singleton must be fully populated before `make_popup_ui()` runs
+- All Chrome API calls use Promises (MV3) — do not introduce callback style except where already present
+
+## Common Tasks
+
+**Add bookmark categories:**
+1. Edit `config/items1.json` — raw JSON array of `["Label", "/path"]` pairs
+2. Reopen popup (fetched with `no-cache` each time)
+
+**Change monthly folder prefixes:**
+- Edit `folderPrefixes` in `config/settings3.js`
+
+**Change date-based folder root:**
+- Edit `folderDayPrefixes` in `config/settings3.js`
+
+**Add auto-routing rule (domain → folder):**
+- Edit `Movergroup.get_mover_group()` in `js/movegroup.js`
