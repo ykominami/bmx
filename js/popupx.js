@@ -1,4 +1,3 @@
-import {items1} from '../config/items1.js';
 import {getKeys, getMax, getNumOfRows} from '../config/settings3.js';
 import {ItemGroup} from './itemgroup.js';
 import {Movergroup} from './movegroup.js';
@@ -309,7 +308,8 @@ class PopupManager {
           });
         }
         for (i = active_tab.index - 1; i >= 0; i--) {
-          chrome.bookmarks.remove(tabs[i].id);
+          // Manifest V3: chrome.tabs.remove() returns a Promise
+          await chrome.tabs.remove(tabs[i].id);
         }
         break;
       case 'x':

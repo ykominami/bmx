@@ -274,34 +274,20 @@ export class AddFolder {
      * ノードのタイトルを解決するPromise。ノードが存在しない、またはエラーの場合はPromiseを拒否します。
      */
     async getBookmarkTitle(nodeId) {
-        return new Promise((resolve, reject) => {
         if (!nodeId || typeof nodeId !== 'string') {
-            return reject(new Error("無効なノードIDが提供されました。IDは文字列である必要があります。"));
+            throw new Error("無効なノードIDが提供されました。IDは文字列である必要があります。");
         }
-    
-        // chrome.bookmarks.get(id, callback) を使用して指定されたノードを取得します
-        chrome.bookmarks.get(nodeId, (nodes) => {
-            // APIがエラーを報告したかチェックします
-            if (chrome.runtime.lastError) {
-            console.error(`ID ${nodeId} のブックマーク取得中にエラーが発生しました:`, chrome.runtime.lastError.message);
-            reject(new Error(chrome.runtime.lastError.message));
-            return;
-            }
-            
-            // chrome.bookmarks.get() はノードの配列を返すため、最初のエントリを確認します
+
+        try {
+            const nodes = await chrome.bookmarks.get(nodeId);
             if (!nodes || nodes.length === 0) {
-            // IDが有効でない場合やノードが見つからない場合に発生します
-            reject(new Error(`ID "${nodeId}" に対応するブックマークノードが見つかりませんでした。`));
-            return;
+                throw new Error(`ID "${nodeId}" に対応するブックマークノードが見つかりませんでした。`);
             }
-    
-            // 最初のノード（nodes[0]）が、指定されたIDのノードです
-            const node = nodes[0];
-            
-            // 成功した場合、ノードのタイトルを解決します
-            resolve(node.title);
-        });
-        });
+            return nodes[0].title;
+        } catch (error) {
+            console.error(`ID ${nodeId} のブックマーク取得中にエラーが発生しました:`, error.message);
+            throw error;
+        }
     }
     
     /**

@@ -1,4 +1,4 @@
-import {addRecentlyItemX, getStorageOptions} from './global.js';
+import { Globalx } from './globalx.js';
 
 /**
  * ユーティリティ関数を提供するクラス
@@ -118,8 +118,8 @@ export class Util {
      * @param {jQuery} select - セレクト要素のjQueryオブジェクト
      */
     static restoreSelectRecently(select) {
-        let sOptions = getStorageOptions();
-        addRecentlyItemX(select, sOptions);
+        let sOptions = Globalx.getStorageOptions();
+        Globalx.addRecentlyItemX(select, sOptions);
     }
 
     /**
