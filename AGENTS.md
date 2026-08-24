@@ -1,6 +1,6 @@
-# AGENTS.md
+# CLAUDE.md | E:\Cchrome-ext\bmx
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
@@ -133,3 +133,6 @@ CSS layout uses three files: `popupy.css` (grid positioning, auto-generated), `p
 
 **Add auto-routing rule (domain → folder):**
 - Edit `Movergroup.get_mover_group()` in `js/movegroup.js`
+
+
+@C:\0-MD-2\_ARCHIVE\AI\SSORT.md
