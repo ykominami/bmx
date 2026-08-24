@@ -1,6 +1,6 @@
-import {getKeys, getMax, getNumOfRows} from '../config/settings3.js';
-import {ItemGroup} from './itemgroup.js';
-import {Movergroup} from './movegroup.js';
+import { getKeys, getMax, getNumOfRows } from '../config/settings3.js';
+import { ItemGroup } from './itemgroup.js';
+import { Movergroup } from './movegroup.js';
 import { AddFolder } from './addfolder.js';
 import { Util } from './util.js';
 import { data } from './data.js';
@@ -9,7 +9,7 @@ import { Globalx } from './globalx.js';
 
 async function loadItems1() {
   const url = chrome.runtime.getURL('config/items1.json');
-  const response = await fetch(url, {cache: 'no-cache'});
+  const response = await fetch(url, { cache: 'no-cache' });
   if (!response.ok) {
     throw new Error(`Failed to load config/items1.json: ${response.status}`);
   }
@@ -47,7 +47,9 @@ class PopupManager {
    * 初期化処理
    */
   init() {
-    document.addEventListener('DOMContentLoaded', () => this.onDOMContentLoaded());
+    document.addEventListener('DOMContentLoaded', () =>
+      this.onDOMContentLoaded(),
+    );
     this.start();
   }
 
@@ -77,13 +79,23 @@ class PopupManager {
    */
   makeDistinationMenu(items) {
     let i, name;
+    let item;
     for (i = 0; i < items.length; i++) {
+      let buffer = [];
       name = Util.getCategoryName(i);
-      this.makeBtnHdrAndSelect(
+      buffer = this.makeBtnHdrAndSelect(
         Util.getJqueryId(Util.getBtnId(name)),
         Util.getJqueryId(Util.getSelectId(name)),
-        items[i][1]
+        items[i][1],
       );
+      // console.log(`popupx.js makeDistinationMenu items[${i}][0]=${items[i][0]}`)
+      // console.log(`popupx.js makeDistinationMenu items[${i}][1]=${items[i][1]}`)
+      if (items[i][0] === 'TODO') {
+        item = buffer[0];
+        console.log(
+          `popupx.js makeDistinationMenu item=${JSON.stringify(item)}`,
+        );
+      }
     }
   }
 
@@ -123,10 +135,12 @@ class PopupManager {
    * @param {string} keytop - キートップ
    */
   makeBtnHdrAndSelect(btn_jquery_id, select_jquery_id, keytop) {
-    this.addSelect($(select_jquery_id), keytop);
+    let buffer;
+    buffer = this.addSelect($(select_jquery_id), keytop);
     $(btn_jquery_id).click(() => {
-      this.createOrMoveBKItem(select_jquery_id, keytop).then(()=>{});
+      this.createOrMoveBKItem(select_jquery_id, keytop).then(() => {});
     });
+    return buffer;
   }
 
   /**
@@ -147,37 +161,42 @@ class PopupManager {
    */
   addSelect(select, keytop) {
     let item;
+    let buffer = [];
     if (keytop != null) {
       item = data.getItemByHier(keytop);
       if (item != null) {
         this.getSelectOption(item, true).then((xary) => {
-          let opts1 = xary.map((ele) => $('<option>', {
-            value: ele.value,
-            text: ele.text,
-          }))
+          let opts1 = xary.map((ele) =>
+            $('<option>', {
+              value: ele.value,
+              text: ele.text,
+            }),
+          );
           if (opts1.length === 0) {
-            opts1.push(
-                $('<option>', {value: item.id, text: item.title})
-            );
+            opts1.push($('<option>', { value: item.id, text: item.title }));
           }
           opts1.push(
-              $('<option>', {
-                value: Globalx.ANOTHER_FOLER,
-                text: '#別のフォルダ#',
-              })
+            $('<option>', {
+              value: Globalx.ANOTHER_FOLER,
+              text: '#別のフォルダ#',
+            }),
           );
           select.empty();
           select.append(opts1);
+          buffer = opts1;
+          console.log(`popupx.js addSelect keytop=${JSON.stringify(keytop)}`);
+          console.log(`popupx.js addSelect buffer=${JSON.stringify(buffer)}`);
           if (opts1.length > 0) {
-            select.prop('selectedIndex', 0);
-            console.log(`popupx.js addSelect opts1[0].value=${opts1[0].value}`)
-            console.log(`popupx.js addSelect opts1=${ JSON.stringify(opts1) }`)
+            // select.prop('selectedIndex', 0);
+            // console.log(`popupx.js addSelect opts1[0].value=${opts1[0].value}`)
+            //console.log(`popupx.js addSelect opts1=${ JSON.stringify(opts1) }`)
           } else {
             //		do nothing
           }
-        })
+        });
       }
     }
+    return buffer;
   }
 
   /**
@@ -190,14 +209,14 @@ class PopupManager {
     let obj;
     let buffer = [];
     if (!ignore_head) {
-      buffer.push({value: item.id, text: item.title});
+      buffer.push({ value: item.id, text: item.title });
     }
     // Manifest V3: chrome.bookmarks.getSubTree() returns a Promise
     const bookmarkTreeNodes = await chrome.bookmarks.getSubTree(item.id);
     let count = 100;
-    obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
-    if(obj.buffer.length > 0){
-      buffer.push(...obj.buffer)
+    obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id);
+    if (obj.buffer.length > 0) {
+      buffer.push(...obj.buffer);
     }
     return buffer;
   }
@@ -242,8 +261,10 @@ class PopupManager {
     // Manifest V3: chrome.bookmarks.getSubTree() returns a Promise
     const bookmarkTreeNodes = await chrome.bookmarks.getSubTree(item.id);
     let count = 1;
-    let obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id)
-    let buffer2 = obj.buffer.map((ele) => $('<option>', {value: ele.value, text: ele.text}));
+    let obj = this.dumpTreeItems(bookmarkTreeNodes, count, item.id);
+    let buffer2 = obj.buffer.map((ele) =>
+      $('<option>', { value: ele.value, text: ele.text }),
+    );
     select.append(buffer2);
     select.prop('selectedIndex', 0);
     folder_id = select.val();
@@ -272,7 +293,7 @@ class PopupManager {
    */
   async add_mode_x([tabs, parent_id, parent_text]) {
     let i;
-    let active_tab = tabs.find((tab) => tab.active)
+    let active_tab = tabs.find((tab) => tab.active);
     let move_need = true;
     const radioval = $("input[name='add-mode']:checked").val();
     switch (radioval) {
@@ -338,16 +359,15 @@ class PopupManager {
   async createOrMoveBKItem(select_jquery_id, keytop) {
     let query;
     const radioval = $("input[name='add-mode']:checked").val();
-    if( radioval === 'm-r' || radioval === 'm-l'){
+    if (radioval === 'm-r' || radioval === 'm-l') {
       query = {
         currentWindow: true,
-      }
-    }
-    else{
+      };
+    } else {
       query = {
         active: true,
         currentWindow: true,
-      }
+      };
     }
     const parent_id = $(select_jquery_id).val();
     const selected_jquery_id = select_jquery_id + ' option:selected';
@@ -356,11 +376,9 @@ class PopupManager {
 
     Globalx.addStorageSelected(keytop, selected.val());
     if (this.Target === '#add-mode') {
-      this.tab_query_async(
-          query,
-          parent_id,
-          parent_text
-      ).then((result) => this.add_mode_x(result));
+      this.tab_query_async(query, parent_id, parent_text).then((result) =>
+        this.add_mode_x(result),
+      );
     } else {
       const text = $('#oname').val();
       const url = $('#ourl').val();
@@ -382,33 +400,37 @@ class PopupManager {
    * @returns {Promise<void>}
    */
   async closeTabs() {
-      const [tabs] = await this.tab_query_async({
+    const [tabs] = await this.tab_query_async(
+      {
         currentWindow: true,
-      }, null, null);
-      let i;
-      const active_tab = tabs.find((tab) => tab.active);
-      if (!active_tab) {
-        return;
-      }
-      const radioval = $("input[name='add-mode']:checked").val();
-      switch (radioval) {
-        case 's':
-          break;
-        case 'm-r':
-          for (i = tabs.length - 1; i > active_tab.index; i--) {
-            // Manifest V3: chrome.tabs.remove() returns a Promise
-            await chrome.tabs.remove(tabs[i].id);
-          }
-          break;
-        case 'm-l':
-          for (i = active_tab.index - 1; i > -1; i--) {
-            // Manifest V3: chrome.tabs.remove() returns a Promise
-            await chrome.tabs.remove(tabs[i].id);
-          }
-          break;
-        default:
-          break;
-      }
+      },
+      null,
+      null,
+    );
+    let i;
+    const active_tab = tabs.find((tab) => tab.active);
+    if (!active_tab) {
+      return;
+    }
+    const radioval = $("input[name='add-mode']:checked").val();
+    switch (radioval) {
+      case 's':
+        break;
+      case 'm-r':
+        for (i = tabs.length - 1; i > active_tab.index; i--) {
+          // Manifest V3: chrome.tabs.remove() returns a Promise
+          await chrome.tabs.remove(tabs[i].id);
+        }
+        break;
+      case 'm-l':
+        for (i = active_tab.index - 1; i > -1; i--) {
+          // Manifest V3: chrome.tabs.remove() returns a Promise
+          await chrome.tabs.remove(tabs[i].id);
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   /**
@@ -432,16 +454,14 @@ class PopupManager {
         }
         return previousValue;
       },
-      [[], []]
+      [[], []],
     ); // => 6
 
     let opts1 = array[0];
-    opts1.push(
-        {
-          value: Globalx.ANOTHER_FOLER,
-          text: '#別のフォルダ#',
-        }
-    );
+    opts1.push({
+      value: Globalx.ANOTHER_FOLER,
+      text: '#別のフォルダ#',
+    });
     if (opts1.length > 1) {
       let opts2 = opts1.map((obj) => {
         if (obj && typeof obj.jquery !== 'undefined') {
@@ -496,22 +516,22 @@ class PopupManager {
    * @returns {Object} {buffer: Array, count: number}
    */
   dumpTreeNodesSub(element, count, parent_id, head_ignore = false) {
-    let ret = {buffer: [], count: count}
+    let ret = { buffer: [], count: count };
 
     if (element.url) {
       return ret;
     }
-    if(!head_ignore){
-      let objx = {value:element.id, text: element.title};
+    if (!head_ignore) {
+      let objx = { value: element.id, text: element.title };
       ret.buffer.push(objx);
     }
     if (element.children) {
       element.children.map((child) => {
-        let obj = this.dumpTreeNodesSub(child, count + 1, parent_id, false)
-          ret.buffer.push(...obj.buffer)
-      })
+        let obj = this.dumpTreeNodesSub(child, count + 1, parent_id, false);
+        ret.buffer.push(...obj.buffer);
+      });
     }
-    return ret
+    return ret;
   }
 
   /**
@@ -524,17 +544,17 @@ class PopupManager {
   dumpTreeItems(bookmarkTreeNodes, count, parent_id) {
     let i;
     let obj;
-    let ret = {buffer: [], count: count}
+    let ret = { buffer: [], count: count };
 
     for (i = 0; i < bookmarkTreeNodes.length; i++) {
-      let element = bookmarkTreeNodes[i]
-      let head_ignore = true
-      obj = this.dumpTreeNodesSub(element, parent_id, count, head_ignore);
-      if( obj.buffer.length > 0){
-        ret.buffer.push(...obj.buffer)
+      let element = bookmarkTreeNodes[i];
+      let head_ignore = true;
+      obj = this.dumpTreeNodesSub(element, count, parent_id, head_ignore);
+      if (obj.buffer.length > 0) {
+        ret.buffer.push(...obj.buffer);
       }
     }
-    return ret
+    return ret;
   }
 
   /**
@@ -573,14 +593,13 @@ class PopupManager {
       aryx.push(element.first);
       aryx.push(element.second);
     });
-    let menu = $('#menu')
+    let menu = $('#menu');
     menu.addClass('wrapper');
     menu.append(aryx);
 
     this.makeDistinationMenu(items);
     $('#rbtn').click(() => {
-      this.createOrMoveBKItem('#rinp', 'recently').then(() => {
-      });
+      this.createOrMoveBKItem('#rinp', 'recently').then(() => {});
     });
 
     let storageOptions = Globalx.getStorageOptions();
@@ -588,7 +607,7 @@ class PopupManager {
     let ary = Globalx.adjustValue(storageOptions);
     Globalx.setStorageOptions(ary);
     Globalx.setStorageHiers(data.getKeysOfItemByHier());
-    let rinp = $('#rinp')
+    let rinp = $('#rinp');
     if (ary.length > 0) {
       Util.updateSelectRecently(ary, rinp);
     }
@@ -640,7 +659,7 @@ class PopupManager {
             return hostname;
           })
           .catch((error) => {
-            console.log(`selectWaitingItemsBtnHdr error=${error}`)
+            console.log(`selectWaitingItemsBtnHdr error=${error}`);
           });
       }
     }
@@ -661,7 +680,7 @@ class PopupManager {
       let value = yinp.val();
       this.selectWaitingItemsBtnHdr(value);
     });
-    let zinp = $('#zinp')
+    let zinp = $('#zinp');
     zinp.click(() => {
       this.setTargetArea('#add-mode');
       let value = zinp.val();
@@ -691,7 +710,7 @@ class PopupManager {
       // console.log(["sid=", sid, "ourl=", ourl]);
     });
     $('#importbtn').click(() => {
-      console.log('not implemented a handler of importbtn')
+      console.log('not implemented a handler of importbtn');
     });
     $('#removeitembtn').click(async () => {
       let valx = $('#oid').val();
@@ -724,7 +743,7 @@ class PopupManager {
       this.moveBMX2();
     });
     $('#addFcbtn').click(() => {
-	  this.addFc();
+      this.addFc();
       console.log('addFcbtn');
     });
 
@@ -776,9 +795,8 @@ class PopupManager {
    * @returns {Promise<void>}
    */
   async get_bookmarks() {
-    this.dumpBookmarksAsync().then((bookmarkTreeNodes) => {
-      this.dumpTreeNodesAsync(bookmarkTreeNodes);
-    });
+    const bookmarkTreeNodes = await this.dumpBookmarksAsync();
+    await this.dumpTreeNodesAsync(bookmarkTreeNodes);
   }
   /**
    * ツリーノードを非同期でダンプする
@@ -808,26 +826,24 @@ class PopupManager {
    * BMXフォルダを移動する（特定の階層パス）
    */
   moveBMX2() {
-      let hier = '/0/0-etc/0';
-      let group = Movergroup.get_mover_group();
-      // console.log(`hier=${hier}`);
-      let obj = data.getItemByHier(hier);
-      // console.log(`obj.id=${obj.id}`);
-      if (obj.id != null) {
-          this.itemGroup.moveBMXFolderBase(group, obj.id).then(() => {
-          });
-      } else {
-          // console.log(`obj=${obj}`);
-      }
+    let hier = '/0/0-etc/0';
+    let group = Movergroup.get_mover_group();
+    // console.log(`hier=${hier}`);
+    let obj = data.getItemByHier(hier);
+    // console.log(`obj.id=${obj.id}`);
+    if (obj.id != null) {
+      this.itemGroup.moveBMXFolderBase(group, obj.id).then(() => {});
+    } else {
+      // console.log(`obj=${obj}`);
+    }
   }
 
   /**
    * BMXフォルダを移動する（ブックマークバー）
    */
   moveBMX() {
-      let group = Movergroup.get_mover_group();
-      this.itemGroup.moveBMXFolderBase(group, '1').then(() => {
-      });
+    let group = Movergroup.get_mover_group();
+    this.itemGroup.moveBMXFolderBase(group, '1').then(() => {});
   }
 
   /**
@@ -838,24 +854,27 @@ class PopupManager {
    */
   print_with_cond_ret(ret) {
     if (this.reg.exec(ret.hier)) {
-          console.log(`dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`)
+      console.log(
+        `dumpTreeNodes 1 ret.hier=${ret.hier}  Reg.title=${ret.title}`,
+      );
     }
   }
-  
+
   /**
    * フォルダを追加する（テスト用）
    */
   addFc() {
-	  /*
+    /*
     const root = data.getItemByHier('/');
 	  console.log(`root=${JSON.stringify(root)}`)
 	  */
-   const root0 = data.getItemByHier('');
-	  console.log(`root0=${JSON.stringify(root0)}`)
+    const root0 = data.getItemByHier('');
+    console.log(`root0=${JSON.stringify(root0)}`);
     data.getKeysOfItemByHier().map((key) => {
-      if( key.trim().startsWith('//') ){
-      console.log(key)
-    }});
+      if (key.trim().startsWith('//')) {
+        console.log(key);
+      }
+    });
   }
 
   /**
@@ -863,18 +882,18 @@ class PopupManager {
    * @returns {Function} ダンプ関数
    */
   createDumpTreeNodes() {
-      const self = this;
-      function dumpTreeNodes_func(bookmarkTreeNodes) {
-          return bookmarkTreeNodes.reduce((accumulator, element) => {
-              let ret = self.itemGroup.add_to_itemgroup(element, dumpTreeNodes_func);
-              if (ret != null) {
-                  self.print_with_cond_ret(ret);
-                  accumulator.push(ret);
-              }
-              return accumulator;
-          }, []);
-      }
-      return dumpTreeNodes_func;
+    const self = this;
+    function dumpTreeNodes_func(bookmarkTreeNodes) {
+      return bookmarkTreeNodes.reduce((accumulator, element) => {
+        let ret = self.itemGroup.add_to_itemgroup(element, dumpTreeNodes_func);
+        if (ret != null) {
+          self.print_with_cond_ret(ret);
+          accumulator.push(ret);
+        }
+        return accumulator;
+      }, []);
+    }
+    return dumpTreeNodes_func;
   }
 }
 
