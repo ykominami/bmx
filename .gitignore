@@ -21,4 +21,5 @@ jquery-ui.js
 /logs/
 #
 /.omc/
-
+.serena/
+SSOT.md
