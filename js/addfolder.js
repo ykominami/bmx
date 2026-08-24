@@ -17,17 +17,14 @@ export class AddFolder {
     }
 
     /**
-     * 現在の年と次の月を文字列として取得する（YYYYMM形式）
-     * @returns {string} 年と次の月の文字列（例: "202501"）
+     * 現在の年と現在の月を文字列として取得する（YYYYMM形式）
+     * @returns {string} 年と現在の月の文字列（例: "202501"）
      */
-    getYearAndNextMonthAsString() {
+    getYearAndCurrentMonthAsString() {
         let current = new Date();
-        let month = current.getMonth();
-        // 次の月に設定する
-        current.setMonth(month + 1);
         let year = current.getFullYear();
-        let next_month = Util.getMonthx(current); // Updated call
-        let monthstr = Util.adjustAsStr(next_month); // Updated call
+        let month = Util.getMonthx(current);
+        let monthstr = Util.adjustAsStr(month);
         return `${year}${monthstr}`;
     }
 
@@ -140,12 +137,12 @@ export class AddFolder {
     }
 
     /**
-     * フォルダを追加する（次の月のフォルダを作成）
+     * フォルダを追加する（現在の月のフォルダを作成）
      * @returns {Promise<void>}
      */
     async addFolderx() {
         let folders = getFoldersFromPrefixes();
-        let year_month = this.getYearAndNextMonthAsString(); // Call instance method
+        let year_month = this.getYearAndCurrentMonthAsString(); // Call instance method
 
         for (const parent_name of folders) {
             const parent_item = await this.getOrCreateFolder(parent_name);
