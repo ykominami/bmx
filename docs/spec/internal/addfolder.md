@@ -29,17 +29,16 @@
 
 ---
 
-### `getYearAndNextMonthAsString() -> string`
+### `getYearAndCurrentMonthAsString() -> string`
 
-現在の年と次の月を組み合わせた文字列（`YYYYMM` 形式）を取得する。
+現在の年と現在の月を組み合わせた文字列（`YYYYMM` 形式）を取得する。
 
 * **処理フロー**:
   1. 現在の `Date` オブジェクトを取得。
-  2. 現在の月に 1 を加算して次の月に設定。
-  3. `Date` オブジェクトから年を取得。
-  4. `Util.getMonthx` と `Util.adjustAsStr` を用いて、月を 2 桁の文字列にする。
-  5. 年と月を結合した文字列を返す。
-* **Returns**: 年と次の月の文字列（例: `"202501"`）
+  2. `Date` オブジェクトから年を取得。
+  3. `Util.getMonthx` と `Util.adjustAsStr` を用いて、現在の月を 2 桁の文字列にする。
+  4. 年と月を結合した文字列を返す。
+* **Returns**: 年と現在の月の文字列（例: `"202501"`）
 
 ---
 
@@ -92,14 +91,14 @@ Chrome API を呼び出してブックマークフォルダを新規作成し、
 
 ### `addFolderx() -> Promise<void>`
 
-プレフィックスを持つ各親フォルダの下に、次月のフォルダ（例: `K-202501`）を自動作成する。
+プレフィックスを持つ各親フォルダの下に、当月のフォルダ（例: `K-202501`）を自動作成する。
 
 * **処理フロー**:
   1. `getFoldersFromPrefixes()` よりプレフィックス対象フォルダの一覧を取得。
-  2. `getYearAndNextMonthAsString()` より次の月の年月文字列を取得。
+  2. `getYearAndCurrentMonthAsString()` より当月の年月文字列を取得。
   3. 各フォルダに対し、`getOrCreateFolder` で親フォルダを作成・取得。
   4. 親フォルダが存在する場合、プレフィックスと年月を結合したタイトル（例: `K-202501`）を生成。
-  5. 結合した階層パスで `getOrCreateFolder` を呼び出し、次月フォルダを作成する。
+  5. 結合した階層パスで `getOrCreateFolder` を呼び出し、当月フォルダを作成する。
 
 ---
 
